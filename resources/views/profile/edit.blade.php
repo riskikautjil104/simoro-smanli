@@ -1,29 +1,47 @@
-<x-app-layout>
-    <x-slot name="header">
-        <h2 class="font-semibold text-xl text-gray-800 leading-tight">
-            {{ __('Profile') }}
-        </h2>
-    </x-slot>
+@extends('layouts.master')
 
-    <div class="py-12">
-        <div class="max-w-7xl mx-auto sm:px-6 lg:px-8 space-y-6">
-            <div class="p-4 sm:p-8 bg-white shadow sm:rounded-lg">
-                <div class="max-w-xl">
+@section('title', 'Edit Profile')
+
+@section('layoutContent')
+<div class="container py-4">
+    <div class="row">
+        <div class="col-lg-8 mx-auto">
+            {{-- Page Header --}}
+            <div class="mb-4">
+                <h2 class="fw-bold">Pengaturan Profil</h2>
+                <p class="text-muted">Kelola informasi akun dan keamanan Anda</p>
+            </div>
+
+            {{-- Profile Information Card --}}
+            <div class="card shadow-sm mb-4">
+                <div class="card-header bg-white border-bottom">
+                    <h5 class="mb-0"><i class="bi bi-person-circle me-2"></i>Informasi Profil</h5>
+                </div>
+                <div class="card-body">
                     @include('profile.partials.update-profile-information-form')
                 </div>
             </div>
 
-            <div class="p-4 sm:p-8 bg-white shadow sm:rounded-lg">
-                <div class="max-w-xl">
+            {{-- Update Password Card --}}
+            <div class="card shadow-sm mb-4">
+                <div class="card-header bg-white border-bottom">
+                    <h5 class="mb-0"><i class="bi bi-shield-lock me-2"></i>Ubah Password</h5>
+                </div>
+                <div class="card-body">
                     @include('profile.partials.update-password-form')
                 </div>
             </div>
 
-            <div class="p-4 sm:p-8 bg-white shadow sm:rounded-lg">
-                <div class="max-w-xl">
+            {{-- Delete Account Card --}}
+            <div class="card shadow-sm border-danger mb-4">
+                <div class="card-header bg-white border-bottom border-danger">
+                    <h5 class="mb-0 text-danger"><i class="bi bi-exclamation-triangle me-2"></i>Zona Berbahaya</h5>
+                </div>
+                <div class="card-body">
                     @include('profile.partials.delete-user-form')
                 </div>
             </div>
         </div>
     </div>
-</x-app-layout>
+</div>
+@endsection

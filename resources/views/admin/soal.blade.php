@@ -256,6 +256,7 @@ document.addEventListener('DOMContentLoaded', function () {
         }
 
         allGurus.forEach(guru => {
+
             let guruMapels = allMapels.filter(m => m.teacher && m.teacher.id === guru.id);
             if (guruMapels.length === 0) return;
 
@@ -266,6 +267,16 @@ document.addEventListener('DOMContentLoaded', function () {
                 if (mapelUjians.length > 0) {
                     ujianList = mapelUjians.map(u => 
                         `<a href='#' class='link-ujian' data-ujian='${u.id}' data-ujian-nama='${u.nama}'>${u.nama}</a>`
+                    ).join('<br>');
+                }
+
+                // Tombol detail ujian untuk setiap ujian
+                let detailUjianBtns = '-';
+                if (mapelUjians.length > 0) {
+                    detailUjianBtns = mapelUjians.map(u => 
+                        `<a class='btn btn-sm btn-info mt-1' href='/admin/ujian/${u.id}/detail' target='_blank'>
+                            <i class="bi bi-eye"></i> Detail Ujian (${u.nama})
+                        </a>`
                     ).join('<br>');
                 }
 
@@ -296,9 +307,7 @@ document.addEventListener('DOMContentLoaded', function () {
                                 data-mapel-name='${mapel.name}'>
                             <i class="bi bi-layers"></i> Batch
                         </button>
-                        <a class='btn btn-sm btn-info mt-1' href='/admin/ujian/${mapelUjians.length === 1 ? mapelUjians[0].id : ''}/detail' target='_blank'>
-                            <i class="bi bi-eye"></i> Detail Ujian
-                        </a>
+                        ${detailUjianBtns}
                     </td>
                 </tr>`;
             });

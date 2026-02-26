@@ -22,6 +22,7 @@ return new class extends Migration
             $table->string('nis')->nullable(); // untuk siswa
             $table->string('phone')->nullable();
             $table->unsignedBigInteger('class_id')->nullable(); // untuk siswa
+            $table->text('ttd_signature')->nullable(); // base64 ttd admin
             $table->rememberToken();
             $table->timestamps();
         });

@@ -18,6 +18,8 @@ return new class extends Migration
             $table->string('ip_address', 45)->nullable();
             $table->string('session_id')->nullable();
             $table->boolean('is_active')->default(true);
+            $table->timestamp('start_time')->nullable();
+            $table->timestamp('end_time')->nullable();
             $table->foreign('user_id')->references('id')->on('users');
             $table->foreign('exam_id')->references('id')->on('exams');
             $table->timestamps();

@@ -32,6 +32,8 @@ class UserSeeder extends Seeder
                 'role' => 'teacher',
                 'nip' => '198001011234',
                 'phone' => '081234567890',
+                // Simulasi ttd_signature base64 (contoh PNG kosong)
+                'ttd_signature' => 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAEAAAABACAYAAACqaXHeAAAAFUlEQVR4nO3BMQEAAAgDoJvc6FEOhAAAAABJRU5ErkJggg==',
             ]
         );
 

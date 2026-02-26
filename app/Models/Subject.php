@@ -28,4 +28,10 @@ class Subject extends Model
     {
         return $this->belongsToMany(SchoolClass::class, 'class_subject', 'subject_id', 'class_id');
     }
+
+    // Relasi mapel ke ujian (one-to-many)
+    public function exams()
+    {
+        return $this->hasMany(Exam::class, 'subject_id');
+    }
 }

@@ -28,30 +28,31 @@ class MonitoringController extends Controller
     // Endpoint data monitoring ujian (AJAX)
     public function data()
     {
-        try {
-            $ujians = \App\Models\Exam::with(['schoolClass', 'subject'])->get();
-            $result = $ujians->map(function ($ujian) {
+        $ujians = \App\Models\Exam::with(['schoolClass', 'subject'])->get();
+        $result = $ujians->map(function ($ujian) {
+            try {
                 $kelas = $ujian->schoolClass && isset($ujian->schoolClass->name) ? $ujian->schoolClass->name : '-';
                 $mapel = $ujian->subject && isset($ujian->subject->name) ? $ujian->subject->name : '-';
-                $peserta = \App\Models\ExamSession::where('exam_id', $ujian->id)->count();
-                $selesai = \App\Models\ExamSession::where('exam_id', $ujian->id)
-                    ->whereNotNull('end_time')->count();
-                $status = $peserta === 0 ? 'Belum Dimulai' : ($selesai === $peserta ? 'Selesai' : 'Sedang Berlangsung');
-                return [
-                    'id' => $ujian->id,
-                    'nama' => $ujian->title,
-                    'kelas' => $kelas,
-                    'mapel' => $mapel,
-                    'jumlah_peserta' => $peserta,
-                    'peserta_selesai' => $selesai,
-                    'status' => $status,
-                ];
-            });
-            return response()->json($result->values());
-        } catch (\Exception $e) {
-            \Log::error('Monitoring error: ' . $e->getMessage());
-            return response()->json([]);
-        }
+            } catch (\Throwable $e) {
+                \Log::warning('Monitoring relasi null: ' . $e->getMessage());
+                $kelas = '-';
+                $mapel = '-';
+            }
+            $peserta = \App\Models\ExamSession::where('exam_id', $ujian->id)->count();
+            $selesai = \App\Models\ExamSession::where('exam_id', $ujian->id)
+                ->whereNotNull('end_time')->count();
+            $status = $peserta === 0 ? 'Belum Dimulai' : ($selesai === $peserta ? 'Selesai' : 'Sedang Berlangsung');
+            return [
+                'id' => $ujian->id,
+                'nama' => $ujian->title,
+                'kelas' => $kelas,
+                'mapel' => $mapel,
+                'jumlah_peserta' => $peserta,
+                'peserta_selesai' => $selesai,
+                'status' => $status,
+            ];
+        });
+        return response()->json($result->values());
     }
     public function show($id)
     {

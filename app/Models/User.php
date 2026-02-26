@@ -39,6 +39,7 @@ class User extends Authenticatable
         'phone',
         'class_id',
         'nis',
+        'ttd_signature',
     ];
 
     /**

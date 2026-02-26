@@ -221,7 +221,7 @@ document.addEventListener('DOMContentLoaded', function () {
         .then(res => res.json())
         .then(guru => {
           document.getElementById('guruId').value = guru.id;
-          document.getElementById('namaGuru').value = guru.nama;
+          document.getElementById('namaGuru').value = guru.name || guru.nama || '';
           document.getElementById('emailGuru').value = guru.email;
           document.getElementById('nipGuru').value = guru.nip || '';
           document.getElementById('hpGuru').value = guru.phone || '';

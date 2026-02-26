@@ -124,7 +124,7 @@ document.addEventListener('DOMContentLoaded', function () {
       .then(data => {
         let options = '';
         data.forEach(guru => {
-          options += `<option value="${guru.id}">${guru.nama}</option>`;
+          options += `<option value="${guru.id}">${guru.name || guru.nama}</option>`;
         });
         document.getElementById('guruMapel').innerHTML = options;
       });

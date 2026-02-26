@@ -10,7 +10,13 @@ class Exam extends Model
 {
     use HasFactory;
     protected $fillable = [
-        'title', 'subject_id', 'class_id', 'start_time', 'end_time', 'duration', 'status'
+        'title',
+        'subject_id',
+        'class_id',
+        'start_time',
+        'end_time',
+        'duration',
+        'status'
     ];
 
     public function subject(): BelongsTo
@@ -21,5 +27,10 @@ class Exam extends Model
     public function schoolClass(): BelongsTo
     {
         return $this->belongsTo(SchoolClass::class, 'class_id');
+    }
+
+    public function questions()
+    {
+        return $this->hasMany(Question::class);
     }
 }
