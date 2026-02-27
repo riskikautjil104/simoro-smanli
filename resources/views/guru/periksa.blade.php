@@ -84,8 +84,8 @@ document.getElementById('ujian-select')
 
             data.forEach(p => {
                 pesertaSelect.innerHTML += `
-                    <option value="${p.student.id}">
-                        ${p.student.name}
+                    <option value="${p.user.id}">
+                        ${p.user.name}
                     </option>
                 `;
             });
@@ -116,6 +116,8 @@ document.getElementById('peserta-select')
             list.innerHTML = '';
 
             let scoresArr = [];
+            let totalScore = 0;
+            let totalCount = 0;
             data.forEach((j, idx) => {
                 let tipe = '-';
                 if (j.question && j.question.type) {
@@ -131,7 +133,11 @@ document.getElementById('peserta-select')
                 if (j.question && j.question.type === 'multiple_choice') {
                     jawabanBenar = `<span class='text-success'><b>Jawaban Benar:</b> ${j.question.answer_key || j.question.jawaban_benar || '-'}</span><br>`;
                 }
-                let scoreVal = j.score != null ? j.score : '';
+                let scoreVal = j.nilai_essay != null ? j.nilai_essay : '';
+                if (scoreVal !== '' && !isNaN(scoreVal)) {
+                    totalScore += parseFloat(scoreVal);
+                    totalCount++;
+                }
                 scoresArr.push({answer_id: j.id, score: scoreVal});
                 list.innerHTML += `
                     <div class="mb-3 p-2 border rounded">
@@ -144,13 +150,15 @@ document.getElementById('peserta-select')
                         <br>
                         <span><b>Jawaban:</b> ${j.answer ?? '-'}</span><br>
                         ${jawabanBenar}
-                        <label>Nilai:</label>
+                        <label>Nilai Essay:</label>
                         <input type="number" class="form-control score-input" data-answer-id="${j.id}" value="${scoreVal}" min="0" max="100">
                     </div>
                 `;
             });
             // Tambahkan tombol simpan nilai per soal
             list.innerHTML += `<button id='btn-simpan-nilai-per-soal' class='btn btn-primary mt-2'>Simpan Nilai Per Soal</button>`;
+            // Set nilai total ke input utama
+            document.getElementById('input-nilai').value = totalScore;
             // Event simpan nilai per soal
             setTimeout(() => {
                 const btn = document.getElementById('btn-simpan-nilai-per-soal');
@@ -159,10 +167,13 @@ document.getElementById('peserta-select')
                         // Ambil semua nilai dari input
                         const scoreInputs = document.querySelectorAll('.score-input');
                         let scores = [];
+                        let total = 0;
                         scoreInputs.forEach(inp => {
+                            let val = inp.value;
+                            if (val !== '' && !isNaN(val)) total += parseFloat(val);
                             scores.push({
                                 answer_id: inp.getAttribute('data-answer-id'),
-                                score: inp.value
+                                score: val
                             });
                         });
                         fetch(`/guru/ujian/${selectedUjian}/peserta/${selectedPeserta}/nilai-per-soal`, {
@@ -175,6 +186,7 @@ document.getElementById('peserta-select')
                         })
                         .then(res => res.json())
                         .then(res => {
+                            document.getElementById('input-nilai').value = total;
                             alert(res.message || 'Nilai per soal berhasil disimpan!');
                         })
                         .catch(() => {
@@ -186,11 +198,11 @@ document.getElementById('peserta-select')
 
             // Ambil nilai terakhir jika ada
             const pesertaObj = pesertaList.find(
-                p => p.student.id == selectedPeserta
+                p => p.user && p.user.id == selectedPeserta
             );
 
             document.getElementById('input-nilai').value =
-                pesertaObj && pesertaObj.score
+                pesertaObj && pesertaObj.score != null
                     ? pesertaObj.score
                     : '';
         })

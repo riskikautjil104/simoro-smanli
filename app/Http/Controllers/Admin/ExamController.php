@@ -175,16 +175,37 @@ class ExamController extends Controller
             ->get()
             ->map(function ($a) {
                 $q = $a->question;
+                $tipe = 'pg';
+                if (isset($q->type)) {
+                    if ($q->type === 'essay') {
+                        $tipe = 'essay';
+                    } else if ($q->type === 'multiple_choice' || $q->type === 'pg') {
+                        $tipe = 'pg';
+                    } else {
+                        $tipe = $q->type;
+                    }
+                }
+                // Ambil opsi PG dari opsi_a-d atau dari options (array)
+                $opsi_a = $q->opsi_a ?? null;
+                $opsi_b = $q->opsi_b ?? null;
+                $opsi_c = $q->opsi_c ?? null;
+                $opsi_d = $q->opsi_d ?? null;
+                if (($tipe === 'pg' || $tipe === 'multiple_choice') && (!$opsi_a && !$opsi_b && !$opsi_c && !$opsi_d) && isset($q->options) && is_array($q->options)) {
+                    $opsi_a = $q->options[0] ?? null;
+                    $opsi_b = $q->options[1] ?? null;
+                    $opsi_c = $q->options[2] ?? null;
+                    $opsi_d = $q->options[3] ?? null;
+                }
                 return [
                     'id' => $q->id,
-                    'pertanyaan' => $q->pertanyaan,
-                    'tipe' => $q->opsi_a ? 'pg' : 'essay',
-                    'opsi_a' => $q->opsi_a,
-                    'opsi_b' => $q->opsi_b,
-                    'opsi_c' => $q->opsi_c,
-                    'opsi_d' => $q->opsi_d,
-                    'jawaban_benar' => $q->jawaban_benar,
-                    'jawaban_siswa' => $a->jawaban,
+                    'pertanyaan' => $q->pertanyaan ?? $q->question_text ?? '-',
+                    'tipe' => $tipe,
+                    'opsi_a' => $opsi_a,
+                    'opsi_b' => $opsi_b,
+                    'opsi_c' => $opsi_c,
+                    'opsi_d' => $opsi_d,
+                    'jawaban_benar' => $q->jawaban_benar ?? $q->answer_key ?? '-',
+                    'jawaban_siswa' => $a->answer,
                     'nilai_essay' => $a->nilai_essay,
                 ];
             });
@@ -195,20 +216,68 @@ class ExamController extends Controller
     public function simpanNilai($ujianId, $userId, Request $request)
     {
         $nilaiEssay = $request->input('nilai_essay', []);
+        $nilaiPgInput = $request->input('nilai_pg', []);
+
+        // Simpan nilai essay
         foreach ($nilaiEssay as $questionId => $nilai) {
             \App\Models\StudentAnswer::where('exam_id', $ujianId)
                 ->where('user_id', $userId)
                 ->where('question_id', $questionId)
                 ->update(['nilai_essay' => $nilai]);
         }
-        // Hitung ulang total score jika perlu
-        $total = \App\Models\StudentAnswer::where('exam_id', $ujianId)
-            ->where('user_id', $userId)
-            ->sum('nilai_essay');
+        // Simpan nilai PG manual jika ada
+        foreach ($nilaiPgInput as $questionId => $nilai) {
+            \App\Models\StudentAnswer::where('exam_id', $ujianId)
+                ->where('user_id', $userId)
+                ->where('question_id', $questionId)
+                ->update(['score' => $nilai]);
+        }
+
+
+        // Hitung nilai dinamis sesuai rumus
+        $exam = \App\Models\Exam::find($ujianId);
+        $questions = $exam ? $exam->questions : collect();
+        $pgQuestions = $questions->where('type', 'multiple_choice')->count();
+        $essayQuestions = $questions->where('type', 'essay')->count();
+
+        // Bobot PG dan Essay (default: 50:50, bisa diubah sesuai kebutuhan)
+        $bobotPg = 50;
+        $bobotEssay = 50;
+        if ($pgQuestions == 0) {
+            $bobotEssay = 100;
+            $bobotPg = 0;
+        } else if ($essayQuestions == 0) {
+            $bobotPg = 100;
+            $bobotEssay = 0;
+        }
+
+        // Nilai per soal
+        $nilaiPerPg = $pgQuestions > 0 ? $bobotPg / $pgQuestions : 0;
+        $nilaiPerEssay = $essayQuestions > 0 ? $bobotEssay / $essayQuestions : 0;
+
+        // Hitung jumlah PG benar
+        $jawabanBenar = \App\Models\StudentAnswer::where('student_answers.exam_id', $ujianId)
+            ->where('student_answers.user_id', $userId)
+            ->join('questions', 'student_answers.question_id', '=', 'questions.id')
+            ->where('questions.type', 'multiple_choice')
+            ->whereRaw('student_answers.answer = questions.jawaban_benar')
+            ->count();
+        $nilaiPg = $jawabanBenar * $nilaiPerPg;
+
+        // Hitung total nilai essay (dibatasi max per soal)
+        $nilaiEssayTotal = 0;
+        foreach ($nilaiEssay as $questionId => $nilai) {
+            $nilaiEssayTotal += min($nilai, $nilaiPerEssay);
+        }
+
+        // Total nilai max 100
+        $total = $nilaiPg + $nilaiEssayTotal;
+        if ($total > 100) $total = 100;
+
         \App\Models\ExamSession::where('exam_id', $ujianId)
             ->where('user_id', $userId)
             ->update(['score' => $total]);
-        return response()->json(['success' => true]);
+        return response()->json(['success' => true, 'nilai_pg' => $nilaiPg, 'nilai_essay' => $nilaiEssayTotal, 'total' => $total]);
     }
 
     /**

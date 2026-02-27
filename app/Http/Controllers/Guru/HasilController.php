@@ -17,8 +17,8 @@ class HasilController extends Controller
         $subjectIds = Subject::where('teacher_id', $user->id)->pluck('id');
         // Ambil exam milik guru
         $examIds = Exam::whereIn('subject_id', $subjectIds)->pluck('id');
-        // Ambil hasil ujian untuk exam milik guru
-        $results = ExamResult::with(['exam.subject', 'exam.schoolClass', 'student'])
+        // Ambil hasil ujian untuk exam milik guru dari ExamSession
+        $results = \App\Models\ExamSession::with(['exam.subject', 'exam.schoolClass', 'user as student'])
             ->whereIn('exam_id', $examIds)
             ->get();
         // Sertakan ttd guru

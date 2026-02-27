@@ -145,46 +145,80 @@ document.addEventListener('DOMContentLoaded', function () {
                     .then(data => {
                         let html = '';
                         if (!data.length) html = '<div class="alert alert-warning">Belum ada jawaban.</div>';
+                        // Hitung jumlah essay
+                        let essayCount = data.filter(j => j.tipe === 'essay').length;
+                        let essayMax = essayCount > 0 ? 50 / essayCount : 0;
                         data.forEach((j, i) => {
                             html += `<div class='mb-3'><b>#${i+1}.</b> ${j.pertanyaan}<br>`;
-                            if (j.tipe === 'pg') {
-                                html += `<div class='mb-1'>
-                                    <span class='badge bg-secondary'>A</span> ${j.opsi_a} &nbsp;
-                                    <span class='badge bg-secondary'>B</span> ${j.opsi_b} &nbsp;
-                                    <span class='badge bg-secondary'>C</span> ${j.opsi_c} &nbsp;
-                                    <span class='badge bg-secondary'>D</span> ${j.opsi_d}
-                                </div>`;
-                                html += `<div>Jawaban Siswa: <b>${j.jawaban_siswa || '-'}</b> | Kunci: <b>${j.jawaban_benar || '-'}</b></div>`;
-                            } else {
+                            if (j.tipe === 'pg' || j.tipe === 'multiple_choice') {
+                                let opsiA = j.opsi_a ?? '';
+                                let opsiB = j.opsi_b ?? '';
+                                let opsiC = j.opsi_c ?? '';
+                                let opsiD = j.opsi_d ?? '';
+                                // Jika opsi_a-d kosong, parse options dari string JSON
+                                if (!opsiA && !opsiB && !opsiC && !opsiD && j.options) {
+                                    let opts = j.options;
+                                    if (typeof opts === 'string') {
+                                        try {
+                                            opts = JSON.parse(opts);
+                                        } catch (e) { opts = {}; }
+                                    }
+                                    opsiA = opts.A ?? opts[0] ?? '';
+                                    opsiB = opts.B ?? opts[1] ?? '';
+                                    opsiC = opts.C ?? opts[2] ?? '';
+                                    opsiD = opts.D ?? opts[3] ?? '';
+                                }
+                                let jawabanSiswa = j.jawaban_siswa || '-';
+                                let pilihan = ['A','B','C','D'];
+                                let opsi = [opsiA, opsiB, opsiC, opsiD];
+                                html += `<div class='mb-1'>`;
+                                for (let idx = 0; idx < 4; idx++) {
+                                    let highlight = (jawabanSiswa === pilihan[idx]) ? 'style="font-weight:bold;color:#0d6efd"' : '';
+                                    html += `<span class='badge bg-secondary'>${pilihan[idx]}</span> <span ${highlight}>${opsi[idx]}</span> &nbsp;`;
+                                }
+                                html += `</div>`;
+                                // Ambil isi jawaban siswa dan kunci
+                                let idxJawab = pilihan.indexOf(jawabanSiswa);
+                                let isiJawab = idxJawab >= 0 ? opsi[idxJawab] : '-';
+                                let kunci = j.jawaban_benar || '-';
+                                let idxKunci = pilihan.indexOf(kunci);
+                                let isiKunci = idxKunci >= 0 ? opsi[idxKunci] : '-';
+                                html += `<div>Jawaban Siswa: <b>${jawabanSiswa}</b> (${isiJawab}) | Kunci: <b>${kunci}</b> (${isiKunci})</div>`;
+                            } else if (j.tipe === 'essay') {
                                 html += `<div>Jawaban Siswa: <i>${j.jawaban_siswa || '-'}</i></div>`;
-                                html += `<div class='mt-1'>Nilai Essay: <input type='number' class='form-control d-inline-block' style='width:80px' name='nilai_essay[${j.id}]' value='${j.nilai_essay ?? ''}' min='0' max='100'></div>`;
+                                html += `<div class='mt-1'>Nilai Essay: <input type='number' class='form-control d-inline-block' style='width:80px' name='nilai_essay[${j.id}]' value='${j.nilai_essay ?? ''}' min='0' max='${essayMax}' step='1'></div>`;
                             }
                             html += '</div>';
                         });
                         document.getElementById('priksaJawabanContent').innerHTML = html;
                     });
                 // Simpan penilaian
-                document.getElementById('btnSimpanNilai').onclick = function() {
-                    const inputs = document.querySelectorAll('#priksaJawabanContent input[name^="nilai_essay"]');
-                    let nilai = {};
-                    inputs.forEach(inp => {
-                        nilai[inp.name.match(/\[(\d+)\]/)[1]] = inp.value;
-                    });
-                    fetch(`/admin/ujian/${ujianId}/peserta/${pesertaId}/nilai`, {
-                        method: 'POST',
-                        headers: {
-                            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
-                            'Accept': 'application/json',
-                            'Content-Type': 'application/json',
-                        },
-                        body: JSON.stringify({ nilai_essay: nilai })
-                    })
-                    .then(res => res.json())
-                    .then(data => {
-                        alert('Penilaian berhasil disimpan!');
-                        modal.hide();
-                    });
-                };
+                    document.getElementById('btnSimpanNilai').onclick = function() {
+                        // Ambil nilai essay, validasi max dinamis
+                        const essayInputs = document.querySelectorAll('#priksaJawabanContent input[name^="nilai_essay"]');
+                        let nilaiEssay = {};
+                        let essayMax = essayInputs.length > 0 ? 50 / essayInputs.length : 0;
+                        essayInputs.forEach(inp => {
+                            let val = parseInt(inp.value) || 0;
+                            if (val > essayMax) val = essayMax;
+                            inp.value = val; // update input jika melebihi
+                            nilaiEssay[inp.name.match(/\[(\d+)\]/)[1]] = val;
+                        });
+                        fetch(`/admin/ujian/${ujianId}/peserta/${pesertaId}/nilai`, {
+                            method: 'POST',
+                            headers: {
+                                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+                                'Accept': 'application/json',
+                                'Content-Type': 'application/json',
+                            },
+                            body: JSON.stringify({ nilai_essay: nilaiEssay })
+                        })
+                        .then(res => res.json())
+                        .then(data => {
+                            alert('Penilaian berhasil disimpan!');
+                            modal.hide();
+                        });
+                    };
             }
         });
 });

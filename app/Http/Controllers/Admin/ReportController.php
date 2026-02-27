@@ -62,11 +62,13 @@ class ReportController extends Controller
         });
         $sessions = $query->get();
         $result = $sessions->map(function ($s) {
+            $score = $s->score;
+            if ($score > 100) $score = 100;
             return [
                 'nama' => $s->user ? $s->user->name : '-',
                 'kelas' => $s->user && $s->user->class ? $s->user->class->name : '-',
                 'ujian' => $s->exam ? $s->exam->title : '-',
-                'nilai' => $s->score,
+                'nilai' => $score,
                 'mulai' => $s->start_time,
                 'selesai' => $s->end_time,
                 'durasi' => $s->start_time && $s->end_time ? (\Carbon\Carbon::parse($s->start_time)->diffInMinutes($s->end_time) . ' menit') : '-',
@@ -93,11 +95,13 @@ class ReportController extends Controller
         });
         $sessions = $query->get();
         $data = $sessions->map(function ($s) {
+            $score = $s->score;
+            if ($score > 100) $score = 100;
             return [
                 'Nama Siswa' => $s->user ? $s->user->name : '-',
                 'Kelas' => $s->user && $s->user->class ? $s->user->class->name : '-',
                 'Ujian' => $s->exam ? $s->exam->title : '-',
-                'Nilai' => $s->score,
+                'Nilai' => $score,
                 'Mulai' => $s->start_time,
                 'Selesai' => $s->end_time,
                 'Durasi' => $s->start_time && $s->end_time ? (\Carbon\Carbon::parse($s->start_time)->diffInMinutes($s->end_time) . ' menit') : '-',
@@ -119,11 +123,13 @@ class ReportController extends Controller
         $ttd = $request->input('ttd');
         $sessions = $query->get();
         $data = $sessions->map(function ($s) {
+            $score = $s->score;
+            if ($score > 100) $score = 100;
             return [
                 'nama' => $s->user ? $s->user->name : '-',
                 'kelas' => $s->user && $s->user->class ? $s->user->class->name : '-',
                 'ujian' => $s->exam ? $s->exam->title : '-',
-                'nilai' => $s->score,
+                'nilai' => $score,
                 'mulai' => $s->start_time,
                 'selesai' => $s->end_time,
                 'durasi' => $s->start_time && $s->end_time ? (\Carbon\Carbon::parse($s->start_time)->diffInMinutes($s->end_time) . ' menit') : '-',

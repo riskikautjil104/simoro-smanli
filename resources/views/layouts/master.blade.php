@@ -16,6 +16,8 @@
             <nav class="col-12 col-md-2 bg-white border-end d-md-flex flex-column d-none d-md-block" style="min-width:220px;">
                 @if(auth()->check() && auth()->user()->role === 'teacher')
                     @include('layouts.partials.verticalMenuGuru')
+                @elseif(auth()->check() && auth()->user()->role === 'student')
+                    @include('layouts.partials.verticalMenuSiswa')
                 @else
                     @include('layouts.partials.verticalMenu')
                 @endif
@@ -32,6 +34,8 @@
                     <div class="offcanvas-body">
                         @if(auth()->check() && auth()->user()->role === 'teacher')
                             @include('layouts.partials.verticalMenuGuru')
+                        @elseif(auth()->check() && auth()->user()->role === 'student')
+                            @include('layouts.partials.verticalMenuSiswa')
                         @else
                             @include('layouts.partials.verticalMenu')
                         @endif
@@ -70,6 +74,8 @@
         <aside class="layout-sidebar d-none d-lg-block">
             @if(auth()->check() && auth()->user()->role === 'teacher')
                 @include('layouts.partials.verticalMenuGuru')
+            @elseif(auth()->check() && auth()->user()->role === 'student')
+                @include('layouts.partials.verticalMenuSiswa')
             @else
                 @include('layouts.partials.verticalMenu')
             @endif

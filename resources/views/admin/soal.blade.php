@@ -274,7 +274,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 let detailUjianBtns = '-';
                 if (mapelUjians.length > 0) {
                     detailUjianBtns = mapelUjians.map(u => 
-                        `<a class='btn btn-sm btn-info mt-1' href='/admin/ujian/${u.id}/detail' target='_blank'>
+                        `<a class='btn btn-sm btn-info mt-1' href='/admin/ujian/${u.id}/detail'>
                             <i class="bi bi-eye"></i> Detail Ujian (${u.nama})
                         </a>`
                     ).join('<br>');

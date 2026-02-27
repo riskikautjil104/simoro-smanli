@@ -45,8 +45,7 @@
 
 @push('scripts')
 <script>
-// Fetch ujian aktif
-fetch('/siswa/ujian/aktif', { headers: { 'Accept': 'application/json' } })
+fetch('/siswa/ujian/aktif/json')
     .then(res => res.json())
     .then(data => {
         let html = '';
@@ -56,7 +55,7 @@ fetch('/siswa/ujian/aktif', { headers: { 'Accept': 'application/json' } })
             html = '<ul class="list-group">';
             data.forEach(ujian => {
                 html += `<li class="list-group-item">
-                    <b>${ujian.nama}</b> <br>
+                    <b>${ujian.nama}</b><br>
                     <span class="badge bg-info">${ujian.mapel}</span>
                     <span class="badge bg-success">${ujian.tanggal}</span>
                     <a href="/siswa/ujian/${ujian.id}" class="btn btn-sm btn-primary float-end">Ikuti</a>
@@ -67,8 +66,7 @@ fetch('/siswa/ujian/aktif', { headers: { 'Accept': 'application/json' } })
         document.getElementById('ujianAktifContent').innerHTML = html;
     });
 
-// Fetch riwayat ujian
-fetch('/siswa/ujian/riwayat', { headers: { 'Accept': 'application/json' } })
+fetch('/siswa/ujian/riwayat/json')
     .then(res => res.json())
     .then(data => {
         let html = '';
@@ -78,7 +76,7 @@ fetch('/siswa/ujian/riwayat', { headers: { 'Accept': 'application/json' } })
             html = '<ul class="list-group">';
             data.forEach(riwayat => {
                 html += `<li class="list-group-item">
-                    <b>${riwayat.nama}</b> <br>
+                    <b>${riwayat.nama}</b><br>
                     <span class="badge bg-info">${riwayat.mapel}</span>
                     <span class="badge bg-secondary">Nilai: ${riwayat.nilai}</span>
                     <span class="badge bg-success">${riwayat.tanggal}</span>

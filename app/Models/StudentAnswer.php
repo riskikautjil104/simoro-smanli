@@ -16,6 +16,7 @@ class StudentAnswer extends Model
         'question_id',
         'answer',
         'score',
+        'nilai_essay',
     ];
     public function exam(): BelongsTo
     {

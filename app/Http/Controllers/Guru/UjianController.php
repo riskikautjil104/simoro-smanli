@@ -8,7 +8,7 @@ use App\Models\Subject;
 use Illuminate\Http\Request;
 
 class UjianController extends Controller
-   
+
 {
     public function index(Request $request)
     {
@@ -28,7 +28,7 @@ class UjianController extends Controller
         $exam = Exam::where('id', $id)
             ->whereIn('subject_id', Subject::where('teacher_id', $user->id)->pluck('id'))
             ->firstOrFail();
-        $results = \App\Models\ExamResult::with('student')
+        $results = \App\Models\ExamSession::with('user')
             ->where('exam_id', $exam->id)
             ->get();
         return response()->json($results);
@@ -58,15 +58,15 @@ class UjianController extends Controller
             ->firstOrFail();
         $student = \App\Models\User::where('id', $userId)->where('role', 'student')->firstOrFail();
         $nilai = $request->input('nilai');
-        $result = \App\Models\ExamResult::where('exam_id', $exam->id)
+        $session = \App\Models\ExamSession::where('exam_id', $exam->id)
             ->where('user_id', $student->id)
             ->firstOrFail();
-        $result->score = $nilai;
-        $result->save();
+        $session->score = $nilai;
+        $session->save();
         return response()->json(['message' => 'Nilai berhasil disimpan']);
     }
 
-     // Simpan nilai per soal
+    // Simpan nilai per soal
     public function simpanNilaiPerSoal($ujianId, $userId, Request $request)
     {
         $user = $request->user();
@@ -81,9 +81,20 @@ class UjianController extends Controller
                 ->where('user_id', $student->id)
                 ->first();
             if ($answer) {
-                $answer->score = $s['score'];
+                $answer->nilai_essay = $s['score'];
                 $answer->save();
             }
+        }
+        // Hitung ulang total nilai essay
+        $total = \App\Models\StudentAnswer::where('exam_id', $exam->id)
+            ->where('user_id', $student->id)
+            ->sum('nilai_essay');
+        $session = \App\Models\ExamSession::where('exam_id', $exam->id)
+            ->where('user_id', $student->id)
+            ->first();
+        if ($session) {
+            $session->score = $total;
+            $session->save();
         }
         return response()->json(['message' => 'Nilai per soal berhasil disimpan']);
     }

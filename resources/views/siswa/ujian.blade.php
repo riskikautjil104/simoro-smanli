@@ -173,7 +173,9 @@ document.addEventListener('DOMContentLoaded', function () {
                         Swal.showLoading();
                     }
                 });
-                
+                    // Set formModified ke false agar konfirmasi keluar tidak muncul
+                    formModified = false;
+                    examForm.submit();
                 // Submit the form
                 examForm.submit();
             }
