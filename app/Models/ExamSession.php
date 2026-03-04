@@ -18,6 +18,12 @@ class ExamSession extends Model
         'is_active',
         'start_time',
         'end_time',
+        'lat',
+        'lng',
+        'status_logout',
+        'logout_time',
+        'reapply_status',
+        'reapply_reason',
     ];
 
     public function user(): BelongsTo

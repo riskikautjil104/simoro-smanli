@@ -21,13 +21,19 @@ document.addEventListener('DOMContentLoaded', function() {
             } else {
                 html = '<ul class="list-group">';
                 data.forEach(ujian => {
+                    let tombol = '';
+                    if (ujian.status_logout == 1 && ujian.reapply_status != 2) {
+                        tombol = `<a href="/siswa/ujian/${ujian.id}" class="btn btn-warning btn-sm">Ajukan Ulang</a>`;
+                    } else {
+                        tombol = `<a href="/siswa/ujian/${ujian.id}" class="btn btn-primary btn-sm">Kerjakan</a>`;
+                    }
                     html += `<li class="list-group-item d-flex justify-content-between align-items-center">
                         <div>
                             <b>${ujian.nama}</b><br>
                             <span class="badge bg-info">${ujian.mapel}</span>
                             <span class="badge bg-secondary">${ujian.tanggal}</span>
                         </div>
-                        <a href="/siswa/ujian/${ujian.id}" class="btn btn-primary btn-sm">Kerjakan</a>
+                        ${tombol}
                     </li>`;
                 });
                 html += '</ul>';

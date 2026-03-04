@@ -61,8 +61,12 @@
             </select>
           </div>
           <div class="mb-3">
-            <label for="tanggalUjian" class="form-label">Tanggal</label>
-            <input type="date" class="form-control" id="tanggalUjian" name="tanggal" required>
+            <label for="startTimeUjian" class="form-label">Mulai Ujian</label>
+            <input type="datetime-local" class="form-control" id="startTimeUjian" name="start_time" required>
+          </div>
+          <div class="mb-3">
+            <label for="endTimeUjian" class="form-label">Berakhir Ujian</label>
+            <input type="datetime-local" class="form-control" id="endTimeUjian" name="end_time" required>
           </div>
         </div>
         <div class="modal-footer">
@@ -142,7 +146,8 @@ document.addEventListener('DOMContentLoaded', function () {
       nama: document.getElementById('namaUjian').value,
       mapel_id: document.getElementById('mapelUjian').value,
       kelas_id: document.getElementById('kelasUjian').value,
-      tanggal: document.getElementById('tanggalUjian').value
+      start_time: document.getElementById('startTimeUjian').value,
+      end_time: document.getElementById('endTimeUjian').value
     };
     fetch(url, {
       method: method,
@@ -186,10 +191,11 @@ document.addEventListener('DOMContentLoaded', function () {
           document.getElementById('namaUjian').value = ujian.title || ujian.nama || '';
           document.getElementById('mapelUjian').value = ujian.subject_id || ujian.mapel_id || '';
           document.getElementById('kelasUjian').value = ujian.class_id || ujian.kelas_id || '';
-          // Format tanggal ke yyyy-mm-dd jika ada
-          let tgl = ujian.start_time || ujian.tanggal || '';
-          if (tgl && tgl.length > 10) tgl = tgl.substring(0, 10);
-          document.getElementById('tanggalUjian').value = tgl;
+          // Set datetime-local value
+          let start = ujian.start_time ? ujian.start_time.replace(' ', 'T').substring(0,16) : '';
+          let end = ujian.end_time ? ujian.end_time.replace(' ', 'T').substring(0,16) : '';
+          document.getElementById('startTimeUjian').value = start;
+          document.getElementById('endTimeUjian').value = end;
           var modal = bootstrap.Modal.getOrCreateInstance(document.getElementById('modalUjian'));
           modal.show();
         });

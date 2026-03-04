@@ -7,6 +7,8 @@ use Illuminate\Http\Request;
 
 class ExamController extends Controller
 
+    
+
 {
     /**
      * Return ujian data as JSON for AJAX table.
@@ -70,14 +72,15 @@ class ExamController extends Controller
             'nama' => 'required|string|max:255',
             'mapel_id' => 'required|integer|exists:subjects,id',
             'kelas_id' => 'required|integer|exists:classes,id',
-            'tanggal' => 'required|date',
+            'start_time' => 'required|date_format:Y-m-d\TH:i',
+            'end_time' => 'required|date_format:Y-m-d\TH:i|after:start_time',
         ]);
         $ujian = \App\Models\Exam::create([
             'title' => $validated['nama'],
             'subject_id' => $validated['mapel_id'],
             'class_id' => $validated['kelas_id'],
-            'start_time' => $validated['tanggal'],
-            'end_time' => $validated['tanggal'], // bisa diubah jika ada duration
+            'start_time' => $validated['start_time'],
+            'end_time' => $validated['end_time'],
             'duration' => 0, // default, bisa diubah jika ada duration
             'status' => 'draft',
         ]);
@@ -97,14 +100,15 @@ class ExamController extends Controller
             'nama' => 'required|string|max:255',
             'mapel_id' => 'required|integer|exists:subjects,id',
             'kelas_id' => 'required|integer|exists:classes,id',
-            'tanggal' => 'required|date',
+            'start_time' => 'required|date_format:Y-m-d\TH:i',
+            'end_time' => 'required|date_format:Y-m-d\TH:i|after:start_time',
         ]);
         $ujian->update([
             'title' => $validated['nama'],
             'subject_id' => $validated['mapel_id'],
             'class_id' => $validated['kelas_id'],
-            'start_time' => $validated['tanggal'],
-            'end_time' => $validated['tanggal'],
+            'start_time' => $validated['start_time'],
+            'end_time' => $validated['end_time'],
         ]);
         return response()->json($ujian);
     }
@@ -131,6 +135,10 @@ class ExamController extends Controller
                     'selesai' => $s->end_time,
                     'durasi' => $s->start_time && $s->end_time ? (\Carbon\Carbon::parse($s->start_time)->diffInMinutes($s->end_time) . ' menit') : '-',
                     'nilai' => $s->score,
+                    'lat' => $s->lat,
+                    'lng' => $s->lng,
+                    'status_logout' => $s->status_logout ?? 0,
+                    'logout_time' => $s->logout_time,
                 ];
             });
         return response()->json($peserta);
@@ -279,7 +287,25 @@ class ExamController extends Controller
             ->update(['score' => $total]);
         return response()->json(['success' => true, 'nilai_pg' => $nilaiPg, 'nilai_essay' => $nilaiEssayTotal, 'total' => $total]);
     }
+// Admin/guru menerima pengajuan ulang akses ujian siswa
+    public function approveReapply($ujianId, $userId)
+    {
+        $session = \App\Models\ExamSession::where('exam_id', $ujianId)->where('user_id', $userId)->firstOrFail();
+        $session->reapply_status = 2; // diterima
+        $session->status_logout = 0;
+        $session->is_active = true;
+        $session->save();
+        return response()->json(['success' => true]);
+    }
 
+    // Admin/guru menolak pengajuan ulang akses ujian siswa
+    public function rejectReapply($ujianId, $userId)
+    {
+        $session = \App\Models\ExamSession::where('exam_id', $ujianId)->where('user_id', $userId)->firstOrFail();
+        $session->reapply_status = 3; // ditolak
+        $session->save();
+        return response()->json(['success' => true]);
+    }
     /**
      * Show the form for creating a new resource.
      */

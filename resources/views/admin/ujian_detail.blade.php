@@ -27,11 +27,13 @@
                         <th>Selesai</th>
                         <th>Durasi</th>
                         <th>Nilai</th>
+                        <th>Lokasi</th>
+                        <th>Status Logout</th>
                         <th>Aksi</th>
                     </tr>
                 </thead>
                 <tbody id="pesertaTableBody">
-                    <tr><td colspan="8" class="text-center">Memuat data...</td></tr>
+                    <tr><td colspan="10" class="text-center">Memuat data...</td></tr>
                 </tbody>
             </table>
         </div>
@@ -100,8 +102,32 @@ document.addEventListener('DOMContentLoaded', function () {
             .then(res => res.json())
             .then(data => {
                 let rows = '';
-                if (!data.length) rows = '<tr><td colspan="8" class="text-center">Belum ada peserta.</td></tr>';
+                if (!data.length) rows = '<tr><td colspan="10" class="text-center">Belum ada peserta.</td></tr>';
                 data.forEach((s, i) => {
+                    let lokasi = '-';
+                    if (s.lat && s.lng) {
+                        lokasi = `<a href='https://maps.google.com/?q=${s.lat},${s.lng}' target='_blank'>Lihat Maps</a>`;
+                    }
+                    let statusLogout = '-';
+                    let aksi = `<button class='btn btn-sm btn-info btn-priksa' data-peserta='${s.id}'>Periksa</button>`;
+                    if (s.status_logout && Number(s.status_logout) === 1) {
+                        statusLogout = `<span class='badge bg-danger'>Logout</span>`;
+                        if (s.logout_time) {
+                            statusLogout += `<br><small>${s.logout_time}</small>`;
+                        }
+                        // Pengajuan ulang
+                        if (s.reapply_status == 1) {
+                            statusLogout += `<br><span class='badge bg-warning text-dark'>Menunggu Approve</span>`;
+                            statusLogout += s.reapply_reason ? `<br><small>Alasan: ${s.reapply_reason}</small>` : '';
+                            aksi += `<br><button class='btn btn-success btn-sm mt-1 btn-approve-reapply' data-peserta='${s.id}'>Approve</button> <button class='btn btn-danger btn-sm mt-1 btn-reject-reapply' data-peserta='${s.id}'>Tolak</button>`;
+                        } else if (s.reapply_status == 2) {
+                            statusLogout += `<br><span class='badge bg-success'>Reapply Diterima</span>`;
+                        } else if (s.reapply_status == 3) {
+                            statusLogout += `<br><span class='badge bg-danger'>Reapply Ditolak</span>`;
+                        }
+                    } else {
+                        statusLogout = `<span class='badge bg-success'>Aktif</span>`;
+                    }
                     rows += `<tr>
                         <td>${i+1}</td>
                         <td>${s.nama}</td>
@@ -110,10 +136,32 @@ document.addEventListener('DOMContentLoaded', function () {
                         <td>${s.selesai || '-'}</td>
                         <td>${s.durasi || '-'}</td>
                         <td>${s.nilai ?? '-'}</td>
-                        <td><button class='btn btn-sm btn-info btn-priksa' data-peserta='${s.id}'>Periksa</button></td>
+                        <td>${lokasi}</td>
+                        <td>${statusLogout}</td>
+                        <td>${aksi}</td>
                     </tr>`;
                 });
                 document.getElementById('pesertaTableBody').innerHTML = rows;
+
+                // Handler approve/reject reapply
+                document.querySelectorAll('.btn-approve-reapply').forEach(btn => {
+                    btn.onclick = function() {
+                        const pesertaId = btn.getAttribute('data-peserta');
+                        fetch(`/admin/ujian/${ujianId}/peserta/${pesertaId}/reapply/approve`, {
+                            method: 'POST',
+                            headers: { 'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content }
+                        }).then(() => location.reload());
+                    };
+                });
+                document.querySelectorAll('.btn-reject-reapply').forEach(btn => {
+                    btn.onclick = function() {
+                        const pesertaId = btn.getAttribute('data-peserta');
+                        fetch(`/admin/ujian/${ujianId}/peserta/${pesertaId}/reapply/reject`, {
+                            method: 'POST',
+                            headers: { 'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content }
+                        }).then(() => location.reload());
+                    };
+                });
             });
 
         // Load ranking

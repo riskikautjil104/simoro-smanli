@@ -15,8 +15,8 @@ use App\Http\Controllers\Api\AuthController;
 Route::post('login', [AuthController::class, 'login']);
 
 Route::middleware('auth:sanctum')->group(function () {
-Route::post('logout', [AuthController::class, 'logout']);
-Route::get('me', [AuthController::class, 'me']);
+    Route::post('logout', [AuthController::class, 'logout']);
+    Route::get('me', [AuthController::class, 'me']);
 });
 Route::middleware('auth:sanctum')->group(function () {
     Route::apiResource('kelas', ApiClassController::class);
@@ -27,4 +27,33 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::apiResource('soal', ApiQuestionController::class);
     Route::apiResource('monitoring', ApiMonitoringController::class);
     Route::apiResource('laporan', ApiReportController::class);
+
+    // ==================== ENDPOINTS KHUSUS SISWA (MOBILE API) ====================
+    // Profile
+    Route::get('siswa/profile', [ApiStudentController::class, 'profile']);
+    Route::put('siswa/profile', [ApiStudentController::class, 'updateProfile']);
+
+    // Ujian - Aktif
+    Route::get('siswa/ujian/aktif', [ApiStudentController::class, 'ujianAktif']);
+
+    // Ujian - Riwayat
+    Route::get('siswa/ujian/riwayat', [ApiStudentController::class, 'riwayatUjian']);
+
+    // Ujian - Detail & Mulai
+    Route::get('siswa/ujian/{id}', [ApiStudentController::class, 'ujianDetail']);
+    Route::post('siswa/ujian/{id}/mulai', [ApiStudentController::class, 'mulaiUjian']);
+
+    // Ujian - Submit & Logout
+    Route::post('siswa/ujian/{id}/submit', [ApiStudentController::class, 'submitUjian']);
+    Route::post('siswa/ujian/{id}/logout', [ApiStudentController::class, 'logoutUjian']);
+
+    // Ujian - Reapply
+    Route::post('siswa/ujian/{id}/reapply', [ApiStudentController::class, 'reapplyUjian']);
+
+    // Ujian - Lokasi
+    Route::post('siswa/ujian/{id}/lokasi', [ApiStudentController::class, 'simpanLokasiUjian']);
+
+    // Ujian - Hasil
+    Route::get('siswa/ujian/{id}/hasil', [ApiStudentController::class, 'hasilUjian']);
+    Route::get('siswa/ujian/{id}/jawaban', [ApiStudentController::class, 'getJawaban']);
 });

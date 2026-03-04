@@ -146,14 +146,71 @@ document.addEventListener('DOMContentLoaded', function () {
         icon: 'info',
         confirmButtonText: 'Oke, Mulai Ujian!',
         allowOutsideClick: false
+    }).then(() => {
+        // Paksa fullscreen
+        if (document.documentElement.requestFullscreen) {
+            document.documentElement.requestFullscreen();
+        }
+        // Minta lokasi
+        if (navigator.geolocation) {
+            navigator.geolocation.getCurrentPosition(function(pos) {
+                fetch('/api/siswa/ujian/lokasi', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                    },
+                    body: JSON.stringify({
+                        exam_id: {{ $exam->id }},
+                        lat: pos.coords.latitude,
+                        lng: pos.coords.longitude
+                    })
+                });
+            }, function(err) {
+                Swal.fire('Lokasi diperlukan!','Ijinkan akses lokasi untuk mengikuti ujian.','error');
+            });
+        }
+    });
+
+
+    // Blokir tab lain (anti switch tab) dan auto logout jika tab ditinggalkan
+    document.addEventListener('visibilitychange', function() {
+        if (document.hidden) {
+            fetch('/api/siswa/ujian/logout', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                },
+                body: JSON.stringify({ exam_id: {{ $exam->id }} })
+            }).then(() => {
+                // Logout via POST (submit form)
+                let logoutForm = document.getElementById('auto-logout-form');
+                if (!logoutForm) {
+                    logoutForm = document.createElement('form');
+                    logoutForm.id = 'auto-logout-form';
+                    logoutForm.method = 'POST';
+                    logoutForm.action = '/logout';
+                    // CSRF token
+                    const csrf = document.querySelector('meta[name="csrf-token"]');
+                    if (csrf) {
+                        const input = document.createElement('input');
+                        input.type = 'hidden';
+                        input.name = '_token';
+                        input.value = csrf.getAttribute('content');
+                        logoutForm.appendChild(input);
+                    }
+                    document.body.appendChild(logoutForm);
+                }
+                logoutForm.submit();
+            });
+        }
     });
 
     // Submit Confirmation
     const examForm = document.getElementById('formUjian');
-    
     examForm.addEventListener('submit', function(e) {
         e.preventDefault();
-        
         Swal.fire({
             title: 'Yakin mau submit?',
             html: '<b>Pastikan jawaban Anda sudah terisi dengan benar dan sudah dibaca baik-baik!</b>',
@@ -165,7 +222,6 @@ document.addEventListener('DOMContentLoaded', function () {
             cancelButtonColor: '#d33'
         }).then((result) => {
             if (result.isConfirmed) {
-                // Show loading
                 Swal.fire({
                     title: 'Mengirim jawaban...',
                     allowOutsideClick: false,
@@ -173,10 +229,7 @@ document.addEventListener('DOMContentLoaded', function () {
                         Swal.showLoading();
                     }
                 });
-                    // Set formModified ke false agar konfirmasi keluar tidak muncul
-                    formModified = false;
-                    examForm.submit();
-                // Submit the form
+                formModified = false;
                 examForm.submit();
             }
         });
@@ -184,11 +237,9 @@ document.addEventListener('DOMContentLoaded', function () {
 
     // Prevent accidental page leave
     let formModified = false;
-    
     examForm.addEventListener('change', function() {
         formModified = true;
     });
-
     window.addEventListener('beforeunload', function (e) {
         if (formModified) {
             e.preventDefault();
@@ -196,6 +247,58 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     });
 });
+// Anti copy, paste, cut, drag, right click, dan screenshot
+document.addEventListener('DOMContentLoaded', function () {
+    // Blokir copy, paste, cut
+    document.body.addEventListener('copy', e => e.preventDefault());
+    document.body.addEventListener('paste', e => e.preventDefault());
+    document.body.addEventListener('cut', e => e.preventDefault());
+    // Blokir drag
+    document.body.addEventListener('dragstart', e => e.preventDefault());
+    // Blokir klik kanan
+    document.body.addEventListener('contextmenu', e => e.preventDefault());
+    // Blokir PrintScreen (screenshot)
+    document.addEventListener('keydown', function(e) {
+        // PrintScreen
+        if (e.key === 'PrintScreen') {
+            e.preventDefault();
+            // Kosongkan clipboard
+            if (navigator.clipboard) {
+                navigator.clipboard.writeText('Screenshot dinonaktifkan!');
+            }
+            alert('Fitur screenshot dinonaktifkan selama ujian.');
+        }
+        // Blokir Ctrl+S, Ctrl+U, Ctrl+Shift+I (view source/devtools)
+        if ((e.ctrlKey && (e.key === 's' || e.key === 'u')) || (e.ctrlKey && e.shiftKey && e.key.toLowerCase() === 'i')) {
+            e.preventDefault();
+        }
+    });
+    // Blokir screenshot di HP Android (beberapa browser support)
+    if (window.navigator && window.navigator.userAgent.match(/Android/i)) {
+        document.addEventListener('visibilitychange', function() {
+            if (document.hidden) {
+                // Bisa tambahkan notifikasi atau auto-logout jika ingin
+            }
+        });
+    }
+});
+// CSS: Blokir user select dan drag
+const style = document.createElement('style');
+style.innerHTML = `
+    body, #formUjian, .container, .card, .card-body {
+        -webkit-user-select: none !important;
+        -moz-user-select: none !important;
+        -ms-user-select: none !important;
+        user-select: none !important;
+        -webkit-user-drag: none !important;
+        -khtml-user-drag: none !important;
+        -moz-user-drag: none !important;
+        -o-user-drag: none !important;
+        user-drag: none !important;
+    }
+`;
+document.head.appendChild(style);
 </script>
+
 @endpush
 @endsection
