@@ -121,9 +121,7 @@
     });
 
     Route::get('/ujian', [App\Http\Controllers\Admin\ExamController::class, 'list']);
-    Route::get('/', function () {
-        return view('welcome');
-    });
+    Route::get('/', [App\Http\Controllers\Frontend\HomeController::class, 'index']);
 
     Route::get('/dashboard', function () {
         return view('admin.dashboard');

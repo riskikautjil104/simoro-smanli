@@ -19,16 +19,9 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('me', [AuthController::class, 'me']);
 });
 Route::middleware('auth:sanctum')->group(function () {
-    Route::apiResource('kelas', ApiClassController::class);
-    Route::apiResource('guru', ApiTeacherController::class);
-    Route::apiResource('siswa', ApiStudentController::class);
-    Route::apiResource('mapel', ApiSubjectController::class);
-    Route::apiResource('ujian', ApiExamController::class);
-    Route::apiResource('soal', ApiQuestionController::class);
-    Route::apiResource('monitoring', ApiMonitoringController::class);
-    Route::apiResource('laporan', ApiReportController::class);
-
     // ==================== ENDPOINTS KHUSUS SISWA (MOBILE API) ====================
+    // PENTING: Routes spesifik harus di atas apiResource!
+
     // Profile
     Route::get('siswa/profile', [ApiStudentController::class, 'profile']);
     Route::put('siswa/profile', [ApiStudentController::class, 'updateProfile']);
@@ -56,4 +49,20 @@ Route::middleware('auth:sanctum')->group(function () {
     // Ujian - Hasil
     Route::get('siswa/ujian/{id}/hasil', [ApiStudentController::class, 'hasilUjian']);
     Route::get('siswa/ujian/{id}/jawaban', [ApiStudentController::class, 'getJawaban']);
+
+    // Ujian - Cetak Hasil (komplit untuk mobile)
+    Route::get('siswa/ujian/{id}/cetak', [ApiStudentController::class, 'cetakHasil']);
+
+    // Dashboard: Kelas, Mata Pelajaran, Jadwal
+    Route::get('siswa/dashboard', [ApiStudentController::class, 'dashboard']);
+
+    // API Resources (harus di bawah routes spesifik)
+    Route::apiResource('kelas', ApiClassController::class);
+    Route::apiResource('guru', ApiTeacherController::class);
+    Route::apiResource('siswa', ApiStudentController::class);
+    Route::apiResource('mapel', ApiSubjectController::class);
+    Route::apiResource('ujian', ApiExamController::class);
+    Route::apiResource('soal', ApiQuestionController::class);
+    Route::apiResource('monitoring', ApiMonitoringController::class);
+    Route::apiResource('laporan', ApiReportController::class);
 });

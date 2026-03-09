@@ -9,6 +9,9 @@ use App\Models\User;
 use App\Models\Exam;
 use App\Models\ExamSession;
 use App\Models\StudentAnswer;
+use App\Models\SchoolClass;
+use App\Models\Subject;
+use Illuminate\Support\Facades\DB;
 
 class StudentController extends Controller
 {
@@ -342,22 +345,34 @@ class StudentController extends Controller
             ], 404);
         }
 
+        // Validasi: jika duration 0, berarti tanpa batas waktu
+        if ($exam->duration <= 0) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Ujian ini tidak memiliki batas waktu. Hubungi admin untuk info lebih lanjut.'
+            ], 400);
+        }
+
         $session = ExamSession::where('user_id', $user->id)
             ->where('exam_id', $exam->id)
             ->first();
 
+        $now = now();
+
         if (!$session) {
+            // Buat session baru dengan start_time = now()
             $session = ExamSession::create([
                 'user_id' => $user->id,
                 'exam_id' => $exam->id,
-                'start_time' => now(),
+                'start_time' => $now,
                 'is_active' => true,
                 'ip_address' => $request->ip(),
                 'session_id' => session()->getId(),
             ]);
         } elseif ($session->status_logout != 1 || $session->reapply_status == 2) {
+            // Jika sudah ada session, update start_time ke sekarang (mulai baru)
             $session->is_active = true;
-            $session->start_time = $session->start_time ?? now();
+            $session->start_time = $now; // SELALU update ke waktu sekarang
             $session->ip_address = $request->ip();
             $session->session_id = session()->getId();
             $session->save();
@@ -369,6 +384,7 @@ class StudentController extends Controller
             'data' => [
                 'session_id' => $session->id,
                 'start_time' => $session->start_time,
+                'duration_minutes' => $exam->duration,
             ]
         ]);
     }
@@ -573,6 +589,219 @@ class StudentController extends Controller
         return response()->json([
             'success' => true,
             'data' => $result
+        ]);
+    }
+
+    /**
+     * Get complete exam result for printing
+     * GET /api/siswa/ujian/{id}/cetak
+     * 
+     * Include: student info, exam info, all questions, 
+     * student answers, correct answers, scores per question
+     */
+    public function cetakHasil(Request $request, string $id)
+    {
+        $user = $request->user();
+
+        // Get exam session
+        $examSession = ExamSession::where('user_id', $user->id)
+            ->where('exam_id', $id)
+            ->first();
+
+        if (!$examSession) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Sesi ujian tidak ditemukan'
+            ], 404);
+        }
+
+        // Get exam with questions
+        $exam = Exam::with(['subject', 'questions'])
+            ->find($id);
+
+        if (!$exam) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Ujian tidak ditemukan'
+            ], 404);
+        }
+
+        // Get student's answers
+        $studentAnswers = StudentAnswer::where('user_id', $user->id)
+            ->where('exam_id', $id)
+            ->get()
+            ->keyBy('question_id');
+
+        // Separate PG and Essay questions
+        $soalPG = $exam->questions->filter(fn($q) => $q->type !== 'essay');
+        $soalEssay = $exam->questions->filter(fn($q) => $q->type === 'essay');
+
+        // Build detailed questions data
+        $questionsData = $exam->questions->map(function ($q) use ($studentAnswers, $exam) {
+            $studentAnswer = $studentAnswers->get($q->id);
+            $jawabanSiswa = $studentAnswer?->answer;
+
+            // Get correct answer from question
+            $jawabanBenar = $q->jawaban_benar ?? $q->answer_key ?? null;
+
+            // Determine if correct (for PG only)
+            $isCorrect = null;
+            $status = null;
+
+            if ($q->type !== 'essay') {
+                // For multiple choice, compare answers (case insensitive)
+                $isCorrect = ($jawabanSiswa && $jawabanBenar)
+                    ? (strtoupper($jawabanSiswa) === strtoupper($jawabanBenar))
+                    : false;
+                $status = $isCorrect ? 'Benar' : 'Salah';
+            } else {
+                // For essay, show nilai_essay
+                $status = $studentAnswer?->nilai_essay !== null
+                    ? 'Dinilai: ' . $studentAnswer->nilai_essay
+                    : 'Belum Dinilai';
+            }
+
+            return [
+                'id' => $q->id,
+                'nomor' => $q->id,
+                'pertanyaan' => $q->pertanyaan ?? $q->question_text,
+                'tipe' => $q->type,
+                // Options for PG
+                'opsi_a' => $q->opsi_a ?? ($q->options['A'] ?? null),
+                'opsi_b' => $q->opsi_b ?? ($q->options['B'] ?? null),
+                'opsi_c' => $q->opsi_c ?? ($q->options['C'] ?? null),
+                'opsi_d' => $q->opsi_d ?? ($q->options['D'] ?? null),
+                // Answers
+                'jawaban_siswa' => $jawabanSiswa ?? '-',
+                'jawaban_benar' => $jawabanBenar ?? '-',
+                // Score info
+                'nilai_pg' => $studentAnswer?->score,
+                'nilai_essay' => $studentAnswer?->nilai_essay,
+                'status' => $status,
+                'is_correct' => $isCorrect,
+            ];
+        });
+
+        // Calculate summary
+        $totalPG = $soalPG->count();
+        $totalEssay = $soalEssay->count();
+        $benarPG = $questionsData->filter(fn($q) => $q['tipe'] !== 'essay' && $q['is_correct'] === true)->count();
+        $salahPG = $questionsData->filter(fn($q) => $q['tipe'] !== 'essay' && $q['is_correct'] === false)->count();
+        $belumDinilai = $questionsData->filter(fn($q) => $q['tipe'] === 'essay' && $q['nilai_essay'] === null)->count();
+
+        return response()->json([
+            'success' => true,
+            'data' => [
+                // Student Info
+                'siswa' => [
+                    'id' => $user->id,
+                    'nama' => $user->name,
+                    'nis' => $user->nis,
+                    'kelas' => $user->class?->name,
+                ],
+                // Exam Info
+                'ujian' => [
+                    'id' => $exam->id,
+                    'nama' => $exam->title,
+                    'mapel' => $exam->subject->name ?? '-',
+                    'tanggal' => $examSession->created_at->format('d-m-Y H:i'),
+                    'durasi' => $exam->duration,
+                ],
+                // Score Summary
+                'ringkasan' => [
+                    'nilai_total' => $examSession->score,
+                    'total_soal_pg' => $totalPG,
+                    'total_soal_essay' => $totalEssay,
+                    'jawaban_benar' => $benarPG,
+                    'jawaban_salah' => $salahPG,
+                    'belum_dinilai' => $belumDinilai,
+                    'status_penilaian' => $examSession->score !== null ? 'Sudah Dinilai' : 'Belum Dinilai',
+                ],
+                // All Questions with Answers
+                'soal' => $questionsData->values()->all(),
+            ]
+        ]);
+    }
+
+    /**
+     * Get student's dashboard info: class, subjects, schedule
+     * GET /api/siswa/dashboard
+     * 
+     * Include: kelas info, mata pelajaran yang dipelajari, jadwal
+     */
+    public function dashboard(Request $request)
+    {
+        $user = $request->user();
+
+        // Get class info
+        $kelas = SchoolClass::find($user->class_id);
+
+        // Get subjects for this class
+        $mapel = DB::table('class_subject')
+            ->where('class_id', $user->class_id)
+            ->join('subjects', 'class_subject.subject_id', '=', 'subjects.id')
+            ->select('subjects.id', 'subjects.name as nama_mapel', 'subjects.code as kode')
+            ->get();
+
+        // Get upcoming exams for this class
+        $now = now();
+        $ujians = Exam::where('class_id', $user->class_id)
+            ->where('start_time', '>=', $now)
+            ->with('subject')
+            ->orderBy('start_time', 'asc')
+            ->limit(5)
+            ->get()
+            ->map(function ($u) {
+                return [
+                    'id' => $u->id,
+                    'nama' => $u->title,
+                    'mapel' => $u->subject->name ?? '-',
+                    'tanggal' => $u->start_time->format('d-m-Y H:i'),
+                    'durasi' => $u->duration,
+                ];
+            });
+
+        // Get exam history stats
+        $totalUjian = ExamSession::where('user_id', $user->id)->count();
+        $ujianSelesai = ExamSession::where('user_id', $user->id)
+            ->whereNotNull('score')
+            ->count();
+        $nilaiRataRata = ExamSession::where('user_id', $user->id)
+            ->whereNotNull('score')
+            ->avg('score');
+
+        return response()->json([
+            'success' => true,
+            'data' => [
+                // Profil Singkat
+                'siswa' => [
+                    'id' => $user->id,
+                    'nama' => $user->name,
+                    'nis' => $user->nis,
+                ],
+                // Info Kelas
+                'kelas' => [
+                    'id' => $kelas?->id,
+                    'nama' => $kelas?->name ?? '-',
+                    'tingkat' => $kelas?->level,
+                ],
+                // Mata Pelajaran
+                'mapel' => $mapel->map(function ($m) {
+                    return [
+                        'id' => $m->id,
+                        'nama' => $m->nama_mapel,
+                        'kode' => $m->kode,
+                    ];
+                }),
+                // Ujian Mendatang
+                'ujian_mendatang' => $ujians,
+                // Stats
+                'stats' => [
+                    'total_ujian' => $totalUjian,
+                    'ujian_selesai' => $ujianSelesai,
+                    'nilai_rata_rata' => round($nilaiRataRata ?? 0, 2),
+                ]
+            ]
         ]);
     }
 }
