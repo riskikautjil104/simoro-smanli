@@ -1,245 +1,703 @@
 @extends('layouts.master')
+@section('title', 'Periksa Jawaban')
 
-@section('title', 'Periksa Ujian')
+@push('styles')
+    <style>
+        .page-header {
+            background: linear-gradient(135deg, var(--primary), var(--accent));
+            border-radius: 16px;
+            padding: 24px 28px;
+            color: #fff;
+            position: relative;
+            overflow: hidden;
+            margin-bottom: 24px;
+        }
+
+        .page-header::before {
+            content: '';
+            position: absolute;
+            width: 220px;
+            height: 220px;
+            background: rgba(255, 255, 255, 0.07);
+            border-radius: 50%;
+            top: -60px;
+            right: -60px;
+            pointer-events: none;
+        }
+
+        .page-header-content {
+            position: relative;
+            z-index: 2;
+        }
+
+        .page-header h4 {
+            font-size: 1.3rem;
+            font-weight: 700;
+            margin: 0 0 4px;
+        }
+
+        .page-header p {
+            font-size: 0.85rem;
+            opacity: 0.85;
+            margin: 0;
+        }
+
+        .panel-card {
+            background: #fff;
+            border-radius: 16px;
+            border: 1px solid var(--border-color);
+            box-shadow: var(--shadow-sm);
+            overflow: hidden;
+            margin-bottom: 20px;
+        }
+
+        .panel-card-header {
+            padding: 16px 20px;
+            border-bottom: 1px solid var(--border-color);
+            background: #f0f4ff;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-weight: 700;
+            font-size: 0.9rem;
+            color: var(--text-main);
+        }
+
+        .panel-card-header i {
+            color: var(--primary);
+        }
+
+        .panel-card-body {
+            padding: 20px;
+        }
+
+        .filter-select {
+            height: 44px;
+            border-radius: 12px;
+            border: 1.5px solid var(--border-color);
+            font-size: 0.875rem;
+            padding: 0 16px;
+            transition: var(--transition);
+        }
+
+        .filter-select:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(13, 110, 253, 0.1);
+            outline: none;
+        }
+
+        /* Soal card */
+        .soal-card {
+            background: #fff;
+            border-radius: 14px;
+            border: 1px solid var(--border-color);
+            padding: 18px;
+            margin-bottom: 14px;
+            transition: var(--transition);
+            border-left: 4px solid transparent;
+        }
+
+        .soal-card:hover {
+            border-color: rgba(13, 110, 253, 0.2);
+            border-left-color: var(--primary);
+            box-shadow: 0 4px 16px rgba(13, 110, 253, 0.08);
+        }
+
+        .soal-card.essay {
+            border-left-color: rgba(111, 66, 193, 0.4);
+        }
+
+        .soal-card.pg {
+            border-left-color: rgba(13, 110, 253, 0.4);
+        }
+
+        .soal-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            font-size: 0.7rem;
+            font-weight: 700;
+            padding: 3px 9px;
+            border-radius: 20px;
+            margin-bottom: 8px;
+            text-transform: uppercase;
+            letter-spacing: 0.3px;
+        }
+
+        .badge-pg {
+            background: rgba(13, 110, 253, 0.1);
+            color: #0d6efd;
+        }
+
+        .badge-essay {
+            background: rgba(111, 66, 193, 0.1);
+            color: #6f42c1;
+        }
+
+        .soal-text {
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: var(--text-main);
+            margin-bottom: 10px;
+            line-height: 1.5;
+        }
+
+        .jawaban-row {
+            display: flex;
+            align-items: flex-start;
+            gap: 8px;
+            margin-bottom: 6px;
+            font-size: 0.85rem;
+        }
+
+        .jawaban-row .label {
+            font-weight: 700;
+            color: var(--text-muted);
+            min-width: 110px;
+            font-size: 0.78rem;
+        }
+
+        .jawaban-row .value {
+            color: var(--text-main);
+        }
+
+        .jawaban-benar {
+            color: #198754 !important;
+            font-weight: 700;
+        }
+
+        .jawaban-salah {
+            color: #dc3545 !important;
+        }
+
+        .nilai-essay-wrap {
+            margin-top: 12px;
+            padding-top: 12px;
+            border-top: 1px solid var(--border-color);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .nilai-essay-wrap label {
+            font-size: 0.78rem;
+            font-weight: 700;
+            color: var(--text-muted);
+            white-space: nowrap;
+        }
+
+        .nilai-essay-input {
+            width: 100px;
+            height: 36px;
+            border-radius: 8px;
+            border: 1.5px solid var(--border-color);
+            font-size: 0.875rem;
+            padding: 0 12px;
+            transition: var(--transition);
+        }
+
+        .nilai-essay-input:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(13, 110, 253, 0.1);
+            outline: none;
+        }
+
+        /* Nilai total card */
+        .nilai-total-card {
+            background: linear-gradient(135deg, rgba(13, 110, 253, 0.06), rgba(13, 202, 240, 0.04));
+            border: 1.5px solid rgba(13, 110, 253, 0.15);
+            border-radius: 14px;
+            padding: 18px 20px;
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .nilai-total-icon {
+            width: 48px;
+            height: 48px;
+            background: linear-gradient(135deg, #0d6efd, #0dcaf0);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #fff;
+            font-size: 1.2rem;
+            flex-shrink: 0;
+            box-shadow: 0 4px 14px rgba(13, 110, 253, 0.3);
+        }
+
+        .nilai-total-label {
+            font-size: 0.78rem;
+            font-weight: 600;
+            color: var(--text-muted);
+            margin-bottom: 2px;
+        }
+
+        .nilai-total-input {
+            width: 100px;
+            height: 38px;
+            border-radius: 10px;
+            border: 1.5px solid rgba(13, 110, 253, 0.2);
+            font-size: 1rem;
+            font-weight: 700;
+            padding: 0 12px;
+            color: var(--primary);
+            transition: var(--transition);
+        }
+
+        .nilai-total-input:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(13, 110, 253, 0.1);
+            outline: none;
+        }
+
+        .btn-simpan-soal {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 10px 20px;
+            background: var(--primary);
+            color: #fff;
+            border: none;
+            border-radius: 50px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+            font-family: 'Poppins', sans-serif;
+        }
+
+        .btn-simpan-soal:hover {
+            background: #0b5ed7;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 16px rgba(13, 110, 253, 0.3);
+        }
+
+        .btn-simpan-soal:disabled {
+            opacity: .6;
+            pointer-events: none;
+        }
+
+        .btn-simpan-nilai {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 10px 22px;
+            background: linear-gradient(135deg, #198754, #20c997);
+            color: #fff;
+            border: none;
+            border-radius: 50px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+            font-family: 'Poppins', sans-serif;
+        }
+
+        .btn-simpan-nilai:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 16px rgba(32, 201, 151, 0.3);
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 48px 24px;
+        }
+
+        .empty-state .empty-icon {
+            width: 68px;
+            height: 68px;
+            background: rgba(13, 110, 253, 0.07);
+            border-radius: 50%;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.7rem;
+            color: var(--primary);
+            margin-bottom: 14px;
+        }
+
+        .empty-state h6 {
+            font-weight: 700;
+            margin-bottom: 5px;
+        }
+
+        .empty-state p {
+            font-size: 0.83rem;
+            color: var(--text-muted);
+            margin: 0;
+        }
+
+        #jawaban-container {
+            display: none;
+        }
+    </style>
+@endpush
 
 @section('layoutContent')
-<div class="card p-4">
-    <h4>Periksa Jawaban Siswa</h4>
 
-    <div class="mb-3">
-        <label class="form-label">Pilih Ujian</label>
-        <select id="ujian-select" class="form-select"></select>
-    </div>
-
-    <div class="mb-3">
-        <label class="form-label">Pilih Siswa</label>
-        <select id="peserta-select" class="form-select"></select>
-    </div>
-
-    <div id="jawaban-container" class="mb-3" style="display:none">
-        <h5>Jawaban Siswa</h5>
-        <div id="jawaban-list"></div>
-
-        <div class="mt-3">
-            <label class="form-label">Nilai</label>
-            <input type="number" id="input-nilai" class="form-control" min="0" max="100">
-            <button id="btn-simpan-nilai" class="btn btn-success mt-2">
-                Simpan Nilai
-            </button>
+    <div class="page-header">
+        <div class="page-header-content">
+            <h4><i class="bi bi-check2-square me-2"></i>Periksa Jawaban Siswa</h4>
+            <p>Beri nilai essay dan simpan hasil penilaian jawaban siswa</p>
         </div>
     </div>
-</div>
 
-<script>
-let ujianList = [];
-let pesertaList = [];
-let selectedUjian = null;
-let selectedPeserta = null;
+    {{-- Pilih Ujian & Siswa --}}
+    <div class="panel-card">
+        <div class="panel-card-header"><i class="bi bi-funnel"></i> Pilih Ujian & Siswa</div>
+        <div class="panel-card-body">
+            <div class="row g-3">
+                <div class="col-md-6">
+                    <label class="form-label">Ujian</label>
+                    <select id="ujian-select" class="form-select filter-select w-100">
+                        <option value="">-- Pilih Ujian --</option>
+                    </select>
+                </div>
+                <div class="col-md-6">
+                    <label class="form-label">Siswa</label>
+                    <select id="peserta-select" class="form-select filter-select w-100" disabled>
+                        <option value="">-- Pilih Siswa --</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+    </div>
 
-/* ===============================
-   AMBIL DAFTAR UJIAN
-================================= */
-fetch('/guru/ujian/list')
-    .then(res => res.json())
-    .then(data => {
-        ujianList = data;
+    {{-- Jawaban --}}
+    <div id="jawaban-container">
 
-        const ujianSelect = document.getElementById('ujian-select');
-        ujianSelect.innerHTML = '<option value="">-- Pilih Ujian --</option>';
+        <div class="panel-card">
+            <div class="panel-card-header">
+                <i class="bi bi-card-list"></i> Jawaban Siswa
+                <span id="peserta-label"
+                    style="font-weight:400;color:var(--text-muted);font-size:0.82rem;margin-left:8px;"></span>
+            </div>
+            <div class="panel-card-body">
+                <div id="jawaban-list"></div>
 
-        ujianList.forEach(u => {
-            ujianSelect.innerHTML += `
-                <option value="${u.id}">
-                    ${u.title} (${u.subject ? u.subject.name : ''})
-                </option>
-            `;
-        });
-    })
-    .catch(() => {
-        alert('Gagal mengambil data ujian');
-    });
+                <div class="d-flex justify-content-end mt-2">
+                    <button id="btn-simpan-nilai-per-soal" class="btn-simpan-soal">
+                        <i class="bi bi-save"></i> Simpan Nilai Per Soal
+                    </button>
+                </div>
+            </div>
+        </div>
 
-/* ===============================
-   PILIH UJIAN → AMBIL PESERTA
-================================= */
-document.getElementById('ujian-select')
-.addEventListener('change', function() {
-
-    selectedUjian = this.value;
-    selectedPeserta = null;
-
-    document.getElementById('peserta-select').innerHTML =
-        '<option value="">-- Pilih Siswa --</option>';
-
-    document.getElementById('jawaban-container').style.display = 'none';
-
-    if (!selectedUjian) return;
-
-    fetch(`/guru/ujian/${selectedUjian}/peserta`)
-        .then(res => res.json())
-        .then(data => {
-
-            pesertaList = data;
-            const pesertaSelect = document.getElementById('peserta-select');
-
-            data.forEach(p => {
-                pesertaSelect.innerHTML += `
-                    <option value="${p.user.id}">
-                        ${p.user.name}
-                    </option>
-                `;
-            });
-        })
-        .catch(() => {
-            alert('Gagal mengambil data peserta');
-        });
-});
-
-
-/* ===============================
-   PILIH PESERTA → AMBIL JAWABAN
-================================= */
-document.getElementById('peserta-select')
-.addEventListener('change', function() {
-
-    selectedPeserta = this.value;
-
-    if (!selectedUjian || !selectedPeserta) return;
-
-    fetch(`/guru/ujian/${selectedUjian}/peserta/${selectedPeserta}/jawaban`)
-        .then(res => res.json())
-        .then(data => {
-
-            document.getElementById('jawaban-container').style.display = '';
-
-            const list = document.getElementById('jawaban-list');
-            list.innerHTML = '';
-
-            let scoresArr = [];
-            let totalScore = 0;
-            let totalCount = 0;
-            data.forEach((j, idx) => {
-                let tipe = '-';
-                if (j.question && j.question.type) {
-                    if (j.question.type === 'essay') {
-                        tipe = 'Essay';
-                    } else if (j.question.type === 'multiple_choice') {
-                        tipe = 'PG';
-                    } else {
-                        tipe = j.question.type;
-                    }
-                }
-                let jawabanBenar = '';
-                if (j.question && j.question.type === 'multiple_choice') {
-                    jawabanBenar = `<span class='text-success'><b>Jawaban Benar:</b> ${j.question.answer_key || j.question.jawaban_benar || '-'}</span><br>`;
-                }
-                let scoreVal = j.nilai_essay != null ? j.nilai_essay : '';
-                if (scoreVal !== '' && !isNaN(scoreVal)) {
-                    totalScore += parseFloat(scoreVal);
-                    totalCount++;
-                }
-                scoresArr.push({answer_id: j.id, score: scoreVal});
-                list.innerHTML += `
-                    <div class="mb-3 p-2 border rounded">
-                        <b>
-                            ${idx + 1}. [${tipe}]
-                            ${j.question 
-                                ? (j.question.question_text || j.question.text)
-                                : '-'}
-                        </b>
-                        <br>
-                        <span><b>Jawaban:</b> ${j.answer ?? '-'}</span><br>
-                        ${jawabanBenar}
-                        <label>Nilai Essay:</label>
-                        <input type="number" class="form-control score-input" data-answer-id="${j.id}" value="${scoreVal}" min="0" max="100">
+        <div class="panel-card">
+            <div class="panel-card-header"><i class="bi bi-trophy"></i> Nilai Akhir</div>
+            <div class="panel-card-body">
+                <div class="nilai-total-card mb-4">
+                    <div class="nilai-total-icon"><i class="bi bi-award"></i></div>
+                    <div>
+                        <div class="nilai-total-label">Total Nilai Siswa</div>
+                        <input type="number" id="input-nilai" class="nilai-total-input" min="0" max="100"
+                            placeholder="0">
                     </div>
-                `;
-            });
-            // Tambahkan tombol simpan nilai per soal
-            list.innerHTML += `<button id='btn-simpan-nilai-per-soal' class='btn btn-primary mt-2'>Simpan Nilai Per Soal</button>`;
-            // Set nilai total ke input utama
-            document.getElementById('input-nilai').value = totalScore;
-            // Event simpan nilai per soal
-            setTimeout(() => {
-                const btn = document.getElementById('btn-simpan-nilai-per-soal');
-                if (btn) {
-                    btn.onclick = function() {
-                        // Ambil semua nilai dari input
-                        const scoreInputs = document.querySelectorAll('.score-input');
-                        let scores = [];
-                        let total = 0;
-                        scoreInputs.forEach(inp => {
-                            let val = inp.value;
-                            if (val !== '' && !isNaN(val)) total += parseFloat(val);
-                            scores.push({
-                                answer_id: inp.getAttribute('data-answer-id'),
-                                score: val
-                            });
-                        });
-                        fetch(`/guru/ujian/${selectedUjian}/peserta/${selectedPeserta}/nilai-per-soal`, {
-                            method: 'POST',
-                            headers: {
-                                'Content-Type': 'application/json',
-                                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
-                            },
-                            body: JSON.stringify({ scores })
-                        })
-                        .then(res => res.json())
-                        .then(res => {
-                            document.getElementById('input-nilai').value = total;
-                            alert(res.message || 'Nilai per soal berhasil disimpan!');
-                        })
-                        .catch(() => {
-                            alert('Gagal simpan nilai per soal');
-                        });
-                    }
-                }
-            }, 100);
+                </div>
+                <button id="btn-simpan-nilai" class="btn-simpan-nilai">
+                    <i class="bi bi-check-circle"></i> Simpan Nilai Akhir
+                </button>
+            </div>
+        </div>
 
-            // Ambil nilai terakhir jika ada
-            const pesertaObj = pesertaList.find(
-                p => p.user && p.user.id == selectedPeserta
-            );
-
-            document.getElementById('input-nilai').value =
-                pesertaObj && pesertaObj.score != null
-                    ? pesertaObj.score
-                    : '';
-        })
-        .catch(() => {
-            alert('Gagal mengambil jawaban siswa');
-        });
-});
-
-
-/* ===============================
-   SIMPAN NILAI
-================================= */
-document.getElementById('btn-simpan-nilai')
-.addEventListener('click', function() {
-
-    if (!selectedUjian || !selectedPeserta) return;
-
-    const nilai = document.getElementById('input-nilai').value;
-
-    fetch(`/guru/ujian/${selectedUjian}/peserta/${selectedPeserta}/nilai`, {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-            'X-CSRF-TOKEN': document
-                .querySelector('meta[name="csrf-token"]')
-                .getAttribute('content')
-        },
-        body: JSON.stringify({ nilai })
-    })
-    .then(res => res.json())
-    .then(res => {
-        alert(res.message || 'Nilai berhasil disimpan!');
-    })
-    .catch(() => {
-        alert('Gagal simpan nilai');
-    });
-});
-</script>
+    </div>
 
 @endsection
+
+@push('scripts')
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script>
+        var ujianList = [];
+        var pesertaList = [];
+        var selectedUjian = null;
+        var selectedPeserta = null;
+        var csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+
+        /* ── Load ujian ── */
+        fetch('/guru/ujian/list', {
+                headers: {
+                    'Accept': 'application/json'
+                }
+            })
+            .then(function(r) {
+                return r.ok ? r.json() : [];
+            })
+            .then(function(data) {
+                ujianList = data;
+                var sel = document.getElementById('ujian-select');
+                data.forEach(function(u) {
+                    sel.innerHTML += '<option value="' + u.id + '">' + (u.title || u.nama || '') + (u.subject ?
+                        ' (' + u.subject.name + ')' : '') + '</option>';
+                });
+            })
+            .catch(function() {
+                Swal.fire('Error', 'Gagal mengambil data ujian.', 'error');
+            });
+
+        /* ── Pilih ujian ── */
+        document.getElementById('ujian-select').addEventListener('change', function() {
+            selectedUjian = this.value;
+            selectedPeserta = null;
+
+            var pesertaSel = document.getElementById('peserta-select');
+            pesertaSel.innerHTML = '<option value="">-- Pilih Siswa --</option>';
+            pesertaSel.disabled = !selectedUjian;
+            document.getElementById('jawaban-container').style.display = 'none';
+
+            if (!selectedUjian) return;
+
+            fetch('/guru/ujian/' + selectedUjian + '/peserta', {
+                    headers: {
+                        'Accept': 'application/json'
+                    }
+                })
+                .then(function(r) {
+                    return r.ok ? r.json() : [];
+                })
+                .then(function(data) {
+                    pesertaList = data;
+                    data.forEach(function(p) {
+                        pesertaSel.innerHTML += '<option value="' + p.user.id + '">' + p.user.name +
+                            '</option>';
+                    });
+                    pesertaSel.disabled = false;
+                })
+                .catch(function() {
+                    Swal.fire('Error', 'Gagal mengambil data peserta.', 'error');
+                });
+        });
+
+        /* ── Pilih peserta ── */
+        document.getElementById('peserta-select').addEventListener('change', function() {
+            selectedPeserta = this.value;
+            if (!selectedUjian || !selectedPeserta) {
+                document.getElementById('jawaban-container').style.display = 'none';
+                return;
+            }
+
+            var pesertaObj = pesertaList.find(function(p) {
+                return p.user && p.user.id == selectedPeserta;
+            });
+            
+            var pesertaName = pesertaObj && pesertaObj.user ? pesertaObj.user.name : '';
+            document.getElementById('peserta-label').textContent = pesertaName ? '— ' + pesertaName : '';
+
+            fetch('/guru/ujian/' + selectedUjian + '/peserta/' + selectedPeserta + '/jawaban', {
+                    headers: {
+                        'Accept': 'application/json'
+                    }
+                })
+                .then(function(r) {
+                    if (!r.ok) {
+                        throw new Error('Network response was not ok');
+                    }
+                    return r.json();
+                })
+                .then(function(data) {
+                    console.log('Jawaban data:', data); // Debug
+                    
+                    document.getElementById('jawaban-container').style.display = 'block';
+
+                    var list = document.getElementById('jawaban-list');
+                    var totalScore = 0;
+                    var html = '';
+
+                    // Validasi array
+                    if (!Array.isArray(data) || data.length === 0) {
+                        list.innerHTML = '<div class="empty-state"><div class="empty-icon"><i class="bi bi-inbox"></i></div><h6>Belum ada jawaban dari siswa</h6></div>';
+                        document.getElementById('jawaban-container').style.display = 'block';
+                        return;
+                    }
+
+                    data.forEach(function(j, idx) {
+                        var tipe = '-';
+                        var isEssay = false;
+                        var isPG = false;
+                        
+                        // Validasi question exists
+                        if (j.question) {
+                            var qType = j.question.type || '';
+                            isEssay = qType === 'essay';
+                            isPG = qType === 'multiple_choice';
+                            tipe = isEssay ? 'Essay' : isPG ? 'PG' : qType;
+                        }
+
+                        // Kunci jawaban - prioritas ke answer_key, lalu jawaban_benar
+                        var correctKey = j.question ? (j.question.answer_key || j.question.jawaban_benar || '') : '';
+                        var siswaJawab = j.answer || '-';
+                        
+                        // Cek jawaban benar untuk PG
+                        var isCorrect = false;
+                        if (isPG && correctKey && siswaJawab) {
+                            isCorrect = siswaJawab.toString().toUpperCase() === correctKey.toString().toUpperCase();
+                        }
+                        
+                        var scoreVal = j.nilai_essay != null ? j.nilai_essay : '';
+                        if (scoreVal !== '' && !isNaN(scoreVal)) {
+                            totalScore += parseFloat(scoreVal);
+                        }
+
+                        // Pertanyaan - prioritas ke question_text, lalu pertanyaan
+                        var qText = j.question ? (j.question.question_text || j.question.pertanyaan || 'Soal #' + (idx + 1)) : 'Soal #' + (idx + 1);
+
+                        // Kelas soal
+                        var cardClass = isEssay ? 'essay' : (isPG ? 'pg' : '');
+                        var badgeClass = isEssay ? 'badge-essay' : 'badge-pg';
+                        var badgeIcon = isEssay ? 'pencil-square' : 'ui-radios';
+                        
+                        // Badge jawaban
+                        var jawabanBadge = '';
+                        if (isPG) {
+                            jawabanBadge = isCorrect ? 
+                                ' <i class="bi bi-check-circle-fill"></i>' : 
+                                ' <i class="bi bi-x-circle-fill"></i>';
+                        }
+
+                        html += '<div class="soal-card ' + cardClass + '">' +
+                            '<span class="soal-badge ' + badgeClass + '">' +
+                            '<i class="bi bi-' + badgeIcon + '"></i> ' +
+                            tipe +
+                            '</span>' +
+                            '<div class="soal-text">' + (idx + 1) + '. ' + qText + '</div>' +
+                            '<div class="jawaban-row"><span class="label">Jawaban Siswa:</span>' +
+                            '<span class="value ' + (isPG ? (isCorrect ? 'jawaban-benar' : 'jawaban-salah') : '') + '">' +
+                            siswaJawab + jawabanBadge +
+                            '</span>' +
+                            '</div>';
+                        
+                        // Tampilkan kunci jawaban untuk PG
+                        if (isPG && correctKey) {
+                            html += '<div class="jawaban-row"><span class="label">Kunci Jawaban:</span><span class="value jawaban-benar">' +
+                                correctKey + '</span></div>';
+                        }
+                        
+                        // Tampilkan input nilai untuk Essay
+                        if (isEssay) {
+                            html += '<div class="nilai-essay-wrap">' +
+                                '<label>Nilai Essay:</label>' +
+                                '<input type="number" class="nilai-essay-input score-input" data-answer-id="' +
+                                j.id + '" value="' + scoreVal + '" min="0" max="100" placeholder="0">' +
+                                '</div>';
+                        }
+                        
+                        html += '</div>';
+                    });
+
+                    list.innerHTML = html;
+
+                    /* Score input live update */
+                    document.querySelectorAll('.score-input').forEach(function(inp) {
+                        inp.addEventListener('input', function() {
+                            var total = 0;
+                            document.querySelectorAll('.score-input').forEach(function(i) {
+                                if (i.value !== '' && !isNaN(i.value)) total += parseFloat(i.value);
+                            });
+                            document.getElementById('input-nilai').value = total;
+                        });
+                    });
+
+                    /* Set nilai akhir */
+                    var existingScore = pesertaObj && pesertaObj.score != null ? pesertaObj.score : '';
+                    document.getElementById('input-nilai').value = existingScore || totalScore || '';
+                })
+                .catch(function(err) {
+                    console.error('Error fetching answers:', err);
+                    Swal.fire('Error', 'Gagal mengambil jawaban siswa: ' + err.message, 'error');
+                });
+        });
+
+        /* ── Simpan nilai per soal ── */
+        document.getElementById('btn-simpan-nilai-per-soal').addEventListener('click', function() {
+            var btn = this;
+            var inputs = document.querySelectorAll('.score-input');
+            var scores = [];
+            var total = 0;
+
+            inputs.forEach(function(inp) {
+                if (inp.value !== '' && !isNaN(inp.value)) total += parseFloat(inp.value);
+                scores.push({
+                    answer_id: inp.getAttribute('data-answer-id'),
+                    score: inp.value
+                });
+            });
+
+            btn.disabled = true;
+            btn.innerHTML = '<span class="spinner-border spinner-border-sm me-1"></span> Menyimpan...';
+
+            fetch('/guru/ujian/' + selectedUjian + '/peserta/' + selectedPeserta + '/nilai-per-soal', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': csrfToken,
+                        'Accept': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        scores: scores
+                    })
+                })
+                .then(function(r) {
+                    return r.json();
+                })
+                .then(function(res) {
+                    document.getElementById('input-nilai').value = total;
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Berhasil!',
+                        text: res.message || 'Nilai per soal berhasil disimpan.',
+                        timer: 1500,
+                        showConfirmButton: false
+                    });
+                })
+                .catch(function() {
+                    Swal.fire('Error', 'Gagal simpan nilai per soal.', 'error');
+                })
+                .finally(function() {
+                    btn.disabled = false;
+                    btn.innerHTML = '<i class="bi bi-save"></i> Simpan Nilai Per Soal';
+                });
+        });
+
+        /* ── Simpan nilai akhir ── */
+        document.getElementById('btn-simpan-nilai').addEventListener('click', function() {
+            if (!selectedUjian || !selectedPeserta) return;
+            var btn = this;
+            var nilai = document.getElementById('input-nilai').value;
+
+            btn.disabled = true;
+            btn.innerHTML = '<span class="spinner-border spinner-border-sm me-1"></span> Menyimpan...';
+
+            fetch('/guru/ujian/' + selectedUjian + '/peserta/' + selectedPeserta + '/nilai', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': csrfToken,
+                        'Accept': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        nilai: nilai
+                    })
+                })
+                .then(function(r) {
+                    return r.json();
+                })
+                .then(function(res) {
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Tersimpan!',
+                        text: res.message || 'Nilai akhir berhasil disimpan.',
+                        timer: 1500,
+                        showConfirmButton: false
+                    });
+                })
+                .catch(function() {
+                    Swal.fire('Error', 'Gagal simpan nilai.', 'error');
+                })
+                .finally(function() {
+                    btn.disabled = false;
+                    btn.innerHTML = '<i class="bi bi-check-circle"></i> Simpan Nilai Akhir';
+                });
+        });
+    </script>
+@endpush
