@@ -8,7 +8,9 @@ return new class extends Migration {
     public function up(): void
     {
         Schema::table('exam_sessions', function (Blueprint $table) {
-            $table->timestamp('end_time')->nullable()->after('created_at');
+            if (!Schema::hasColumn('exam_sessions', 'end_time')) {
+                $table->timestamp('end_time')->nullable()->after('created_at');
+            }
         });
     }
 
