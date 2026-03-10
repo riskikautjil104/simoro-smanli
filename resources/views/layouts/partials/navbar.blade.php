@@ -50,8 +50,8 @@
         <li class="nav-item dropdown">
           <a class="nav-link dropdown-toggle d-flex align-items-center py-2" href="#" id="userDropdown" role="button" data-bs-toggle="dropdown">
             <img src="{{ asset('assets/img/people.svg') }}" alt="User" class="rounded-circle me-2" height="32" width="32" />
-            <span class="user-name d-none d-sm-inline">Admin SMA5</span>
-            <span class="user-name d-inline d-sm-none">Admin</span>
+            <span class="user-name d-none d-sm-inline">{{ auth()->user()->name }}</span>
+            <span class="user-name d-inline d-sm-none">{{ auth()->user()->name }}</span>
           </a>
           <ul class="dropdown-menu dropdown-menu-end shadow-sm" aria-labelledby="userDropdown">
             <li><a class="dropdown-item" href="/profile"><i class="bi bi-person me-2"></i>Profile</a></li>

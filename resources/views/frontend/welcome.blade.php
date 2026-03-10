@@ -9,8 +9,19 @@
     <title>{{ config('app.name', 'SIMORO SMANLI') }} - SMA Negeri 5 Morotai</title>
 
     <!-- Favicons -->
-    <link href="{{ asset('assets/frondend/assets/img/favicon.png') }}" rel="icon">
+    <link href="{{ asset('assets/frondend/assets/img/favicon.svg') }}" rel="icon"  type="image/svg+xml" >
     <link href="{{ asset('assets/frondend/assets/img/apple-touch-icon.png') }}" rel="apple-touch-icon">
+    <link rel="apple-touch-icon" sizes="180x180" href="{{ asset('assets/frondend/assets/img/apple-touch-icon.png') }}">
+<link rel="icon" type="image/png" sizes="32x32" href="{{ asset('assets/frondend/assets/img/favicon-32x32.png') }}">
+<link rel="icon" type="image/png" sizes="16x16" href="{{ asset('assets/frondend/assets/img/favicon-16x16.png') }}">
+<link rel="icon" type="image/png" sizes="16x16" href="{{ asset('assets/frondend/assets/img/favicon-16x16.png') }}">
+<link rel="manifest" href="{{ asset('assets/frondend/assets/img/site.webmanifest') }}">
+
+<link rel="icon" type="image/png" href="{{ asset('assets/frondend/assets/img/favicon-96x96.png') }}" sizes="96x96" />
+{{-- <link rel="icon" type="image/svg+xml" href="/favicon.svg" /> --}}
+<link rel="shortcut icon" href="{{ asset('assets/frondend/assets/img/favicon.ico') }}" />
+<link rel="apple-touch-icon" sizes="180x180" href="{{ asset('assets/frondend/assets/img/apple-touch-icon.png') }}" />
+<link rel="manifest" href="{{asset('assets/frondend/assets/img/site.webmanifest') }}" />
 
     <!-- Fonts -->
     <link href="https://fonts.googleapis.com" rel="preconnect">
@@ -870,8 +881,9 @@
         <div class="sm-header-inner">
 
             <a href="{{ url('/') }}" class="sm-logo">
-                <img src="{{ asset('assets/frondend/assets/img/logo.png') }}" alt="Logo SIMORO">
-                <span>SIMORO SMANLI</span>
+                {{-- <img src="{{ asset('assets/frondend/assets/img/logo.png') }}" alt="Logo SIMORO"> --}}
+                <img src="{{ asset('assets/img/icon.png') }}" alt="Logo" style="width: 150px; height: 100px;">
+                {{-- <span>SIMORO SMANLI</span> --}}
             </a>
 
             <!-- Nav desktop + mobile dropdown -->

@@ -12,6 +12,40 @@ use App\Http\Controllers\Api\ReportController as ApiReportController;
 use App\Http\Controllers\Api\AuthController;
 
 
+// ==================== PUBLIC ENDPOINTS ====================
+
+// App Config - Public endpoint for mobile app
+Route::get('/config', function () {
+    return response()->json([
+        'success' => true,
+        'data' => [
+            'app_name' => config('app.app_name', 'Web Skola SMA5'),
+            'school_name' => config('app.school_name', 'SMA 5'),
+            'tagline' => config('app.tagline', 'Sistem Ujian Online'),
+            'location' => config('app.location', ''),
+            'theme' => [
+                'primary' => config('theme.primary', '#0d6efd'),
+                'secondary' => config('theme.secondary', '#6c757d'),
+                'background' => config('theme.background', '#ffffff'),
+                'surface' => config('theme.surface', '#f8f9fa'),
+                'error' => config('theme.error', '#dc3545'),
+                'success' => config('theme.success', '#198754'),
+                'text_primary' => config('theme.text_primary', '#212529'),
+                'text_secondary' => config('theme.text_secondary', '#6c757d'),
+            ],
+            'features' => [
+                'show_onboarding' => config('features.show_onboarding', true),
+                'show_notifications' => config('features.show_notifications', true),
+                'enable_location_tracking' => config('features.enable_location_tracking', true),
+            ],
+            'version' => config('app.version', '1.0.0'),
+            'maintenance_mode' => (bool) config('app.maintenance_mode', false),
+            'maintenance_message' => config('app.maintenance_message', ''),
+        ]
+    ]);
+});
+
+// Login
 Route::post('login', [AuthController::class, 'login']);
 
 Route::middleware('auth:sanctum')->group(function () {

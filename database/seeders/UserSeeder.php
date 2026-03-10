@@ -37,6 +37,17 @@ class UserSeeder extends Seeder
             ]
         );
 
+        // Mobile Manager
+        \DB::table('users')->updateOrInsert(
+            ['email' => 'mobile@sma5.sch.id'],
+            [
+                'name' => 'Mobile Manager',
+                'password' => bcrypt('mobile123'),
+                'role' => 'mobile',
+                'phone' => '081234567891',
+            ]
+        );
+
         // Siswa
         $classId = \DB::table('classes')->where('name', 'X IPA 1')->value('id');
         if ($classId) {

@@ -43,9 +43,10 @@
   {{-- Header --}}
   <div class="swirl-header">
     <div class="swirl-logo">
-      <img src="{{ asset('assets/frondend/assets/img/logo.png') }}" alt="Logo"
+      {{-- <img src="{{ asset('assets/frondend/assets/img/logo.png') }}" alt="Logo" --}}
+      <img src="{{ asset('assets/img/icon.png') }}" alt="Logo"  height="100px" width="100px" 
            onerror="this.style.display='none';this.nextElementSibling.style.display='flex';">
-      <span style="display:none;color:white;font-weight:800;font-size:1.2rem;">S</span>
+      {{-- <span style="display:none;color:white;font-weight:800;font-size:1.2rem;">S</span> --}}
     </div>
     <div class="swirl-logo-text">
       <h5>SIMORO SMANLI</h5>
@@ -217,10 +218,11 @@
 }
 
 .swirl-logo img {
-  width: 28px; height: 28px;
+  width: 70px; height: 70px;
   object-fit: contain;
   filter: brightness(0) invert(1);
 }
+
 
 .swirl-logo-text h5 {
   font-size: 0.82rem; font-weight: 700;

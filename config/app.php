@@ -123,4 +123,17 @@ return [
         'store' => env('APP_MAINTENANCE_STORE', 'database'),
     ],
 
+    /*
+    |--------------------------------------------------------------------------
+    | App Configuration for Mobile API
+    |--------------------------------------------------------------------------
+    */
+    'app_name' => env('APP_NAME_MOBILE', 'Web Skola SMA5'),
+    'school_name' => env('SCHOOL_NAME', 'SMA 5'),
+    'tagline' => env('APP_TAGLINE', 'Sistem Ujian Online'),
+    'location' => env('SCHOOL_LOCATION', ''),
+    'version' => env('APP_VERSION', '1.0.0'),
+    'maintenance_mode' => env('MAINTENANCE_MODE', false),
+    'maintenance_message' => env('MAINTENANCE_MESSAGE', ''),
+
 ];

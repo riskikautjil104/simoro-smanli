@@ -229,4 +229,30 @@ class UjianController extends Controller
 
         return response()->json(['message' => 'Nilai per soal berhasil disimpan', 'total' => $total]);
     }
+
+    // Detail ujian
+    public function detail($id, Request $request)
+    {
+        $user = $request->user();
+
+        // Ambil subjectIds guru
+        $subjectIds = Subject::where('teacher_id', $user->id)->pluck('id');
+        $allowAll = $subjectIds->isEmpty();
+
+        $exam = Exam::with(['subject', 'schoolClass'])
+            ->when(!$allowAll, function ($q) use ($subjectIds) {
+                return $q->whereIn('subject_id', $subjectIds);
+            })
+            ->find($id);
+
+        if (!$exam) {
+            abort(404, 'Ujian tidak ditemukan atau bukan milik Anda');
+        }
+
+        // Hitung statistik
+        $totalPeserta = \App\Models\ExamSession::where('exam_id', $id)->count();
+        $pesertaSelesai = \App\Models\ExamSession::where('exam_id', $id)->whereNotNull('end_time')->count();
+
+        return view('guru.ujian-detail', compact('exam', 'totalPeserta', 'pesertaSelesai'));
+    }
 }

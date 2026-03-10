@@ -32,9 +32,13 @@ class AuthenticatedSessionController extends Controller
         $user = auth()->user();
         if ($user->role === 'admin') {
             return redirect()->intended(route('admin.dashboard'));
-        } elseif ($user->role === 'teacher') {
+        } 
+        elseif ($user->role === 'teacher') {
             return redirect()->intended(route('guru.dashboard'));
-        } else {
+        } elseif ($user->role === 'mobile') {
+            return redirect()->intended(route('mobile.dashboard'));
+        }
+        else {
            
 return redirect()->intended(route('siswa.dashboard'));
         }

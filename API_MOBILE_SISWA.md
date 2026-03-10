@@ -1,91 +1,147 @@
-# 📱 API Mobile App Siswa - Web Skola SMA5
+# 📡 API Mobile Siswa - Dokumentasi Lengkap
 
-Dokumentasi API ini digunakan untuk pengembangan aplikasi mobile siswa (Android/iOS).
+## 🔗 Base URL
+
+```
+https://domain-anda.com/api
+```
 
 ---
 
-## 🔐 Authentication
+## 📡 Public Endpoints
 
-### Login
+### 1. Get App Config
+
+Mengambil konfigurasi aplikasi secara dinamis untuk mobile app.
+
+```
+GET /api/config
+```
+
+**Headers:**
+```
+Content-Type: application/json
+```
+
+**Response Success (200):**
+```json
+{
+  "success": true,
+  "data": {
+    "app_name": "Web Skola SMA5",
+    "school_name": "SMA 5",
+    "tagline": "Sistem Ujian Online",
+    "location": "",
+    "theme": {
+      "primary": "#0d6efd",
+      "secondary": "#6c757d",
+      "background": "#ffffff",
+      "surface": "#f8f9fa",
+      "error": "#dc3545",
+      "success": "#198754",
+      "text_primary": "#212529",
+      "text_secondary": "#6c757d"
+    },
+    "features": {
+      "show_onboarding": true,
+      "show_notifications": true,
+      "enable_location_tracking": true
+    },
+    "version": "1.0.0",
+    "maintenance_mode": false,
+    "maintenance_message": ""
+  }
+}
+```
+
+---
+
+## 🔐 Autentikasi
+
+### 2. Login
+
 ```
 POST /api/login
 ```
 
 **Request:**
-```
-json
+```json
 {
-  "email": "siswa@sekolah.sch.id",
+  "email": "siswa@email.com",
   "password": "password123"
 }
 ```
 
 **Response:**
-```
-json
+```json
 {
-  "token": "1|abc123xyz...",
+  "token": "1|abc123...",
   "user": {
     "id": 1,
     "name": "Nama Siswa",
-    "email": "siswa@sekolah.sch.id",
-    "nis": "12345",
-    "role": "student",
-    "class_id": 1,
-    "class_name": "X IPA 1"
+    "email": "siswa@email.com",
+    "role": "student"
   }
 }
 ```
 
-### Logout
+### 3. Logout
+
 ```
 POST /api/logout
-Headers: Authorization: Bearer {token}
 ```
 
-### Get Current User
+**Headers:**
+```
+Authorization: Bearer {token}
+```
+
+### 4. Get Current User
+
 ```
 GET /api/me
-Headers: Authorization: Bearer {token}
+```
+
+**Headers:**
+```
+Authorization: Bearer {token}
 ```
 
 ---
 
-## 👤 Profil Siswa
+## 👨‍🎓 Endpoint Siswa (Requires Auth)
 
-### Get Profil
+### 5. Get Profile
+
 ```
 GET /api/siswa/profile
-Headers: Authorization: Bearer {token}
 ```
 
 **Response:**
-```
-json
+```json
 {
   "success": true,
   "data": {
     "id": 1,
     "name": "Nama Siswa",
-    "email": "siswa@sekolah.sch.id",
-    "nis": "12345",
-    "phone": "081234567890",
+    "email": "siswa@email.com",
+    "nis": "12345678",
+    "role": "student",
     "class_id": 1,
-    "class": { "id": 1, "name": "X IPA 1" },
+    "class_name": "XII IPA 1",
     "ttd_signature": "data:image/png;base64,..."
   }
 }
 ```
 
-### Update Profil
+### 6. Update Profile
+
 ```
 PUT /api/siswa/profile
-Headers: Authorization: Bearer {token}
 ```
 
 **Request:**
-```
-json
+```json
 {
   "name": "Nama Baru",
   "phone": "081234567890",
@@ -93,31 +149,52 @@ json
 }
 ```
 
----
+### 7. Dashboard
 
-## 📝 Ujian - Daftar Ujian Aktif
-
-### Get Ujian Aktif
 ```
-GET /api/siswa/ujian/aktif
-Headers: Authorization: Bearer {token}
+GET /api/siswa/dashboard
 ```
 
 **Response:**
+```json
+{
+  "success": true,
+  "data": {
+    "siswa": { "id": 1, "nama": "Siswa", "nis": "123456" },
+    "kelas": { "id": 1, "nama": "XII IPA 1", "tingkat": 12 },
+    "mapel": [
+      { "id": 1, "nama_mapel": "Matematika", "kode": "MTK" }
+    ],
+    "ujian_mendatang": [
+      { "id": 1, "nama": "Ujian Tengah Semester", "mapel": "Matematika", "tanggal": "2026-04-01 09:00", "durasi": 90 }
+    ],
+    "stats": {
+      "total_ujian": 5,
+      "ujian_selesai": 3,
+      "nilai_rata_rata": 82.5
+    }
+  }
+}
 ```
-json
+
+### 8. Ujian Aktif
+
+```
+GET /api/siswa/ujian/aktif
+```
+
+**Response:**
+```json
 {
   "success": true,
   "data": [
     {
       "id": 1,
-      "nama": "Ujian Matematika Semester 1",
+      "nama": "Ujian Matematika",
       "mapel": "Matematika",
       "mapel_id": 1,
-      "tanggal": "2026-03-01T08:00:00",
+      "tanggal": "2026-03-15 10:00:00",
       "durasi": 90,
-      "jam_mulai": "08:00",
-      "jam_selesai": "09:30",
       "status_logout": 0,
       "reapply_status": 0,
       "is_active": true
@@ -126,52 +203,43 @@ json
 }
 ```
 
----
+### 9. Ujian Riwayat
 
-## 📝 Ujian - Riwayat
-
-### Get Riwayat Ujian
 ```
 GET /api/siswa/ujian/riwayat
-Headers: Authorization: Bearer {token}
 ```
 
 **Response:**
-```
-json
+```json
 {
   "success": true,
   "data": [
     {
       "id": 1,
-      "exam_title": "Ujian Matematika",
-      "subject": "Matematika",
-      "score": 85,
-      "tanggal": "01-03-2026 10:30",
+      "exam_id": 1,
+      "nama": "Ujian Matematika",
+      "mapel": "Matematika",
+      "nilai": 85,
+      "tanggal": "15-03-2026 10:00",
       "status": "Selesai"
     }
   ]
 }
 ```
 
----
+### 10. Ujian Detail
 
-## 📝 Ujian - Detail & Mulai
-
-### Get Detail Ujian
 ```
 GET /api/siswa/ujian/{id}
-Headers: Authorization: Bearer {token}
 ```
 
 **Response:**
-```
-json
+```json
 {
   "success": true,
   "data": {
     "id": 1,
-    "title": "Ujian Matematika Semester 1",
+    "title": "Ujian Matematika",
     "subject": "Matematika",
     "duration": 90,
     "remaining_seconds": 5400,
@@ -187,143 +255,83 @@ json
 }
 ```
 
-### Mulai Ujian
+### 11. Mulai Ujian
+
 ```
 POST /api/siswa/ujian/{id}/mulai
-Headers: Authorization: Bearer {token}
 ```
 
 **Response:**
-```
-json
+```json
 {
   "success": true,
   "message": "Ujian dimulai",
   "data": {
     "session_id": 1,
-    "start_time": "2026-03-01 08:00:00"
+    "start_time": "2026-03-15 10:00:00",
+    "duration_minutes": 90
   }
 }
 ```
 
----
+### 12. Submit Jawaban
 
-## 📝 Ujian - Submit Jawaban
-
-### Submit Ujian
 ```
 POST /api/siswa/ujian/{id}/submit
-Headers: Authorization: Bearer {token}
 ```
 
 **Request:**
-```
-json
+```json
 {
   "answers": {
-    "1": "Jakarta",
+    "1": "A",
     "2": "B",
-    "3": "true"
+    "3": "C"
   }
 }
 ```
 
-**Response:**
-```
-json
-{
-  "success": true,
-  "message": "Jawaban berhasil disubmit"
-}
-```
+### 13. Logout dari Ujian
 
----
-
-## 📝 Ujian - Logout dari Ujian
-
-### Logout Ujian
 ```
 POST /api/siswa/ujian/{id}/logout
-Headers: Authorization: Bearer {token}
 ```
 
-**Response:**
-```
-json
-{
-  "success": true,
-  "message": "Logout berhasil, progress tersimpan"
-}
-```
+### 14. Request Reapply
 
----
-
-## 📝 Ujian - Reapply (Minta Akses Ulang)
-
-### Reapply Ujian
 ```
 POST /api/siswa/ujian/{id}/reapply
-Headers: Authorization: Bearer {token}
 ```
 
 **Request:**
-```
-json
+```json
 {
-  "alasan": "Tidak sengaja logout, minta akses ulang"
+  "alasan": "Saya logout tidak sengaja"
 }
 ```
 
-**Response:**
-```
-json
-{
-  "success": true,
-  "message": "Permintaan reapply berhasil dikirim"
-}
-```
+### 15. Simpan Lokasi
 
----
-
-## 📝 Ujian - Simpan Lokasi
-
-### Simpan Lokasi (GPS)
 ```
 POST /api/siswa/ujian/{id}/lokasi
-Headers: Authorization: Bearer {token}
 ```
 
 **Request:**
-```
-json
+```json
 {
-  "lat": -6.200000,
-  "lng": 106.816666
+  "lat": -6.2088,
+  "lng": 106.8456
 }
 ```
 
-**Response:**
-```
-json
-{
-  "success": true,
-  "message": "Lokasi berhasil disimpan"
-}
-```
+### 16. Hasil Ujian
 
----
-
-## 📝 Ujian - Hasil Ujian
-
-### Get Hasil Ujian
 ```
 GET /api/siswa/ujian/{id}/hasil
-Headers: Authorization: Bearer {token}
 ```
 
 **Response:**
-```
-json
+```json
 {
   "success": true,
   "data": {
@@ -331,248 +339,96 @@ json
     "exam_title": "Ujian Matematika",
     "subject": "Matematika",
     "score": 85,
-    "tanggal": "01-03-2026 10:30"
+    "tanggal": "15-03-2026 10:00"
   }
 }
 ```
 
----
+### 17. Get Jawaban
 
-## 📝 Ujian - Get Jawaban
-
-### Get Jawaban Siswa
 ```
-GET /api/siswa/ujian/{exam_id}/jawaban
-Headers: Authorization: Bearer {token}
+GET /api/siswa/ujian/{id}/jawaban
 ```
 
-**Catatan:** Gunakan `exam_id` (ID ujian), bukan `session_id`!
+### 18. Cetak Hasil Lengkap
+
+```
+GET /api/siswa/ujian/{id}/cetak
+```
 
 **Response:**
-```
-json
+```json
 {
   "success": true,
-  "data": [
-    {
-      "question_id": 1,
-      "question_text": "a",
-      "answer": "D",
-      "score": 0,
-      "nilai_essay": 3
+  "data": {
+    "siswa": { "id": 1, "nama": "Siswa", "nis": "123", "kelas": "XII IPA 1" },
+    "ujian": { "id": 1, "nama": "Ujian Matematika", "mapel": "Matematika", "tanggal": "15-03-2026 10:00", "durasi": 90 },
+    "ringkasan": {
+      "nilai_total": 85,
+      "total_soal_pg": 40,
+      "total_soal_essay": 5,
+      "jawaban_benar": 35,
+      "jawaban_salah": 5,
+      "belum_dinilai": 0,
+      "status_penilaian": "Sudah Dinilai"
     },
-    {
-      "question_id": 2,
-      "question_text": "res",
-      "answer": "aa",
-      "score": 4,
-      "nilai_essay": 25
-    },
-    {
-      "question_id": 6,
-      "question_text": "a",
-      "answer": "B",
-      "score": 0,
-      "nilai_essay": 4
-    }
-  ]
-}
-```
-
-**Keterangan:**
-- `score`: Nilai untuk soal pilihan ganda
-- `nilai_essay`: Nilai untuk soal essay
-- Jika `score` null, berarti belum dinilai oleh guru
-
----
-
-## 💻 Contoh Kode (Flutter/Dart)
-
-```
-dart
-class ApiService {
-  static const baseUrl = 'https://web-skola-sma5.com/api';
-  String? token;
-
-  // Login
-  Future<Map> login(String email, String password) async {
-    final response = await http.post(
-      Uri.parse('$baseUrl/login'),
-      headers: {'Content-Type': 'application/json'},
-      body: jsonEncode({'email': email, 'password': password}),
-    );
-    final data = jsonDecode(response.body);
-    token = data['token'];
-    return data;
-  }
-
-  // Get Active Exams
-  Future<List> getActiveExams() async {
-    final response = await http.get(
-      Uri.parse('$baseUrl/siswa/ujian/aktif'),
-      headers: {'Authorization': 'Bearer $token'},
-    );
-    return jsonDecode(response.body)['data'];
-  }
-
-  // Get Exam History
-  Future<List> getExamHistory() async {
-    final response = await http.get(
-      Uri.parse('$baseUrl/siswa/ujian/riwayat'),
-      headers: {'Authorization': 'Bearer $token'},
-    );
-    return jsonDecode(response.body)['data'];
-  }
-
-  // Get Exam Details
-  Future<Map> getExamDetails(int examId) async {
-    final response = await http.get(
-      Uri.parse('$baseUrl/siswa/ujian/$examId'),
-      headers: {'Authorization': 'Bearer $token'},
-    );
-    return jsonDecode(response.body)['data'];
-  }
-
-  // Start Exam
-  Future<Map> startExam(int examId) async {
-    final response = await http.post(
-      Uri.parse('$baseUrl/siswa/ujian/$examId/mulai'),
-      headers: {'Authorization': 'Bearer $token'},
-    );
-    return jsonDecode(response.body);
-  }
-
-  // Submit Exam
-  Future<Map> submitExam(int examId, Map answers) async {
-    final response = await http.post(
-      Uri.parse('$baseUrl/siswa/ujian/$examId/submit'),
-      headers: {'Authorization': 'Bearer $token'},
-      body: jsonEncode({'answers': answers}),
-    );
-    return jsonDecode(response.body);
-  }
-
-  // Logout from Exam
-  Future<Map> logoutExam(int examId) async {
-    final response = await http.post(
-      Uri.parse('$baseUrl/siswa/ujian/$examId/logout'),
-      headers: {'Authorization': 'Bearer $token'},
-    );
-    return jsonDecode(response.body);
-  }
-
-  // Get Exam Result
-  Future<Map> getExamResult(int examId) async {
-    final response = await http.get(
-      Uri.parse('$baseUrl/siswa/ujian/$examId/hasil'),
-      headers: {'Authorization': 'Bearer $token'},
-    );
-    return jsonDecode(response.body)['data'];
-  }
-
-  // Get Student Answers
-  Future<List> getExamAnswers(int examId) async {
-    final response = await http.get(
-      Uri.parse('$baseUrl/siswa/ujian/$examId/jawaban'),
-      headers: {'Authorization': 'Bearer $token'},
-    );
-    return jsonDecode(response.body)['data'];
-  }
-
-  // Get Profile
-  Future<Map> getProfile() async {
-    final response = await http.get(
-      Uri.parse('$baseUrl/siswa/profile'),
-      headers: {'Authorization': 'Bearer $token'},
-    );
-    return jsonDecode(response.body)['data'];
-  }
-
-  // Update Profile
-  Future<Map> updateProfile(Map data) async {
-    final response = await http.put(
-      Uri.parse('$baseUrl/siswa/profile'),
-      headers: {
-        'Authorization': 'Bearer $token',
-        'Content-Type': 'application/json',
-      },
-      body: jsonEncode(data),
-    );
-    return jsonDecode(response.body);
+    "soal": [
+      {
+        "id": 1,
+        "nomor": 1,
+        "pertanyaan": "Apa ibu kota Indonesia?",
+        "tipe": "multiple_choice",
+        "opsi_a": "Jakarta",
+        "opsi_b": "Bandung",
+        "opsi_c": "Surabaya",
+        "opsi_d": "Medan",
+        "jawaban_siswa": "A",
+        "jawaban_benar": "A",
+        "nilai_pg": 2.5,
+        "nilai_essay": null,
+        "status": "Benar",
+        "is_correct": true
+      }
+    ]
   }
 }
 ```
 
 ---
 
-## ⚠️ Catatan Penting
+## ⚙️ Konfigurasi via .env
 
-1. **Base URL:** `https://web-skola-sma5.com/api` (sesuaikan dengan server)
-2. **Semua endpoint (kecuali login) memerlukan token**
-3. **Format Token:** Bearer Token (Laravel Sanctum)
-4. **Role Student:** Endpoint `/api/siswa/*` khusus untuk role student
-5. **Exam Session:** Setiap ujian harus di-start dulu sebelum akses soal
+Untuk mengubah konfigurasi mobile app, tambahkan di file `.env`:
 
----
+```env
+# App Info
+APP_NAME_MOBILE=Web Skola SMA5
+SCHOOL_NAME=SMA 5 Morotai
+APP_TAGLINE=Sistem Ujian Online
+SCHOOL_LOCATION=Pulau Morotai, Maluku Utara
+APP_VERSION=1.0.0
 
-## 📱 Flow Lengkap Ujian Mobile
+# Theme Colors
+THEME_PRIMARY=#0d6efd
+THEME_SECONDARY=#6c757d
+THEME_BACKGROUND=#ffffff
+THEME_SURFACE=#f8f9fa
+THEME_ERROR=#dc3545
+THEME_SUCCESS=#198754
+THEME_TEXT_PRIMARY=#212529
+THEME_TEXT_SECONDARY=#6c757d
 
+# Features
+FEATURE_SHOW_ONBOARDING=true
+FEATURE_SHOW_NOTIFICATIONS=true
+FEATURE_LOCATION_TRACKING=true
+
+# Maintenance
+MAINTENANCE_MODE=false
+MAINTENANCE_MESSAGE=System under maintenance
 ```
-1. LOGIN
-   POST /api/login
-   → Simpan token
-
-2. CEK UJIAN AKTIF
-   GET /api/siswa/ujian/aktif
-   → Tampilkan list ujian
-
-3. MULAI UJIAN
-   POST /api/siswa/ujian/{id}/mulai
-   → Dapat session_id
-
-4. AMBIL SOAL
-   GET /api/siswa/ujian/{id}
-   → Tampilkan soal + timer
-
-5. (Opsional) SIMPAN LOKASI
-   POST /api/siswa/ujian/{id}/lokasi
-   → Simpan GPS
-
-6. SUBMIT JAWABAN
-   POST /api/siswa/ujian/{id}/submit
-   → Kirim semua jawaban
-
-7. LIHAT HASIL
-   GET /api/siswa/ujian/{id}/hasil
-   → Tampilkan nilai
-```
-
----
-
-## 🔧 Troubleshooting
-
-### Error: "Unauthenticated"
-- Pastikan token sudah disimpan
-- Pastikan header `Authorization: Bearer {token}` ada
-
-### Error: "Hasil ujian belum diperiksa"
-- Belum ada nilai karena guru belum memeriksa
-
-### Error: "Ujian sudah dimulai"
-- Gunakan endpoint `/api/siswa/ujian/{id}` untuk lanjut
-
-### Error: "Ujian belum dimulai atau sudah berakhir"
-- Ujian sudah expired (tanggal sudah lewat)
-- Hubungi admin untuk perbarui tanggal ujian
-- Atau hapus exam session lama agar bisa ikut ujian ulang
-
-### Catatan Penting untuk Developer Mobile:
-1. **Waktu Ujian:** Jika `remaining_seconds` sudah 0, berarti waktu ujian habis
-2. **Durasi:** `duration` dalam menit, `remaining_seconds` dalam detik
-3. **Soal Kosong:** Jika soal kosong, cek apakah ujian punya soal atau bukan
-4. **Session Idle:** Jika siswa logout dari ujian, harus reapply untuk akses ulang
 
 ---
 
 **Last Updated:** Maret 2026
-**Version:** 1.0
+

@@ -9,9 +9,11 @@
     <title>{{ config('app.name', 'SIMORO SMANLI') }} - SMA Negeri 5 Morotai</title>
 
     <!-- Favicons -->
-    <link href="{{ asset('assets/frondend/assets/img/favicon.png') }}" rel="icon">
-    <link href="{{ asset('assets/frondend/assets/img/apple-touch-icon.png') }}" rel="apple-touch-icon">
-
+    {{-- <link href="{{ asset('assets/frondend/assets/img/favicon.png') }}" rel="icon">
+    <link href="{{ asset('assets/frondend/assets/img/apple-touch-icon.png') }}" rel="apple-touch-icon"> --}}
+<link rel="icon" type="image/png" sizes="32x32" href="{{ asset('assets/frondend/assets/img/favicon-32x32.png') }}">
+<link rel="icon" type="image/png" sizes="16x16" href="{{ asset('assets/frondend/assets/img/favicon-16x16.png') }}">
+<link rel="manifest" href="{{ asset('assets/frondend/assets/img/site.webmanifest') }}">
     <!-- Fonts -->
     <link href="https://fonts.googleapis.com" rel="preconnect">
     <link href="https://fonts.gstatic.com" rel="preconnect" crossorigin>

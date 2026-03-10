@@ -90,8 +90,10 @@
         Route::view('ujian', 'guru.ujian')->name('ujian');
         Route::view('ujian/create', 'guru.ujian-create')->name('ujian.create');
         Route::get('ujian/list', [\App\Http\Controllers\Guru\UjianController::class, 'index'])->name('ujian.list');
+        Route::get('ujian/{id}/detail', [\App\Http\Controllers\Guru\UjianController::class, 'detail'])->name('ujian.detail');
         Route::post('ujian/store', [\App\Http\Controllers\Guru\UjianStoreController::class, 'store'])->name('ujian.store');
         Route::view('monitoring', 'guru.monitoring')->name('monitoring');
+        Route::get('monitoring/data', [\App\Http\Controllers\Guru\MonitoringController::class, 'data'])->name('monitoring.data');
         Route::view('hasil', 'guru.hasil')->name('hasil');
         Route::get('hasil/list', [\App\Http\Controllers\Guru\HasilController::class, 'index'])->name('hasil.list');
         Route::post('ujian/{ujianId}/peserta/{userId}/nilai-per-soal', [\App\Http\Controllers\Guru\UjianController::class, 'simpanNilaiPerSoal'])->name('ujian.simpanNilaiPerSoal');
@@ -110,6 +112,15 @@
         Route::get('ujian/{id}/hasil/pdf', [\App\Http\Controllers\Siswa\HasilUjianPdfController::class, 'hasilPdf'])->name('ujian.hasil.pdf');
         Route::post('/api/siswa/ujian/lokasi', [\App\Http\Controllers\Siswa\DashboardController::class, 'simpanLokasiUjian']);
         Route::post('ujian/{id}/submit', [\App\Http\Controllers\Siswa\DashboardController::class, 'submitUjian'])->name('ujian.submit');
+    });
+
+    // Route mobile manager
+    Route::middleware(['auth', 'verified', 'role:mobile'])->prefix('mobile')->name('mobile.')->group(function () {
+        Route::get('dashboard', [\App\Http\Controllers\Mobile\DashboardController::class, 'index'])->name('dashboard');
+        Route::get('config', [\App\Http\Controllers\Mobile\DashboardController::class, 'getConfig'])->name('config');
+        Route::post('config/app', [\App\Http\Controllers\Mobile\DashboardController::class, 'updateAppConfig'])->name('config.app');
+        Route::post('config/theme', [\App\Http\Controllers\Mobile\DashboardController::class, 'updateTheme'])->name('config.theme');
+        Route::post('config/features', [\App\Http\Controllers\Mobile\DashboardController::class, 'updateFeatures'])->name('config.features');
     });
     // Route siswa CRUD (API/AJAX)
     Route::middleware(['auth', 'verified'])->group(function () {
