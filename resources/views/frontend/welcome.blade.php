@@ -871,6 +871,565 @@
             #scroll-top { display: none !important; }
         }
     </style>
+    <!-- 
+  ================================================================
+  SIMORO SMANLI — PREMIUM STYLE PATCH
+  Paste CSS ini ke dalam <style> yang sudah ada (setelah semua 
+  CSS yang lama, sebelum penutup </style>)
+  ================================================================
+-->
+<style>
+/* ================================================================
+   GLOBAL ENHANCEMENTS — noise texture + refined feel
+================================================================ */
+
+/* Subtle noise overlay on body for "expensive paper" feel */
+body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    z-index: 0;
+    pointer-events: none;
+    opacity: 0.018;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+    background-size: 180px;
+}
+
+/* Ensure all sections sit above the noise */
+section, header, footer, main { position: relative; z-index: 1; }
+
+/* ================================================================
+   HEADER — refined glass morphism
+================================================================ */
+#sm-header {
+    background: rgba(255, 255, 255, 0.88) !important;
+    backdrop-filter: blur(20px) saturate(180%) !important;
+    -webkit-backdrop-filter: blur(20px) saturate(180%) !important;
+    border-bottom: 1px solid rgba(13, 110, 253, 0.08);
+    box-shadow: 0 1px 0 rgba(255,255,255,0.9), 0 4px 24px rgba(0,0,0,0.05) !important;
+}
+
+/* ================================================================
+   HERO — premium layered background
+================================================================ */
+#hero {
+    background:
+        /* Dot grid pattern */
+        radial-gradient(circle, rgba(255,255,255,0.12) 1px, transparent 1px),
+        /* Diagonal lines */
+        repeating-linear-gradient(
+            -45deg,
+            transparent,
+            transparent 40px,
+            rgba(255,255,255,0.03) 40px,
+            rgba(255,255,255,0.03) 41px
+        ),
+        /* Main gradient */
+        linear-gradient(135deg, rgba(13,110,253,0.97) 0%, rgba(6,182,212,0.92) 60%, rgba(13,202,240,0.88) 100%) !important;
+    background-size: 28px 28px, 100% 100%, 100% 100% !important;
+}
+
+/* Glowing orb accents */
+#hero .container::before {
+    content: '';
+    position: absolute;
+    width: 420px; height: 420px;
+    background: radial-gradient(circle, rgba(255,255,255,0.14) 0%, transparent 70%);
+    border-radius: 50%;
+    top: 50%; left: 50%;
+    transform: translate(-50%, -50%);
+    pointer-events: none;
+    z-index: 0;
+}
+
+/* Floating hexagon decorations */
+#hero::before {
+    content: '';
+    position: absolute;
+    width: 600px; height: 600px;
+    background: 
+        radial-gradient(circle at 30% 30%, rgba(255,255,255,0.08) 0%, transparent 50%),
+        radial-gradient(circle at 70% 70%, rgba(13,202,240,0.15) 0%, transparent 50%);
+    border-radius: 50%;
+    top: -150px; right: -200px;
+    pointer-events: none;
+    animation: floatCircle 8s ease-in-out infinite;
+}
+
+/* Extra decorative rings */
+#hero .container::after {
+    content: '';
+    position: absolute;
+    width: 220px; height: 220px;
+    border: 1.5px solid rgba(255,255,255,0.15);
+    border-radius: 50%;
+    bottom: -30px; left: -60px;
+    pointer-events: none;
+    z-index: 0;
+    animation: ringPulse 6s ease-in-out infinite;
+}
+
+@keyframes ringPulse {
+    0%, 100% { transform: scale(1); opacity: 0.6; }
+    50% { transform: scale(1.12); opacity: 0.25; }
+}
+
+/* Badge chip above title */
+.hero-text-wrap::before {
+    content: '✦ Sistem Ujian Digital';
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: rgba(255,255,255,0.18);
+    border: 1px solid rgba(255,255,255,0.35);
+    color: #fff;
+    font-size: 0.75rem;
+    font-weight: 600;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    padding: 6px 16px;
+    border-radius: 100px;
+    margin-bottom: 18px;
+    backdrop-filter: blur(8px);
+    display: block;
+    width: fit-content;
+}
+
+/* Enhanced wave — 3 layers */
+.hero-wave {
+    filter: drop-shadow(0 -4px 12px rgba(13,110,253,0.12));
+}
+
+.hero-wave svg {
+    height: 90px !important;
+}
+
+/* ================================================================
+   STATS — richer gradient + pattern
+================================================================ */
+#stats {
+    background:
+        radial-gradient(circle at 20% 50%, rgba(255,255,255,0.06) 0%, transparent 50%),
+        radial-gradient(circle at 80% 50%, rgba(13,202,240,0.2) 0%, transparent 50%),
+        repeating-linear-gradient(
+            90deg,
+            transparent,
+            transparent 60px,
+            rgba(255,255,255,0.025) 60px,
+            rgba(255,255,255,0.025) 61px
+        ),
+        linear-gradient(135deg, var(--primary), #0ea5e9, var(--accent)) !important;
+}
+
+.stats-card {
+    background: rgba(255,255,255,0.12) !important;
+    border: 1px solid rgba(255,255,255,0.22) !important;
+    backdrop-filter: blur(16px) !important;
+    position: relative;
+    overflow: hidden;
+    transition: all 0.35s cubic-bezier(0.34, 1.56, 0.64, 1) !important;
+}
+
+.stats-card::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(135deg, rgba(255,255,255,0.1) 0%, transparent 60%);
+    border-radius: inherit;
+    pointer-events: none;
+}
+
+.stats-card:hover {
+    transform: translateY(-6px) scale(1.03);
+    background: rgba(255,255,255,0.2) !important;
+    box-shadow: 0 20px 40px rgba(0,0,0,0.15), 0 0 0 1px rgba(255,255,255,0.3);
+}
+
+/* ================================================================
+   ABOUT — elegant section separator
+================================================================ */
+#about {
+    position: relative;
+    overflow: hidden;
+}
+
+#about::before {
+    content: '';
+    position: absolute;
+    top: -200px; right: -300px;
+    width: 700px; height: 700px;
+    background: radial-gradient(circle, rgba(13,110,253,0.04) 0%, transparent 65%);
+    border-radius: 50%;
+    pointer-events: none;
+}
+
+#about img {
+    box-shadow: 
+        0 2px 0 rgba(255,255,255,0.8) inset,
+        0 32px 80px rgba(13,110,253,0.15),
+        0 8px 24px rgba(0,0,0,0.08) !important;
+    border: 1px solid rgba(13,110,253,0.08) !important;
+}
+
+/* ================================================================
+   FEATURE CARDS — premium glass + shimmer
+================================================================ */
+.feature-card {
+    border: 1px solid rgba(13,110,253,0.08) !important;
+    background: #fff !important;
+    position: relative;
+    overflow: hidden;
+    transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1) !important;
+}
+
+/* Shimmer line on top */
+.feature-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 2px;
+    background: linear-gradient(90deg, transparent, var(--primary), var(--accent), transparent);
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.feature-card:hover::before {
+    opacity: 1;
+}
+
+/* Subtle inner glow on hover */
+.feature-card::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(135deg, rgba(13,110,253,0.03) 0%, transparent 60%);
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    pointer-events: none;
+    border-radius: inherit;
+}
+
+.feature-card:hover::after {
+    opacity: 1;
+}
+
+.feature-card:hover {
+    transform: translateY(-10px) !important;
+    box-shadow: 0 24px 60px rgba(13,110,253,0.14), 0 4px 16px rgba(0,0,0,0.06) !important;
+    border-color: rgba(13,110,253,0.18) !important;
+}
+
+/* ================================================================
+   SERVICES SECTION — background pattern
+================================================================ */
+#services {
+    background:
+        radial-gradient(ellipse at 0% 0%, rgba(13,110,253,0.04) 0%, transparent 50%),
+        radial-gradient(ellipse at 100% 100%, rgba(13,202,240,0.05) 0%, transparent 50%),
+        linear-gradient(180deg,
+            rgba(248,249,250,0) 0%,
+            #f1f5ff 30%,
+            #f0f9ff 70%,
+            rgba(248,249,250,0) 100%
+        ) !important;
+    position: relative;
+}
+
+/* Decorative wave top edge */
+#services::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 4px;
+    background: linear-gradient(90deg, 
+        transparent 0%,
+        var(--primary) 20%,
+        var(--accent) 50%,
+        var(--primary) 80%,
+        transparent 100%
+    );
+    opacity: 0.3;
+}
+
+/* ================================================================
+   CALL TO ACTION — layered pattern
+================================================================ */
+#call-to-action {
+    background:
+        /* Concentric rings */
+        radial-gradient(circle at 50% 50%, rgba(255,255,255,0.06) 0%, transparent 40%),
+        radial-gradient(circle at 50% 50%, rgba(255,255,255,0.04) 0%, transparent 65%),
+        /* Cross-hatch */
+        repeating-linear-gradient(
+            0deg,
+            transparent,
+            transparent 30px,
+            rgba(255,255,255,0.03) 30px,
+            rgba(255,255,255,0.03) 31px
+        ),
+        repeating-linear-gradient(
+            90deg,
+            transparent,
+            transparent 30px,
+            rgba(255,255,255,0.03) 30px,
+            rgba(255,255,255,0.03) 31px
+        ),
+        linear-gradient(135deg, var(--primary), #0ea5e9, var(--accent)) !important;
+    position: relative;
+    overflow: hidden;
+}
+
+/* Glowing circles behind CTA */
+#call-to-action::before {
+    content: '';
+    position: absolute;
+    width: 500px; height: 500px;
+    background: radial-gradient(circle, rgba(255,255,255,0.07) 0%, transparent 65%);
+    border-radius: 50%;
+    top: -200px; left: -100px;
+    pointer-events: none;
+}
+
+#call-to-action::after {
+    content: '';
+    position: absolute;
+    width: 400px; height: 400px;
+    background: radial-gradient(circle, rgba(255,255,255,0.06) 0%, transparent 65%);
+    border-radius: 50%;
+    bottom: -160px; right: -80px;
+    pointer-events: none;
+}
+
+/* Animated border ring around CTA button */
+.btn-school-inverted {
+    box-shadow: 0 0 0 0 rgba(255,255,255,0.4);
+    animation: ctaPulse 3s ease-in-out infinite;
+}
+
+@keyframes ctaPulse {
+    0%, 100% { box-shadow: 0 0 0 0 rgba(255,255,255,0.4); }
+    50% { box-shadow: 0 0 0 12px rgba(255,255,255,0); }
+}
+
+/* ================================================================
+   RECENT / ACTIVE EXAMS sections
+================================================================ */
+#active-exams {
+    background:
+        radial-gradient(ellipse at 100% 0%, rgba(32,201,151,0.05) 0%, transparent 50%),
+        radial-gradient(ellipse at 0% 100%, rgba(13,110,253,0.04) 0%, transparent 50%),
+        linear-gradient(180deg, #f0fff8 0%, #f0f9ff 100%) !important;
+}
+
+/* Active exam card — glowing left border */
+.exam-card-active {
+    border-left: 4px solid var(--secondary) !important;
+    box-shadow: -3px 0 20px rgba(32,201,151,0.12), var(--shadow-card) !important;
+}
+
+.exam-card-active::before {
+    background: linear-gradient(90deg, transparent, var(--secondary), var(--accent), transparent) !important;
+}
+
+/* ================================================================
+   SECTION TITLES — accent line decoration
+================================================================ */
+.section-title h2 {
+    position: relative;
+    display: inline-block;
+}
+
+.section-title h2::after {
+    content: '';
+    position: absolute;
+    bottom: -10px; left: 50%; 
+    transform: translateX(-50%);
+    width: 48px; height: 3px;
+    background: linear-gradient(90deg, var(--primary), var(--accent));
+    border-radius: 2px;
+}
+
+/* ================================================================
+   CONTACT — subtle side accent
+================================================================ */
+#contact {
+    position: relative;
+    overflow: hidden;
+}
+
+#contact::after {
+    content: '';
+    position: absolute;
+    bottom: -300px; right: -300px;
+    width: 700px; height: 700px;
+    background: radial-gradient(circle, rgba(13,202,240,0.05) 0%, transparent 60%);
+    border-radius: 50%;
+    pointer-events: none;
+}
+
+.info-item {
+    border: 1px solid rgba(13,110,253,0.06) !important;
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+}
+
+.info-item::before {
+    content: '';
+    position: absolute;
+    bottom: 0; left: 0; right: 0;
+    height: 2px;
+    background: linear-gradient(90deg, var(--primary), var(--accent));
+    transform: scaleX(0);
+    transition: transform 0.3s ease;
+    transform-origin: left;
+}
+
+.info-item:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 12px 32px rgba(13,110,253,0.1);
+    border-color: rgba(13,110,253,0.15) !important;
+}
+
+.info-item:hover::before {
+    transform: scaleX(1);
+}
+
+/* ================================================================
+   FOOTER — premium dark with pattern
+================================================================ */
+#footer {
+    background:
+        repeating-linear-gradient(
+            -45deg,
+            transparent,
+            transparent 50px,
+            rgba(255,255,255,0.012) 50px,
+            rgba(255,255,255,0.012) 51px
+        ),
+        radial-gradient(ellipse at 20% 80%, rgba(13,110,253,0.12) 0%, transparent 50%),
+        radial-gradient(ellipse at 80% 20%, rgba(13,202,240,0.08) 0%, transparent 50%),
+        #0f172a !important;
+}
+
+/* Footer top divider glow */
+#footer::before {
+    content: '';
+    display: block;
+    height: 1px;
+    background: linear-gradient(90deg,
+        transparent 0%,
+        rgba(13,110,253,0.5) 20%,
+        rgba(13,202,240,0.6) 50%,
+        rgba(13,110,253,0.5) 80%,
+        transparent 100%
+    );
+    margin-bottom: 60px;
+}
+
+/* ================================================================
+   WAVE HERO — enhanced multi-layer
+================================================================ */
+.hero-wave svg {
+    height: 90px !important;
+}
+
+/* ================================================================
+   SCROLL TOP — premium fab
+================================================================ */
+#scroll-top {
+    background: linear-gradient(135deg, var(--primary), var(--accent)) !important;
+    box-shadow: 0 4px 20px rgba(13,110,253,0.4), 0 0 0 4px rgba(13,110,253,0.1) !important;
+}
+
+#scroll-top:hover {
+    box-shadow: 0 8px 28px rgba(13,110,253,0.5), 0 0 0 8px rgba(13,110,253,0.08) !important;
+}
+
+/* ================================================================
+   BOTTOM NAV — glass upgrade
+================================================================ */
+#sm-bottom-nav {
+    background: rgba(255,255,255,0.92) !important;
+    backdrop-filter: blur(20px) saturate(180%) !important;
+    -webkit-backdrop-filter: blur(20px) saturate(180%) !important;
+    border-top: 1px solid rgba(13,110,253,0.08) !important;
+    box-shadow: 0 -2px 0 rgba(255,255,255,0.9), 0 -8px 32px rgba(0,0,0,0.08) !important;
+}
+
+/* ================================================================
+   BUTTONS — premium micro-interaction
+================================================================ */
+.btn-school {
+    box-shadow: 0 4px 14px rgba(13,110,253,0.25);
+    transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1) !important;
+}
+
+.btn-school:hover {
+    box-shadow: 0 10px 30px rgba(13,110,253,0.4) !important;
+    transform: translateY(-3px) scale(1.03) !important;
+}
+
+.btn-exam {
+    box-shadow: 0 4px 14px rgba(13,110,253,0.2);
+}
+
+/* ================================================================
+   FEATURE ICON — subtle ring decoration
+================================================================ */
+.feature-icon {
+    box-shadow: 0 8px 28px rgba(13,110,253,0.25), 0 0 0 8px rgba(13,110,253,0.06);
+}
+
+/* ================================================================
+   WAVE BETWEEN SECTIONS — add a subtle SVG divider after stats
+================================================================ */
+#stats {
+    position: relative;
+}
+
+#stats::after {
+    content: '';
+    position: absolute;
+    bottom: -1px; left: 0; right: 0;
+    height: 48px;
+    background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1200 48' preserveAspectRatio='none'%3E%3Cpath d='M0,20 C200,48 400,0 600,22 C800,44 1000,8 1200,20 L1200,48 L0,48 Z' fill='%23ffffff'/%3E%3C/svg%3E");
+    background-size: cover;
+    background-repeat: no-repeat;
+    z-index: 2;
+}
+
+/* Wave between services → CTA */
+#services::after {
+    content: '';
+    position: absolute;
+    bottom: -1px; left: 0; right: 0;
+    height: 48px;
+    background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1200 48' preserveAspectRatio='none'%3E%3Cpath d='M0,28 C300,48 500,4 700,26 C900,48 1100,10 1200,24 L1200,48 L0,48 Z' fill='%230d6efd' fill-opacity='0.95'/%3E%3C/svg%3E");
+    background-size: cover;
+    background-repeat: no-repeat;
+    z-index: 2;
+}
+
+/* ================================================================
+   TYPOGRAPHY — subtle letter-spacing refinement
+================================================================ */
+h1, h2, h3 { letter-spacing: -0.02em; }
+.section-title h2 { letter-spacing: -0.03em; }
+.btn-school, .btn-outline-school, .btn-school-inverted, .btn-exam {
+    letter-spacing: 0.01em;
+}
+
+/* ================================================================
+   SMOOTH SCROLL + SELECTION COLOR
+================================================================ */
+html { scroll-behavior: smooth; }
+
+::selection {
+    background: rgba(13,110,253,0.2);
+    color: var(--primary-dark);
+}
+</style>
 </head>
 
 <body class="index-page">
