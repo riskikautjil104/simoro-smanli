@@ -12,7 +12,9 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('exam_sessions', function (Blueprint $table) {
-            $table->integer('score')->nullable()->after('end_time');
+            if (!Schema::hasColumn('exam_sessions', 'score')) {
+                $table->integer('score')->nullable()->after('end_time');
+            }
         });
     }
 
