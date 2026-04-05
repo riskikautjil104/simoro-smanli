@@ -2189,8 +2189,7 @@
         <div class="footer-bottom">
             <div class="container">
                 © Copyright <strong>SIMORO SMANLI</strong> All Rights Reserved ·
-                Designed by <a href="https://bootstrapmade.com/">BootstrapMade</a> ·
-                Distributed by <a href="#">SMA Negeri 5 Morotai</a>
+                <a href="#">SMA Negeri 5 Morotai</a>
             </div>
         </div>
     </footer>
