@@ -1943,23 +1943,23 @@
                         --}}
 
                         <div class="mp-slide">
-                            <img src="{{ asset('assets/img/simoro/dashboard.png') }}" alt="Dashboard SIMORO" loading="lazy"
+                            <img src="{{ asset('assets/img/simoro/mobile.png') }}" alt="Mobile SIMORO" loading="lazy"
                                  onerror="this.closest('.mp-slide').querySelector('.mp-slide-placeholder').style.display='flex'; this.style.display='none';">
                             <div class="mp-slide-placeholder" style="display:none; flex-direction:column; align-items:center; gap:8px; color:var(--text-muted);">
                                 <i class="bi bi-image" style="font-size:2rem; opacity:.4;"></i>
-                                <span style="font-size:.75rem;">dashboard.png</span>
+                                <span style="font-size:.75rem;">mobile.png</span>
                             </div>
-                            <div class="mp-slide-label">Dashboard Utama</div>
+                            <div class="mp-slide-label">Tampilan Mobile</div>
                         </div>
 
                         <div class="mp-slide">
-                            <img src="{{ asset('assets/img/simoro/login.png') }}" alt="Halaman Login" loading="lazy"
+                            <img src="{{ asset('assets/img/simoro/mobile1.png) }}" alt="Halaman mobile" loading="lazy"
                                  onerror="this.closest('.mp-slide').querySelector('.mp-slide-placeholder').style.display='flex'; this.style.display='none';">
                             <div class="mp-slide-placeholder" style="display:none; flex-direction:column; align-items:center; gap:8px; color:var(--text-muted);">
                                 <i class="bi bi-image" style="font-size:2rem; opacity:.4;"></i>
-                                <span style="font-size:.75rem;">login.png</span>
+                                <span style="font-size:.75rem;">mobile1.png</span>
                             </div>
-                            <div class="mp-slide-label">Halaman Login</div>
+                            <div class="mp-slide-label">Tampilan Mobile</div>
                         </div>
 
                         <div class="mp-slide">
