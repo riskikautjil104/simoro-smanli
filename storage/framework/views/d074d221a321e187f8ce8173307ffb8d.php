@@ -1,0 +1,2 @@
+<!-- Scripts Includes partial for template layout -->
+<!-- Customizer, helper, analytics, config scripts can be added here --><?php /**PATH /Users/rizkihiibrahim/Documents/simoro-smanli/resources/views/layouts/sections/scriptsIncludes.blade.php ENDPATH**/ ?>
