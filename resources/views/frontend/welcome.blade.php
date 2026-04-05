@@ -1283,323 +1283,273 @@
         }
     </style>
 
-    {{-- =====================================================
-         ★ TAMBAHAN 2: MY PROJECT SECTION CSS
-         ===================================================== --}}
-    <style>
-        /* ── Section My Project ── */
-        #my-project { padding: 80px 0; background-color: #fff; }
-        [data-theme="dark"] #my-project { background-color: #0f1117; }
+   <style>
+    /* ── Section My Project ── */
+    #my-project { padding: 80px 0; background-color: #fff; }
+    [data-theme="dark"] #my-project { background-color: #0f1117; }
 
-        /* Wrapper kartu project */
-        .mp-card {
-            background: #fff;
-            border: 1px solid rgba(13,110,253,0.1);
-            border-radius: 24px;
-            overflow: hidden;
-            box-shadow: 0 8px 40px rgba(13,110,253,0.1);
-            position: relative;
-        }
-        [data-theme="dark"] .mp-card {
-            background: #1e2130;
-            border-color: rgba(255,255,255,0.07);
-            box-shadow: 0 8px 40px rgba(0,0,0,0.4);
-        }
-        /* Garis gradien atas */
-        .mp-card::before {
-            content: '';
-            position: absolute; top: 0; left: 0; right: 0;
-            height: 3px;
-            background: linear-gradient(90deg, var(--primary), var(--accent), var(--secondary));
-        }
+    .mp-card {
+        background: #fff;
+        border: 1px solid rgba(13,110,253,0.1);
+        border-radius: 24px;
+        overflow: hidden;
+        box-shadow: 0 8px 40px rgba(13,110,253,0.1);
+        position: relative;
+    }
+    [data-theme="dark"] .mp-card {
+        background: #1e2130;
+        border-color: rgba(255,255,255,0.07);
+        box-shadow: 0 8px 40px rgba(0,0,0,0.4);
+    }
+    .mp-card::before {
+        content: '';
+        position: absolute; top: 0; left: 0; right: 0;
+        height: 3px;
+        background: linear-gradient(90deg, var(--primary), var(--accent), var(--secondary));
+    }
 
-        /* Header kartu */
-        .mp-card-header {
-            padding: 32px 36px 0;
-            display: flex;
-            flex-wrap: wrap;
-            align-items: flex-start;
-            justify-content: space-between;
-            gap: 16px;
-        }
-        @media (max-width: 576px) { .mp-card-header { padding: 24px 20px 0; } }
+    /* Header */
+    .mp-card-header {
+        padding: 32px 36px 0;
+        display: flex;
+        flex-wrap: wrap;
+        align-items: flex-start;
+        justify-content: space-between;
+        gap: 16px;
+    }
+    @media (max-width: 576px) { .mp-card-header { padding: 24px 20px 0; } }
 
-        .mp-project-title {
-            font-size: 1.5rem;
-            font-weight: 700;
-            color: var(--primary);
-            margin-bottom: 6px;
-        }
-        [data-theme="dark"] .mp-project-title { color: #60a5fa; }
+    .mp-project-title { font-size: 1.5rem; font-weight: 700; color: var(--primary); margin-bottom: 6px; }
+    [data-theme="dark"] .mp-project-title { color: #60a5fa; }
 
-        .mp-project-desc {
-            font-size: 0.88rem;
-            color: var(--text-muted);
-            max-width: 560px;
-            line-height: 1.7;
-            margin-bottom: 12px;
-        }
+    .mp-project-desc { font-size: 0.88rem; color: var(--text-muted); max-width: 560px; line-height: 1.7; margin-bottom: 12px; }
 
-        .mp-tags { display: flex; flex-wrap: wrap; gap: 8px; }
-        .mp-tag {
-            padding: 4px 14px;
-            border-radius: 100px;
-            font-size: 0.75rem;
-            font-weight: 600;
-            background: rgba(13,110,253,0.09);
-            color: var(--primary);
-            border: 1px solid rgba(13,110,253,0.18);
-        }
-        .mp-tag-green { background: rgba(32,201,151,0.1); color: #20c997; border-color: rgba(32,201,151,0.25); }
-        .mp-tag-orange { background: rgba(253,126,20,0.1); color: #fd7e14; border-color: rgba(253,126,20,0.25); }
+    .mp-tags { display: flex; flex-wrap: wrap; gap: 8px; }
+    .mp-tag { padding: 4px 14px; border-radius: 100px; font-size: 0.75rem; font-weight: 600; background: rgba(13,110,253,0.09); color: var(--primary); border: 1px solid rgba(13,110,253,0.18); }
+    .mp-tag-green { background: rgba(32,201,151,0.1); color: #20c997; border-color: rgba(32,201,151,0.25); }
+    .mp-tag-orange { background: rgba(253,126,20,0.1); color: #fd7e14; border-color: rgba(253,126,20,0.25); }
 
-        .mp-status {
-            display: inline-flex;
-            align-items: center;
-            gap: 7px;
-            background: rgba(32,201,151,0.1);
-            color: var(--secondary);
-            border: 1px solid rgba(32,201,151,0.25);
-            padding: 7px 16px;
-            border-radius: 100px;
-            font-size: 0.8rem;
-            font-weight: 600;
-            white-space: nowrap;
-            flex-shrink: 0;
-        }
-        .mp-status-dot {
-            width: 7px; height: 7px;
-            background: var(--secondary);
-            border-radius: 50%;
-            animation: blink 1.5s ease-in-out infinite;
-        }
-        @keyframes blink { 0%,100%{opacity:1;} 50%{opacity:.25;} }
+    .mp-status { display: inline-flex; align-items: center; gap: 7px; background: rgba(32,201,151,0.1); color: var(--secondary); border: 1px solid rgba(32,201,151,0.25); padding: 7px 16px; border-radius: 100px; font-size: 0.8rem; font-weight: 600; white-space: nowrap; flex-shrink: 0; }
+    .mp-status-dot { width: 7px; height: 7px; background: var(--secondary); border-radius: 50%; animation: blink 1.5s ease-in-out infinite; }
+    @keyframes blink { 0%,100%{opacity:1;} 50%{opacity:.25;} }
 
-        /* ── DEVICE SHOWCASE ── */
-        .mp-devices {
-            padding: 32px 36px 0;
-            display: grid;
-            grid-template-columns: 1.7fr 1fr 0.6fr;
-            gap: 24px;
-            align-items: flex-end;
-        }
-        @media (max-width: 900px) {
-            .mp-devices { grid-template-columns: 1fr 1fr; }
-            .mp-device-web { grid-column: span 2; }
-        }
-        @media (max-width: 576px) {
-            .mp-devices { grid-template-columns: 1fr; padding: 20px 20px 0; gap: 20px; }
-            .mp-device-web { grid-column: auto; }
-        }
+    /* ── SLIDER UTAMA ── */
+    .mp-slider-wrap {
+        margin: 28px 36px 0;
+        position: relative;
+        border-radius: 14px;
+        overflow: hidden;
+        background: rgba(13,110,253,0.03);
+        border: 1px solid rgba(13,110,253,0.08);
+    }
+    [data-theme="dark"] .mp-slider-wrap { background: rgba(255,255,255,0.03); border-color: rgba(255,255,255,0.07); }
+    @media (max-width: 576px) { .mp-slider-wrap { margin: 20px 20px 0; } }
 
-        .mp-device-slot { display: flex; flex-direction: column; align-items: center; gap: 10px; }
+    /* Browser chrome bar */
+    .mp-slider-chrome {
+        height: 36px;
+        background: #f1f3f5;
+        display: flex;
+        align-items: center;
+        padding: 0 14px;
+        gap: 7px;
+        border-bottom: 1px solid rgba(0,0,0,0.07);
+        flex-shrink: 0;
+    }
+    [data-theme="dark"] .mp-slider-chrome { background: #2d3148; border-bottom-color: rgba(255,255,255,0.07); }
+    .mp-dot-r { width: 10px; height: 10px; border-radius: 50%; background: #ff5f57; flex-shrink: 0; }
+    .mp-dot-y { width: 10px; height: 10px; border-radius: 50%; background: #febc2e; flex-shrink: 0; }
+    .mp-dot-g { width: 10px; height: 10px; border-radius: 50%; background: #28c840; flex-shrink: 0; }
+    .mp-url-bar { flex: 1; margin: 0 10px; height: 20px; background: #fff; border-radius: 5px; display: flex; align-items: center; padding: 0 10px; border: 1px solid rgba(0,0,0,0.08); }
+    [data-theme="dark"] .mp-url-bar { background: #1e2130; border-color: rgba(255,255,255,0.07); }
+    .mp-url-text { font-size: 0.65rem; color: #6b7280; }
 
-        .mp-device-label {
-            font-size: 0.7rem;
-            font-weight: 700;
-            letter-spacing: 1.5px;
-            text-transform: uppercase;
-            color: var(--text-muted);
-            display: flex;
-            align-items: center;
-            gap: 6px;
-        }
-        .mp-device-label::before {
-            content: '';
-            width: 6px; height: 6px;
-            border-radius: 50%;
-            background: var(--primary);
-            display: inline-block;
-        }
+    /* Slide track */
+    .mp-slide-track-wrap {
+        position: relative;
+        overflow: hidden;
+        aspect-ratio: 16 / 9;
+        background: linear-gradient(135deg, rgba(13,110,253,0.04), rgba(13,202,240,0.04));
+    }
+    [data-theme="dark"] .mp-slide-track-wrap { background: linear-gradient(135deg, rgba(13,110,253,0.1), rgba(13,202,240,0.07)); }
 
-        /* ── Frame Web ── */
-        .mp-frame-web {
-            width: 100%;
-            border: 2px solid rgba(0,0,0,0.1);
-            border-radius: 10px 10px 0 0;
-            overflow: hidden;
-            box-shadow: 0 -6px 30px rgba(13,110,253,0.12);
-        }
-        [data-theme="dark"] .mp-frame-web { border-color: rgba(255,255,255,0.08); }
+    .mp-slide-track {
+        display: flex;
+        height: 100%;
+        transition: transform 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+    }
 
-        .mp-browser-bar {
-            height: 32px;
-            background: #f1f3f5;
-            display: flex;
-            align-items: center;
-            padding: 0 10px;
-            gap: 5px;
-            border-bottom: 1px solid rgba(0,0,0,0.08);
-        }
-        [data-theme="dark"] .mp-browser-bar { background: #2d3148; border-bottom-color: rgba(255,255,255,0.07); }
+    .mp-slide {
+        min-width: 100%;
+        height: 100%;
+        position: relative;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
 
-        .mp-dot { width: 9px; height: 9px; border-radius: 50%; flex-shrink: 0; }
-        .mp-dot-r { background: #ff5f57; }
-        .mp-dot-y { background: #febc2e; }
-        .mp-dot-g { background: #28c840; }
+    .mp-slide img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        display: block;
+    }
 
-        .mp-url-bar {
-            flex: 1; margin: 0 8px;
-            height: 18px;
-            background: #fff;
-            border-radius: 4px;
-            display: flex; align-items: center;
-            padding: 0 8px;
-            border: 1px solid rgba(0,0,0,0.08);
-        }
-        [data-theme="dark"] .mp-url-bar { background: #1e2130; border-color: rgba(255,255,255,0.07); }
+    /* Label slide */
+    .mp-slide-label {
+        position: absolute;
+        bottom: 10px;
+        left: 50%;
+        transform: translateX(-50%);
+        background: rgba(0,0,0,0.55);
+        color: #fff;
+        font-size: 0.72rem;
+        font-weight: 600;
+        padding: 4px 14px;
+        border-radius: 100px;
+        white-space: nowrap;
+        backdrop-filter: blur(6px);
+        letter-spacing: 0.3px;
+    }
 
-        .mp-url-text { font-size: 0.6rem; color: #6b7280; }
+    /* Tombol prev/next */
+    .mp-slide-btn {
+        position: absolute;
+        top: 50%;
+        transform: translateY(-50%);
+        z-index: 10;
+        width: 36px; height: 36px;
+        border-radius: 50%;
+        background: rgba(255,255,255,0.85);
+        border: 1px solid rgba(0,0,0,0.1);
+        color: var(--primary);
+        font-size: 1rem;
+        display: flex; align-items: center; justify-content: center;
+        cursor: pointer;
+        transition: all 0.2s;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.12);
+    }
+    [data-theme="dark"] .mp-slide-btn { background: rgba(30,33,48,0.9); border-color: rgba(255,255,255,0.1); color: #60a5fa; }
+    .mp-slide-btn:hover { background: var(--primary); color: #fff; transform: translateY(-50%) scale(1.08); }
+    [data-theme="dark"] .mp-slide-btn:hover { background: #3b82f6; color: #fff; }
+    .mp-slide-btn-prev { left: 10px; }
+    .mp-slide-btn-next { right: 10px; }
 
-        /* ── Frame Tablet ── */
-        .mp-frame-tablet {
-            width: 100%;
-            border: 2px solid rgba(0,0,0,0.1);
-            border-radius: 14px 14px 0 0;
-            overflow: hidden;
-            box-shadow: 0 -6px 30px rgba(13,110,253,0.1);
-        }
-        [data-theme="dark"] .mp-frame-tablet { border-color: rgba(255,255,255,0.08); }
+    /* Dots indikator */
+    .mp-dots {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        gap: 7px;
+        padding: 14px 0 10px;
+        background: #f8f9fa;
+        border-top: 1px solid rgba(0,0,0,0.05);
+    }
+    [data-theme="dark"] .mp-dots { background: #2d3148; border-top-color: rgba(255,255,255,0.07); }
 
-        .mp-tablet-bar {
-            height: 26px;
-            background: #f1f3f5;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            border-bottom: 1px solid rgba(0,0,0,0.07);
-        }
-        [data-theme="dark"] .mp-tablet-bar { background: #2d3148; }
+    .mp-dot-ind {
+        width: 8px; height: 8px;
+        border-radius: 50%;
+        background: rgba(13,110,253,0.2);
+        border: none;
+        cursor: pointer;
+        padding: 0;
+        transition: all 0.25s;
+        flex-shrink: 0;
+    }
+    .mp-dot-ind.active {
+        background: var(--primary);
+        width: 22px;
+        border-radius: 4px;
+    }
+    [data-theme="dark"] .mp-dot-ind { background: rgba(96,165,250,0.25); }
+    [data-theme="dark"] .mp-dot-ind.active { background: #60a5fa; }
 
-        .mp-home-btn { width: 44px; height: 4px; background: rgba(0,0,0,0.15); border-radius: 2px; }
-        [data-theme="dark"] .mp-home-btn { background: rgba(255,255,255,0.15); }
+    /* Progress bar auto-slide */
+    .mp-progress {
+        height: 2px;
+        background: rgba(13,110,253,0.12);
+        overflow: hidden;
+    }
+    [data-theme="dark"] .mp-progress { background: rgba(96,165,250,0.15); }
+    .mp-progress-bar {
+        height: 100%;
+        background: linear-gradient(90deg, var(--primary), var(--accent));
+        width: 0%;
+        transition: none;
+    }
+    .mp-progress-bar.running {
+        width: 100%;
+        transition: width 3s linear;
+    }
 
-        /* ── Frame Mobile ── */
-        .mp-frame-mobile {
-            width: 100%;
-            border: 2px solid rgba(0,0,0,0.1);
-            border-radius: 18px 18px 0 0;
-            overflow: hidden;
-            box-shadow: 0 -6px 30px rgba(13,110,253,0.1);
-        }
-        [data-theme="dark"] .mp-frame-mobile { border-color: rgba(255,255,255,0.08); }
+    /* ── Thumbnail strip ── */
+    .mp-thumbs {
+        display: flex;
+        gap: 10px;
+        padding: 16px 36px;
+        overflow-x: auto;
+        scrollbar-width: thin;
+    }
+    @media (max-width: 576px) { .mp-thumbs { padding: 14px 20px; } }
+    .mp-thumbs::-webkit-scrollbar { height: 3px; }
+    .mp-thumbs::-webkit-scrollbar-track { background: transparent; }
+    .mp-thumbs::-webkit-scrollbar-thumb { background: rgba(13,110,253,0.2); border-radius: 2px; }
 
-        .mp-mobile-bar {
-            height: 24px;
-            background: #f1f3f5;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            border-bottom: 1px solid rgba(0,0,0,0.07);
-        }
-        [data-theme="dark"] .mp-mobile-bar { background: #2d3148; }
+    .mp-thumb {
+        flex-shrink: 0;
+        width: 80px; height: 50px;
+        border-radius: 8px;
+        overflow: hidden;
+        border: 2px solid transparent;
+        cursor: pointer;
+        transition: all 0.2s;
+        background: rgba(13,110,253,0.06);
+        display: flex; align-items: center; justify-content: center;
+        position: relative;
+    }
+    .mp-thumb img { width: 100%; height: 100%; object-fit: cover; }
+    .mp-thumb:hover { border-color: rgba(13,110,253,0.4); transform: translateY(-2px); }
+    .mp-thumb.active { border-color: var(--primary); box-shadow: 0 0 0 2px rgba(13,110,253,0.2); }
+    [data-theme="dark"] .mp-thumb.active { border-color: #60a5fa; box-shadow: 0 0 0 2px rgba(96,165,250,0.2); }
 
-        .mp-notch { width: 40px; height: 10px; background: #fff; border-radius: 0 0 8px 8px; }
-        [data-theme="dark"] .mp-notch { background: #1e2130; }
+    .mp-thumb-add {
+        flex-shrink: 0;
+        width: 80px; height: 50px;
+        border-radius: 8px;
+        border: 2px dashed rgba(13,110,253,0.25);
+        background: rgba(13,110,253,0.04);
+        display: flex; flex-direction: column; align-items: center; justify-content: center;
+        gap: 3px;
+        cursor: pointer;
+        transition: all 0.2s;
+        color: var(--primary);
+        font-size: 0.65rem; font-weight: 600;
+    }
+    .mp-thumb-add:hover { background: rgba(13,110,253,0.1); border-color: var(--primary); }
+    .mp-thumb-add i { font-size: 1rem; }
 
-        /* ── Image area (shared) ── */
-        .mp-img-area {
-            width: 100%;
-            background: linear-gradient(135deg, rgba(13,110,253,0.04), rgba(13,202,240,0.04));
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            position: relative;
-            overflow: hidden;
-            cursor: pointer;
-        }
-        [data-theme="dark"] .mp-img-area {
-            background: linear-gradient(135deg, rgba(13,110,253,0.1), rgba(13,202,240,0.07));
-        }
+    input#mp-file-bulk { display: none; }
 
-        .mp-img-area-web    { aspect-ratio: 16 / 9; }
-        .mp-img-area-tablet { aspect-ratio: 4 / 3; }
-        .mp-img-area-mobile { aspect-ratio: 9 / 18; }
+    /* ── Feature grid ── */
+    .mp-features {
+        padding: 24px 36px 36px;
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 14px;
+        border-top: 1px solid rgba(0,0,0,0.06);
+    }
+    [data-theme="dark"] .mp-features { border-top-color: rgba(255,255,255,0.07); }
+    @media (max-width: 900px) { .mp-features { grid-template-columns: 1fr 1fr; } }
+    @media (max-width: 576px) { .mp-features { grid-template-columns: 1fr 1fr; padding: 20px; } }
 
-        /* Upload placeholder */
-        .mp-upload-placeholder {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 8px;
-            padding: 16px;
-            text-align: center;
-        }
-        .mp-upload-icon {
-            width: 44px; height: 44px;
-            border-radius: 10px;
-            background: rgba(13,110,253,0.08);
-            border: 2px dashed rgba(13,110,253,0.3);
-            display: flex; align-items: center; justify-content: center;
-            font-size: 1.2rem;
-        }
-        .mp-upload-text { font-size: 0.72rem; color: var(--text-muted); line-height: 1.5; }
-        .mp-upload-btn {
-            display: inline-block;
-            padding: 5px 14px;
-            border-radius: 100px;
-            background: rgba(13,110,253,0.1);
-            border: 1px solid rgba(13,110,253,0.25);
-            color: var(--primary);
-            font-size: 0.72rem;
-            font-weight: 600;
-            cursor: pointer;
-            transition: var(--transition);
-        }
-        .mp-upload-btn:hover { background: rgba(13,110,253,0.2); }
-
-        /* Preview image */
-        .mp-preview-img {
-            width: 100%; height: 100%;
-            object-fit: cover;
-            display: none;
-        }
-        .mp-preview-img.loaded { display: block; }
-
-        /* Hover overlay untuk re-upload */
-        .mp-img-area .mp-reupload-hint {
-            position: absolute; inset: 0;
-            background: rgba(13,110,253,0.75);
-            color: #fff;
-            display: flex; flex-direction: column;
-            align-items: center; justify-content: center;
-            gap: 4px;
-            font-size: 0.75rem; font-weight: 600;
-            opacity: 0;
-            transition: opacity 0.2s;
-        }
-        .mp-img-area:hover .mp-reupload-hint { opacity: 1; }
-
-        input.mp-file-input { display: none; }
-
-        /* ── Feature grid bawah ── */
-        .mp-features {
-            padding: 28px 36px 36px;
-            display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            gap: 14px;
-            border-top: 1px solid rgba(0,0,0,0.06);
-            margin-top: 36px;
-        }
-        [data-theme="dark"] .mp-features { border-top-color: rgba(255,255,255,0.07); }
-
-        @media (max-width: 900px) { .mp-features { grid-template-columns: 1fr 1fr; } }
-        @media (max-width: 576px) { .mp-features { grid-template-columns: 1fr 1fr; padding: 20px; } }
-
-        .mp-feat-item {
-            background: var(--bg-light);
-            border-radius: 12px;
-            padding: 16px 14px;
-            display: flex; flex-direction: column; gap: 6px;
-            transition: transform 0.2s;
-        }
-        .mp-feat-item:hover { transform: translateY(-3px); }
-        [data-theme="dark"] .mp-feat-item { background: #13151c; }
-
-        .mp-feat-icon { font-size: 1.3rem; }
-        .mp-feat-title { font-size: 0.85rem; font-weight: 700; }
-        .mp-feat-desc { font-size: 0.75rem; color: var(--text-muted); line-height: 1.5; }
-    </style>
+    .mp-feat-item { background: var(--bg-light); border-radius: 12px; padding: 16px 14px; display: flex; flex-direction: column; gap: 6px; transition: transform 0.2s; }
+    .mp-feat-item:hover { transform: translateY(-3px); }
+    [data-theme="dark"] .mp-feat-item { background: #13151c; }
+    .mp-feat-icon { font-size: 1.3rem; }
+    .mp-feat-title { font-size: 0.85rem; font-weight: 700; }
+    .mp-feat-desc { font-size: 0.75rem; color: var(--text-muted); line-height: 1.5; }
+</style>
 </head>
 
 <body class="index-page">
@@ -1925,158 +1875,200 @@
         </section>
         @endif
 
-        {{-- =====================================================
-             ★ TAMBAHAN 3: MY PROJECT — SIMORO SMANLI
-             ===================================================== --}}
-        <section id="my-project">
-            <div class="container">
+       {{-- =====================================================
+     ★ TAMBAHAN 3: MY PROJECT — SIMORO SMANLI (SLIDER)
+     ===================================================== --}}
+<section id="my-project">
+    <div class="container">
 
-                <div class="section-title" data-aos="fade-up">
-                    <h2>My Project</h2>
-                    <p>Tampilan SIMORO SMANLI di berbagai perangkat</p>
+        <div class="section-title" data-aos="fade-up">
+            <h2>My Project</h2>
+            <p>Tampilan SIMORO SMANLI — SMA Negeri 5 Morotai</p>
+        </div>
+
+        <div class="mp-card" data-aos="fade-up" data-aos-delay="100">
+
+            {{-- Header --}}
+            <div class="mp-card-header">
+                <div>
+                    <div class="mp-project-title">
+                        <i class="bi bi-mortarboard-fill me-2"></i>SIMORO SMANLI
+                    </div>
+                    <p class="mp-project-desc">
+                        Sistem Ujian Online resmi SMA Negeri 5 Morotai. Dibangun dengan Laravel + Bootstrap 5,
+                        mendukung multi-role (Admin, Guru, Siswa) dengan fitur timer real-time, anti-cheat,
+                        bank soal, dan analitik nilai.
+                    </p>
+                    <div class="mp-tags">
+                        <span class="mp-tag">Laravel</span>
+                        <span class="mp-tag">PHP</span>
+                        <span class="mp-tag mp-tag-green">MySQL</span>
+                        <span class="mp-tag mp-tag-orange">Bootstrap 5</span>
+                        <span class="mp-tag">Multi-Role</span>
+                        <span class="mp-tag mp-tag-green">Live</span>
+                    </div>
+                </div>
+                <div class="mp-status">
+                    <span class="mp-status-dot"></span>
+                    Project Aktif
+                </div>
+            </div>
+
+            {{-- Slider utama --}}
+            <div class="mp-slider-wrap" data-aos="fade-up" data-aos-delay="150">
+
+                {{-- Progress bar --}}
+                <div class="mp-progress"><div class="mp-progress-bar" id="mp-prog"></div></div>
+
+                {{-- Browser chrome --}}
+                <div class="mp-slider-chrome">
+                    <span class="mp-dot-r"></span>
+                    <span class="mp-dot-y"></span>
+                    <span class="mp-dot-g"></span>
+                    <div class="mp-url-bar">
+                        <span class="mp-url-text" id="mp-url-text">simoro.sman5morotai.sch.id</span>
+                    </div>
                 </div>
 
-                <div class="mp-card" data-aos="fade-up" data-aos-delay="100">
+                {{-- Slide track --}}
+                <div class="mp-slide-track-wrap" id="mp-track-wrap">
+                    <div class="mp-slide-track" id="mp-track">
 
-                    {{-- Header kartu --}}
-                    <div class="mp-card-header">
-                        <div>
-                            <div class="mp-project-title">
-                                <i class="bi bi-mortarboard-fill me-2"></i>SIMORO SMANLI
+                        {{-- 
+                            =========================================================
+                            SLIDE DEFAULT: gambar dari asset folder
+                            Ganti path sesuai nama file lo di /assets/img/simoro/
+                            Tambah/hapus <div class="mp-slide"> sesuai kebutuhan
+                            =========================================================
+                        --}}
+
+                        <div class="mp-slide">
+                            <img src="{{ asset('assets/img/simoro/dashboard.png') }}" alt="Dashboard SIMORO" loading="lazy"
+                                 onerror="this.closest('.mp-slide').querySelector('.mp-slide-placeholder').style.display='flex'; this.style.display='none';">
+                            <div class="mp-slide-placeholder" style="display:none; flex-direction:column; align-items:center; gap:8px; color:var(--text-muted);">
+                                <i class="bi bi-image" style="font-size:2rem; opacity:.4;"></i>
+                                <span style="font-size:.75rem;">dashboard.png</span>
                             </div>
-                            <p class="mp-project-desc">
-                                Sistem Ujian Online resmi SMA Negeri 5 Morotai. Dibangun dengan Laravel + Bootstrap 5,
-                                mendukung multi-role (Admin, Guru, Siswa) dengan fitur timer real-time, anti-cheat,
-                                bank soal, dan analitik nilai.
-                            </p>
-                            <div class="mp-tags">
-                                <span class="mp-tag">Laravel</span>
-                                <span class="mp-tag">PHP</span>
-                                <span class="mp-tag mp-tag-green">MySQL</span>
-                                <span class="mp-tag mp-tag-orange">Bootstrap 5</span>
-                                <span class="mp-tag">Multi-Role</span>
-                                <span class="mp-tag mp-tag-green">Live</span>
+                            <div class="mp-slide-label">Dashboard Utama</div>
+                        </div>
+
+                        <div class="mp-slide">
+                            <img src="{{ asset('assets/img/simoro/login.png') }}" alt="Halaman Login" loading="lazy"
+                                 onerror="this.closest('.mp-slide').querySelector('.mp-slide-placeholder').style.display='flex'; this.style.display='none';">
+                            <div class="mp-slide-placeholder" style="display:none; flex-direction:column; align-items:center; gap:8px; color:var(--text-muted);">
+                                <i class="bi bi-image" style="font-size:2rem; opacity:.4;"></i>
+                                <span style="font-size:.75rem;">login.png</span>
                             </div>
+                            <div class="mp-slide-label">Halaman Login</div>
                         </div>
-                        <div class="mp-status">
-                            <span class="mp-status-dot"></span>
-                            Project Aktif
+
+                        <div class="mp-slide">
+                            <img src="{{ asset('assets/img/simoro/ujian.png') }}" alt="Halaman Ujian" loading="lazy"
+                                 onerror="this.closest('.mp-slide').querySelector('.mp-slide-placeholder').style.display='flex'; this.style.display='none';">
+                            <div class="mp-slide-placeholder" style="display:none; flex-direction:column; align-items:center; gap:8px; color:var(--text-muted);">
+                                <i class="bi bi-image" style="font-size:2rem; opacity:.4;"></i>
+                                <span style="font-size:.75rem;">ujian.png</span>
+                            </div>
+                            <div class="mp-slide-label">Halaman Ujian</div>
                         </div>
+
+                        <div class="mp-slide">
+                            <img src="{{ asset('assets/img/simoro/soal.png') }}" alt="Bank Soal" loading="lazy"
+                                 onerror="this.closest('.mp-slide').querySelector('.mp-slide-placeholder').style.display='flex'; this.style.display='none';">
+                            <div class="mp-slide-placeholder" style="display:none; flex-direction:column; align-items:center; gap:8px; color:var(--text-muted);">
+                                <i class="bi bi-image" style="font-size:2rem; opacity:.4;"></i>
+                                <span style="font-size:.75rem;">soal.png</span>
+                            </div>
+                            <div class="mp-slide-label">Bank Soal</div>
+                        </div>
+
+                        <div class="mp-slide">
+                            <img src="{{ asset('assets/img/simoro/nilai.png') }}" alt="Rekap Nilai" loading="lazy"
+                                 onerror="this.closest('.mp-slide').querySelector('.mp-slide-placeholder').style.display='flex'; this.style.display='none';">
+                            <div class="mp-slide-placeholder" style="display:none; flex-direction:column; align-items:center; gap:8px; color:var(--text-muted);">
+                                <i class="bi bi-image" style="font-size:2rem; opacity:.4;"></i>
+                                <span style="font-size:.75rem;">nilai.png</span>
+                            </div>
+                            <div class="mp-slide-label">Rekap Nilai</div>
+                        </div>
+
+                        <div class="mp-slide">
+                            <img src="{{ asset('assets/img/simoro/guru.png') }}" alt="Panel Guru" loading="lazy"
+                                 onerror="this.closest('.mp-slide').querySelector('.mp-slide-placeholder').style.display='flex'; this.style.display='none';">
+                            <div class="mp-slide-placeholder" style="display:none; flex-direction:column; align-items:center; gap:8px; color:var(--text-muted);">
+                                <i class="bi bi-image" style="font-size:2rem; opacity:.4;"></i>
+                                <span style="font-size:.75rem;">guru.png</span>
+                            </div>
+                            <div class="mp-slide-label">Panel Guru</div>
+                        </div>
+
+                        <div class="mp-slide">
+                            <img src="{{ asset('assets/img/simoro/admin.png') }}" alt="Panel Admin" loading="lazy"
+                                 onerror="this.closest('.mp-slide').querySelector('.mp-slide-placeholder').style.display='flex'; this.style.display='none';">
+                            <div class="mp-slide-placeholder" style="display:none; flex-direction:column; align-items:center; gap:8px; color:var(--text-muted);">
+                                <i class="bi bi-image" style="font-size:2rem; opacity:.4;"></i>
+                                <span style="font-size:.75rem;">admin.png</span>
+                            </div>
+                            <div class="mp-slide-label">Panel Admin</div>
+                        </div>
+
+                        <div class="mp-slide">
+                            <img src="{{ asset('assets/img/simoro/mobile.png') }}" alt="Tampilan Mobile" loading="lazy"
+                                 onerror="this.closest('.mp-slide').querySelector('.mp-slide-placeholder').style.display='flex'; this.style.display='none';">
+                            <div class="mp-slide-placeholder" style="display:none; flex-direction:column; align-items:center; gap:8px; color:var(--text-muted);">
+                                <i class="bi bi-image" style="font-size:2rem; opacity:.4;"></i>
+                                <span style="font-size:.75rem;">mobile.png</span>
+                            </div>
+                            <div class="mp-slide-label">Tampilan Mobile</div>
+                        </div>
+
+                        {{-- Tambahkan slide baru di sini —
+                             copy paste blok <div class="mp-slide"> di atas --}}
+
                     </div>
 
-                    {{-- Device showcase --}}
-                    <div class="mp-devices">
+                    {{-- Prev / Next --}}
+                    <button class="mp-slide-btn mp-slide-btn-prev" id="mp-prev" aria-label="Sebelumnya">
+                        <i class="bi bi-chevron-left"></i>
+                    </button>
+                    <button class="mp-slide-btn mp-slide-btn-next" id="mp-next" aria-label="Selanjutnya">
+                        <i class="bi bi-chevron-right"></i>
+                    </button>
+                </div>
 
-                        {{-- WEB --}}
-                        <div class="mp-device-slot mp-device-web">
-                            <div class="mp-device-label">Desktop / Web</div>
-                            <div class="mp-frame-web">
-                                <div class="mp-browser-bar">
-                                    <span class="mp-dot mp-dot-r"></span>
-                                    <span class="mp-dot mp-dot-y"></span>
-                                    <span class="mp-dot mp-dot-g"></span>
-                                    <div class="mp-url-bar">
-                                        <span class="mp-url-text">simoro.sman5morotai.sch.id</span>
-                                    </div>
-                                </div>
-                                <div class="mp-img-area mp-img-area-web" id="mp-area-web">
-                                    <img class="mp-preview-img" id="mp-img-web" alt="Web Preview">
-                                    <div class="mp-reupload-hint">
-                                        <i class="bi bi-arrow-repeat" style="font-size:1.3rem;"></i>
-                                        <span>Ganti Gambar</span>
-                                    </div>
-                                    <div class="mp-upload-placeholder" id="mp-ph-web">
-                                        <div class="mp-upload-icon"><i class="bi bi-display"></i></div>
-                                        <div class="mp-upload-text">Upload screenshot<br><strong>Desktop / Web</strong></div>
-                                        <label class="mp-upload-btn" for="mp-file-web">
-                                            <i class="bi bi-upload me-1"></i> Pilih Gambar
-                                        </label>
-                                    </div>
-                                </div>
-                            </div>
-                            <input type="file" class="mp-file-input" id="mp-file-web" accept="image/*">
-                        </div>
+                {{-- Dots --}}
+                <div class="mp-dots" id="mp-dots"></div>
 
-                        {{-- TABLET --}}
-                        <div class="mp-device-slot">
-                            <div class="mp-device-label">Tablet</div>
-                            <div class="mp-frame-tablet">
-                                <div class="mp-tablet-bar">
-                                    <div class="mp-home-btn"></div>
-                                </div>
-                                <div class="mp-img-area mp-img-area-tablet" id="mp-area-tablet">
-                                    <img class="mp-preview-img" id="mp-img-tablet" alt="Tablet Preview">
-                                    <div class="mp-reupload-hint">
-                                        <i class="bi bi-arrow-repeat" style="font-size:1.1rem;"></i>
-                                        <span>Ganti Gambar</span>
-                                    </div>
-                                    <div class="mp-upload-placeholder" id="mp-ph-tablet">
-                                        <div class="mp-upload-icon"><i class="bi bi-tablet-landscape"></i></div>
-                                        <div class="mp-upload-text">Upload screenshot<br><strong>Tablet</strong></div>
-                                        <label class="mp-upload-btn" for="mp-file-tablet">
-                                            <i class="bi bi-upload me-1"></i> Pilih Gambar
-                                        </label>
-                                    </div>
-                                </div>
-                            </div>
-                            <input type="file" class="mp-file-input" id="mp-file-tablet" accept="image/*">
-                        </div>
+            </div>{{-- /mp-slider-wrap --}}
 
-                        {{-- MOBILE --}}
-                        <div class="mp-device-slot">
-                            <div class="mp-device-label">Mobile</div>
-                            <div class="mp-frame-mobile">
-                                <div class="mp-mobile-bar">
-                                    <div class="mp-notch"></div>
-                                </div>
-                                <div class="mp-img-area mp-img-area-mobile" id="mp-area-mobile">
-                                    <img class="mp-preview-img" id="mp-img-mobile" alt="Mobile Preview">
-                                    <div class="mp-reupload-hint">
-                                        <i class="bi bi-arrow-repeat" style="font-size:1rem;"></i>
-                                        <span style="font-size:.7rem;">Ganti</span>
-                                    </div>
-                                    <div class="mp-upload-placeholder" id="mp-ph-mobile">
-                                        <div class="mp-upload-icon"><i class="bi bi-phone"></i></div>
-                                        <div class="mp-upload-text">Screenshot<br><strong>Mobile</strong></div>
-                                        <label class="mp-upload-btn" for="mp-file-mobile">
-                                            <i class="bi bi-upload"></i> Upload
-                                        </label>
-                                    </div>
-                                </div>
-                            </div>
-                            <input type="file" class="mp-file-input" id="mp-file-mobile" accept="image/*">
-                        </div>
-
-                    </div>{{-- /mp-devices --}}
-
-                    {{-- Feature grid bawah --}}
-                    <div class="mp-features">
-                        <div class="mp-feat-item">
-                            <div class="mp-feat-icon">🔐</div>
-                            <div class="mp-feat-title">Multi-Role Auth</div>
-                            <div class="mp-feat-desc">Admin, Guru & Siswa dengan akses berbeda</div>
-                        </div>
-                        <div class="mp-feat-item">
-                            <div class="mp-feat-icon">⏱️</div>
-                            <div class="mp-feat-title">Timer Real-time</div>
-                            <div class="mp-feat-desc">Countdown & auto-submit saat waktu habis</div>
-                        </div>
-                        <div class="mp-feat-item">
-                            <div class="mp-feat-icon">📊</div>
-                            <div class="mp-feat-title">Analitik Nilai</div>
-                            <div class="mp-feat-desc">Grafik & statistik performa siswa</div>
-                        </div>
-                        <div class="mp-feat-item">
-                            <div class="mp-feat-icon">🛡️</div>
-                            <div class="mp-feat-title">Anti-Cheat</div>
-                            <div class="mp-feat-desc">Monitoring tab & fullscreen enforcement</div>
-                        </div>
-                    </div>
-
-                </div>{{-- /mp-card --}}
+            {{-- Feature grid --}}
+            <div class="mp-features">
+                <div class="mp-feat-item">
+                    <div class="mp-feat-icon">🔐</div>
+                    <div class="mp-feat-title">Multi-Role Auth</div>
+                    <div class="mp-feat-desc">Admin, Guru & Siswa dengan akses berbeda</div>
+                </div>
+                <div class="mp-feat-item">
+                    <div class="mp-feat-icon">⏱️</div>
+                    <div class="mp-feat-title">Timer Real-time</div>
+                    <div class="mp-feat-desc">Countdown & auto-submit saat waktu habis</div>
+                </div>
+                <div class="mp-feat-item">
+                    <div class="mp-feat-icon">📊</div>
+                    <div class="mp-feat-title">Analitik Nilai</div>
+                    <div class="mp-feat-desc">Grafik & statistik performa siswa</div>
+                </div>
+                <div class="mp-feat-item">
+                    <div class="mp-feat-icon">🛡️</div>
+                    <div class="mp-feat-title">Anti-Cheat</div>
+                    <div class="mp-feat-desc">Monitoring tab & fullscreen enforcement</div>
+                </div>
             </div>
-        </section>
-        {{-- ===== END MY PROJECT ===== --}}
+
+        </div>{{-- /mp-card --}}
+    </div>
+</section>
+{{-- ===== END MY PROJECT ===== --}}
 
         <!-- CONTACT -->
         <section id="contact">
@@ -2301,64 +2293,112 @@
     </script>
 
     {{-- =====================================================
-         ★ TAMBAHAN 4: DARK MODE + UPLOAD GAMBAR SCRIPT
-         ===================================================== --}}
-    <script>
-        // ── Dark Mode ──────────────────────────────────────────
-        (function () {
-            var html    = document.documentElement;
-            var btn     = document.getElementById('dm-toggle');
-            var STORAGE = 'simoro-theme';
-
-            // Terapkan tema tersimpan
-            var saved = localStorage.getItem(STORAGE);
-            if (saved) html.setAttribute('data-theme', saved);
-
-            if (btn) {
-                btn.addEventListener('click', function () {
-                    var isDark = html.getAttribute('data-theme') === 'dark';
-                    var next   = isDark ? 'light' : 'dark';
-                    html.setAttribute('data-theme', next);
-                    localStorage.setItem(STORAGE, next);
-                });
-            }
-        })();
-
-        // ── Upload Gambar Device ───────────────────────────────
-        (function () {
-            var slots = [
-                { file: 'mp-file-web',    img: 'mp-img-web',    ph: 'mp-ph-web',    area: 'mp-area-web' },
-                { file: 'mp-file-tablet', img: 'mp-img-tablet', ph: 'mp-ph-tablet', area: 'mp-area-tablet' },
-                { file: 'mp-file-mobile', img: 'mp-img-mobile', ph: 'mp-ph-mobile', area: 'mp-area-mobile' },
-            ];
-
-            slots.forEach(function (s) {
-                var fileEl = document.getElementById(s.file);
-                var imgEl  = document.getElementById(s.img);
-                var phEl   = document.getElementById(s.ph);
-                var areaEl = document.getElementById(s.area);
-
-                if (!fileEl || !imgEl || !phEl || !areaEl) return;
-
-                // Klik area gambar → buka file picker
-                areaEl.addEventListener('click', function () {
-                    fileEl.click();
-                });
-
-                fileEl.addEventListener('change', function () {
-                    var file = this.files[0];
-                    if (!file) return;
-                    var reader = new FileReader();
-                    reader.onload = function (e) {
-                        imgEl.src = e.target.result;
-                        imgEl.classList.add('loaded');
-                        phEl.style.display = 'none';
-                    };
-                    reader.readAsDataURL(file);
-                });
+     ★ TAMBAHAN 4: DARK MODE + SLIDER SCRIPT
+     ===================================================== --}}
+<script>
+    // ── Dark Mode ──────────────────────────────────────────
+    (function () {
+        var html    = document.documentElement;
+        var btn     = document.getElementById('dm-toggle');
+        var STORAGE = 'simoro-theme';
+        var saved   = localStorage.getItem(STORAGE);
+        if (saved) html.setAttribute('data-theme', saved);
+        if (btn) {
+            btn.addEventListener('click', function () {
+                var isDark = html.getAttribute('data-theme') === 'dark';
+                var next   = isDark ? 'light' : 'dark';
+                html.setAttribute('data-theme', next);
+                localStorage.setItem(STORAGE, next);
             });
-        })();
-    </script>
+        }
+    })();
+
+    // ── Slider My Project ──────────────────────────────────
+    (function () {
+        var track    = document.getElementById('mp-track');
+        var dotsWrap = document.getElementById('mp-dots');
+        var prevBtn  = document.getElementById('mp-prev');
+        var nextBtn  = document.getElementById('mp-next');
+        var progBar  = document.getElementById('mp-prog');
+
+        if (!track || !dotsWrap) return;
+
+        var slides   = track.querySelectorAll('.mp-slide');
+        var total    = slides.length;
+        var current  = 0;
+        var timer    = null;
+        var INTERVAL = 3000; // 3 detik
+
+        // Buat dots
+        slides.forEach(function (_, i) {
+            var dot = document.createElement('button');
+            dot.className = 'mp-dot-ind' + (i === 0 ? ' active' : '');
+            dot.setAttribute('aria-label', 'Slide ' + (i + 1));
+            dot.addEventListener('click', function () { goTo(i); resetTimer(); });
+            dotsWrap.appendChild(dot);
+        });
+
+        function updateDots() {
+            dotsWrap.querySelectorAll('.mp-dot-ind').forEach(function (d, i) {
+                d.classList.toggle('active', i === current);
+            });
+        }
+
+        function goTo(idx) {
+            current = (idx + total) % total;
+            track.style.transform = 'translateX(-' + (current * 100) + '%)';
+            updateDots();
+            // reset progress bar
+            if (progBar) {
+                progBar.classList.remove('running');
+                void progBar.offsetWidth; // reflow
+                progBar.classList.add('running');
+            }
+        }
+
+        function next() { goTo(current + 1); }
+        function prev() { goTo(current - 1); }
+
+        function startTimer() {
+            timer = setInterval(next, INTERVAL);
+        }
+
+        function resetTimer() {
+            clearInterval(timer);
+            startTimer();
+        }
+
+        if (prevBtn) prevBtn.addEventListener('click', function () { prev(); resetTimer(); });
+        if (nextBtn) nextBtn.addEventListener('click', function () { next(); resetTimer(); });
+
+        // Touch/swipe support
+        var touchStartX = 0;
+        var trackWrap   = document.getElementById('mp-track-wrap');
+        if (trackWrap) {
+            trackWrap.addEventListener('touchstart', function (e) {
+                touchStartX = e.changedTouches[0].screenX;
+            }, { passive: true });
+            trackWrap.addEventListener('touchend', function (e) {
+                var diff = touchStartX - e.changedTouches[0].screenX;
+                if (Math.abs(diff) > 40) {
+                    diff > 0 ? next() : prev();
+                    resetTimer();
+                }
+            }, { passive: true });
+        }
+
+        // Pause on hover
+        var sliderWrap = document.querySelector('.mp-slider-wrap');
+        if (sliderWrap) {
+            sliderWrap.addEventListener('mouseenter', function () { clearInterval(timer); if (progBar) { progBar.classList.remove('running'); } });
+            sliderWrap.addEventListener('mouseleave', function () { startTimer(); });
+        }
+
+        // Mulai
+        goTo(0);
+        startTimer();
+    })();
+</script>
 
 </body>
 </html>
