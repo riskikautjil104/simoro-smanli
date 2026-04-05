@@ -1953,7 +1953,7 @@
                         </div>
 
                         <div class="mp-slide">
-                            <img src="{{ asset('assets/img/simoro/mobile1.png) }}" alt="Halaman mobile" loading="lazy"
+                            <img src="{{ asset('assets/img/simoro/mobile1.png') }}" alt="Halaman mobile" loading="lazy"
                                  onerror="this.closest('.mp-slide').querySelector('.mp-slide-placeholder').style.display='flex'; this.style.display='none';">
                             <div class="mp-slide-placeholder" style="display:none; flex-direction:column; align-items:center; gap:8px; color:var(--text-muted);">
                                 <i class="bi bi-image" style="font-size:2rem; opacity:.4;"></i>
