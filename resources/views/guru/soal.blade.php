@@ -46,28 +46,36 @@
 .btn-header { display:inline-flex; align-items:center; gap:7px; background:rgba(255,255,255,0.2); color:#fff !important; border:1.5px solid rgba(255,255,255,0.45); padding:9px 20px; border-radius:50px; font-size:0.875rem; font-weight:600; backdrop-filter:blur(8px); cursor:pointer; transition:var(--transition); font-family:'Poppins',sans-serif; text-decoration:none; }
 .btn-header:hover { background:rgba(255,255,255,0.32); transform:translateY(-2px); color:#fff !important; }
 
-/* Aksi buttons */
 .btn-aksi { display:inline-flex; align-items:center; justify-content:center; width:30px; height:30px; border-radius:8px; border:none; cursor:pointer; transition:all .18s; font-size:0.82rem; }
 .btn-edit  { background:rgba(13,110,253,0.1); color:#0d6efd; }
 .btn-edit:hover  { background:#0d6efd; color:#fff; }
 .btn-hapus { background:rgba(220,53,69,0.1); color:#dc3545; }
 .btn-hapus:hover { background:#dc3545; color:#fff; }
 
-/* Modal overlay */
+/* Modal */
 .modal-overlay { display:none; position:fixed; inset:0; background:rgba(0,0,0,0.45); z-index:1050; align-items:center; justify-content:center; backdrop-filter:blur(3px); }
 .modal-overlay.active { display:flex; }
-.modal-box { background:#fff; border-radius:20px; width:100%; max-width:560px; max-height:90vh; overflow-y:auto; box-shadow:0 20px 60px rgba(0,0,0,0.2); animation:modalIn .22s ease; }
+.modal-box { background:#fff; border-radius:20px; width:100%; max-width:700px; max-height:92vh; overflow-y:auto; box-shadow:0 20px 60px rgba(0,0,0,0.2); animation:modalIn .22s ease; }
 @keyframes modalIn { from{transform:translateY(24px);opacity:0} to{transform:translateY(0);opacity:1} }
-.modal-head { padding:20px 24px 16px; border-bottom:1px solid var(--border-color,#e5e7eb); display:flex; align-items:center; justify-content:space-between; }
+.modal-head { padding:20px 24px 16px; border-bottom:1px solid var(--border-color,#e5e7eb); display:flex; align-items:center; justify-content:space-between; position:sticky; top:0; background:#fff; z-index:10; border-radius:20px 20px 0 0; }
 .modal-head h5 { font-weight:700; font-size:1rem; margin:0; }
 .modal-close { background:none; border:none; font-size:1.3rem; color:#aaa; cursor:pointer; line-height:1; }
 .modal-close:hover { color:#dc3545; }
 .modal-body { padding:20px 24px; }
-.modal-foot { padding:14px 24px 20px; display:flex; gap:10px; justify-content:flex-end; border-top:1px solid var(--border-color,#e5e7eb); }
+.modal-foot { padding:14px 24px 20px; display:flex; gap:10px; justify-content:flex-end; border-top:1px solid var(--border-color,#e5e7eb); position:sticky; bottom:0; background:#fff; border-radius:0 0 20px 20px; }
 
-/* Confirm delete dialog */
 .confirm-box { background:#fff; border-radius:20px; width:100%; max-width:380px; box-shadow:0 20px 60px rgba(0,0,0,0.2); animation:modalIn .22s ease; text-align:center; padding:32px 28px 24px; }
 .confirm-icon { width:64px; height:64px; background:rgba(220,53,69,0.1); border-radius:50%; display:inline-flex; align-items:center; justify-content:center; font-size:1.7rem; color:#dc3545; margin-bottom:14px; }
+
+/* CKEditor dalam modal */
+.modal-body .ck-editor__editable { min-height:130px; }
+.modal-body .ck.ck-editor { border-radius:10px; overflow:hidden; }
+
+/* Opsi input */
+.opsi-input-wrap { position:relative; }
+.opsi-label-badge { position:absolute; left:0; top:0; bottom:0; width:36px; display:flex; align-items:center; justify-content:center; background:linear-gradient(135deg,#0d6efd,#0dcaf0); color:#fff; font-weight:800; font-size:0.78rem; border-radius:10px 0 0 10px; pointer-events:none; z-index:1; }
+.opsi-input-wrap .form-control { padding-left:48px; border-radius:10px; border:1.5px solid var(--border-color,#dee2e6); font-size:0.85rem; height:40px; }
+.opsi-input-wrap .form-control:focus { border-color:#0d6efd; box-shadow:0 0 0 3px rgba(13,110,253,0.1); }
 </style>
 @endpush
 
@@ -91,21 +99,15 @@
         <div class="row g-3 align-items-end">
             <div class="col-md-3">
                 <label class="form-label">Kelas</label>
-                <select id="filter-kelas" class="form-select filter-select w-100">
-                    <option value="">Semua Kelas</option>
-                </select>
+                <select id="filter-kelas" class="form-select filter-select w-100"><option value="">Semua Kelas</option></select>
             </div>
             <div class="col-md-3">
                 <label class="form-label">Mata Pelajaran</label>
-                <select id="filter-mapel" class="form-select filter-select w-100">
-                    <option value="">Semua Mapel</option>
-                </select>
+                <select id="filter-mapel" class="form-select filter-select w-100"><option value="">Semua Mapel</option></select>
             </div>
             <div class="col-md-3">
                 <label class="form-label">Ujian</label>
-                <select id="filter-ujian" class="form-select filter-select w-100">
-                    <option value="">Semua Ujian</option>
-                </select>
+                <select id="filter-ujian" class="form-select filter-select w-100"><option value="">Semua Ujian</option></select>
             </div>
             <div class="col-md-3">
                 <label class="form-label">Cari Soal</label>
@@ -116,12 +118,8 @@
             </div>
         </div>
         <div class="mt-3">
-            <button id="btn-filter" class="btn btn-primary" style="border-radius:50px;padding:8px 22px;">
-                <i class="bi bi-search me-1"></i> Terapkan
-            </button>
-            <button id="btn-reset" class="btn btn-outline-secondary ms-2" style="border-radius:50px;padding:8px 20px;">
-                <i class="bi bi-arrow-counterclockwise me-1"></i> Reset
-            </button>
+            <button id="btn-filter" class="btn btn-primary" style="border-radius:50px;padding:8px 22px;"><i class="bi bi-search me-1"></i> Terapkan</button>
+            <button id="btn-reset" class="btn btn-outline-secondary ms-2" style="border-radius:50px;padding:8px 20px;"><i class="bi bi-arrow-counterclockwise me-1"></i> Reset</button>
             <span class="ms-3" style="font-size:0.82rem;color:var(--text-muted);">Menampilkan <span id="soal-shown">0</span> soal</span>
         </div>
     </div>
@@ -138,18 +136,13 @@
                     <th>Mata Pelajaran</th>
                     <th>Kelas</th>
                     <th>Ujian</th>
-                    <th>Opsi A</th>
-                    <th>Opsi B</th>
-                    <th>Opsi C</th>
-                    <th>Opsi D</th>
+                    <th>Opsi A</th><th>Opsi B</th><th>Opsi C</th><th>Opsi D</th>
                     <th>Kunci</th>
                     <th style="width:80px;">Aksi</th>
                 </tr>
             </thead>
             <tbody id="soal-tbody">
-                <tr><td colspan="12">
-                    <div class="empty-state"><div class="empty-icon"><i class="bi bi-hourglass-split"></i></div><h6>Memuat data...</h6></div>
-                </td></tr>
+                <tr><td colspan="12"><div class="empty-state"><div class="empty-icon"><i class="bi bi-hourglass-split"></i></div><h6>Memuat data...</h6></div></td></tr>
             </tbody>
         </table>
     </div>
@@ -164,53 +157,77 @@
         </div>
         <div class="modal-body">
             <input type="hidden" id="edit-id">
+
+            {{-- Pertanyaan — CKEditor --}}
             <div class="mb-3">
-                <label class="form-label fw-600">Pertanyaan <span class="text-danger">*</span></label>
-                <textarea id="edit-pertanyaan" class="form-control" rows="3" placeholder="Tulis pertanyaan..."></textarea>
+                <label class="form-label fw-semibold">Pertanyaan <span class="text-danger">*</span></label>
+                <div id="edit-ck-container"></div>
             </div>
+
             <div class="row g-3 mb-3">
-                <div class="col-md-6">
-                    <label class="form-label fw-600">Tipe Soal <span class="text-danger">*</span></label>
-                    <select id="edit-type" class="form-select filter-select w-100" onchange="toggleOpsi(this.value)">
-    <option value="multiple_choice">Pilihan Ganda</option>
-    <option value="essay">Essay</option>
-</select>
+                <div class="col-md-4">
+                    <label class="form-label fw-semibold">Tipe Soal <span class="text-danger">*</span></label>
+                    <select id="edit-type" class="form-select" style="border-radius:10px;" onchange="toggleOpsiEdit(this.value)">
+                        <option value="multiple_choice">Pilihan Ganda</option>
+                        <option value="essay">Essay</option>
+                    </select>
                 </div>
-                <div class="col-md-6">
-                    <label class="form-label fw-600">Kunci Jawaban</label>
-                    <input type="text" id="edit-jawaban_benar" class="form-control" style="border-radius:50px;" placeholder="A / B / C / D">
+                <div class="col-md-4">
+                    <label class="form-label fw-semibold">Mata Pelajaran <span class="text-danger">*</span></label>
+                    <select id="edit-subject_id" class="form-select" style="border-radius:10px;"></select>
                 </div>
-            </div>
-            <div id="opsi-wrapper">
-                <div class="row g-2 mb-2">
-                    <div class="col-md-6">
-                        <label class="form-label">Opsi A</label>
-                        <input type="text" id="edit-opsi_a" class="form-control" style="border-radius:10px;" placeholder="Opsi A">
-                    </div>
-                    <div class="col-md-6">
-                        <label class="form-label">Opsi B</label>
-                        <input type="text" id="edit-opsi_b" class="form-control" style="border-radius:10px;" placeholder="Opsi B">
-                    </div>
-                </div>
-                <div class="row g-2">
-                    <div class="col-md-6">
-                        <label class="form-label">Opsi C</label>
-                        <input type="text" id="edit-opsi_c" class="form-control" style="border-radius:10px;" placeholder="Opsi C">
-                    </div>
-                    <div class="col-md-6">
-                        <label class="form-label">Opsi D</label>
-                        <input type="text" id="edit-opsi_d" class="form-control" style="border-radius:10px;" placeholder="Opsi D">
-                    </div>
+                <div class="col-md-4">
+                    <label class="form-label fw-semibold">Kelas <span class="text-danger">*</span></label>
+                    <select id="edit-kelas_id" class="form-select" style="border-radius:10px;" onchange="filterUjianByKelas(this.value)">
+                        <option value="">-- Pilih Kelas --</option>
+                    </select>
                 </div>
             </div>
-            <div class="row g-3 mt-1">
-                <div class="col-md-6">
-                    <label class="form-label fw-600">Mata Pelajaran <span class="text-danger">*</span></label>
-                    <select id="edit-subject_id" class="form-select filter-select w-100"></select>
+
+            <div class="mb-3">
+                <label class="form-label fw-semibold">Ujian <span class="text-danger">*</span></label>
+                <select id="edit-exam_id" class="form-select" style="border-radius:10px;">
+                    <option value="">-- Pilih Kelas dulu --</option>
+                </select>
+            </div>
+
+            <div id="edit-opsi-wrapper">
+                <label class="form-label fw-semibold">Opsi Jawaban</label>
+                <div class="row g-2 mb-3">
+                    <div class="col-md-6">
+                        <div class="opsi-input-wrap">
+                            <div class="opsi-label-badge">A</div>
+                            <input type="text" id="edit-opsi_a" class="form-control" placeholder="Opsi A">
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="opsi-input-wrap">
+                            <div class="opsi-label-badge">B</div>
+                            <input type="text" id="edit-opsi_b" class="form-control" placeholder="Opsi B">
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="opsi-input-wrap">
+                            <div class="opsi-label-badge">C</div>
+                            <input type="text" id="edit-opsi_c" class="form-control" placeholder="Opsi C">
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="opsi-input-wrap">
+                            <div class="opsi-label-badge">D</div>
+                            <input type="text" id="edit-opsi_d" class="form-control" placeholder="Opsi D">
+                        </div>
+                    </div>
                 </div>
-                <div class="col-md-6">
-                    <label class="form-label fw-600">Ujian <span class="text-danger">*</span></label>
-                    <select id="edit-exam_id" class="form-select filter-select w-100"></select>
+                <div style="max-width:200px;">
+                    <label class="form-label fw-semibold">Kunci Jawaban</label>
+                    <select id="edit-jawaban_benar" class="form-select" style="border-radius:50px;">
+                        <option value="">Pilih</option>
+                        <option value="A">A</option>
+                        <option value="B">B</option>
+                        <option value="C">C</option>
+                        <option value="D">D</option>
+                    </select>
                 </div>
             </div>
         </div>
@@ -227,7 +244,7 @@
 <div class="modal-overlay" id="modal-hapus">
     <div class="confirm-box">
         <div class="confirm-icon"><i class="bi bi-trash3"></i></div>
-        <h6 class="fw-700 mb-2">Hapus Soal?</h6>
+        <h6 class="fw-bold mb-2">Hapus Soal?</h6>
         <p style="font-size:0.85rem;color:#6c757d;margin-bottom:20px;">Soal ini akan dihapus permanen dan tidak dapat dikembalikan.</p>
         <input type="hidden" id="hapus-id">
         <div class="d-flex gap-2 justify-content-center">
@@ -242,31 +259,70 @@
 @endsection
 
 @push('scripts')
+<script src="https://cdn.ckeditor.com/ckeditor5/41.4.2/classic/ckeditor.js"></script>
 <script>
 var soalData     = [];
 var examsData    = [];
 var subjectsData = [];
 var kelasData    = [];
+var editCKEditor = null; // satu instance CKEditor untuk modal edit
 
-/* ─── helpers ─── */
+/* ─── Upload Adapter ─── */
+class CustomUploadAdapter {
+    constructor(loader) { this.loader = loader; }
+    upload() {
+        return this.loader.file.then(file => new Promise((resolve, reject) => {
+            const fd = new FormData();
+            fd.append('upload', file);
+            fetch('/guru/upload-image', { method:'POST', headers:{'X-CSRF-TOKEN': getCsrf()}, body:fd })
+            .then(r => r.json())
+            .then(d => d.url ? resolve({ default: d.url }) : reject('Upload failed'))
+            .catch(reject);
+        }));
+    }
+    abort() {}
+}
+function UploadAdapterPlugin(editor) {
+    editor.plugins.get('FileRepository').createUploadAdapter = loader => new CustomUploadAdapter(loader);
+}
+var CK_CONFIG = {
+    language: 'id',
+    toolbar: { items:['bold','italic','|','numberedList','bulletedList','|','link','imageUpload','insertTable','|','undo','redo'], shouldNotGroupWhenFull:true },
+    extraPlugins: [UploadAdapterPlugin]
+};
+
+/* ─── Helpers ─── */
+function getCsrf() {
+    var m = document.querySelector('meta[name="csrf-token"]');
+    return m ? m.content : '';
+}
 function tipeBadge(type) {
     var t = (type||'').toLowerCase();
     if (t === 'essay') return '<span class="badge-tipe badge-essay"><i class="bi bi-pencil-square"></i> Esai</span>';
     return '<span class="badge-tipe badge-pg"><i class="bi bi-ui-radios"></i> PG</span>';
 }
-
-
-function csrfToken() {
-    return document.querySelector('meta[name="csrf-token"]') ? document.querySelector('meta[name="csrf-token"]').content : '';
+function toggleOpsiEdit(type) {
+    document.getElementById('edit-opsi-wrapper').style.display = (type === 'essay') ? 'none' : '';
 }
 
-function toggleOpsi(type) {
-    var wrap = document.getElementById('opsi-wrapper');
-    if (!wrap) return;
-    wrap.style.display = (type === 'essay') ? 'none' : '';
+/* ─── Filter ujian by kelas di modal ─── */
+function filterUjianByKelas(kelasId) {
+    var uSel       = document.getElementById('edit-exam_id');
+    var currentVal = uSel.dataset.current || '';
+    uSel.innerHTML = '<option value="">-- Pilih Ujian --</option>';
+    var list = kelasId
+        ? examsData.filter(function(e){ return e.school_class && e.school_class.id == kelasId; })
+        : examsData;
+    list.forEach(function(e){
+        var opt = document.createElement('option');
+        opt.value = e.id;
+        opt.textContent = e.title || e.nama || '';
+        if (e.id == currentVal) opt.selected = true;
+        uSel.appendChild(opt);
+    });
 }
 
-/* ─── render table ─── */
+/* ─── Render table ─── */
 function renderTable(data) {
     var tbody = document.getElementById('soal-tbody');
     document.getElementById('soal-count').textContent = soalData.length + ' soal';
@@ -276,15 +332,14 @@ function renderTable(data) {
         tbody.innerHTML = '<tr><td colspan="12"><div class="empty-state"><div class="empty-icon"><i class="bi bi-inbox"></i></div><h6>Data tidak ditemukan</h6><p>Coba ubah filter atau tambah soal baru</p></div></td></tr>';
         return;
     }
-
     var rows = '';
     data.forEach(function(s, idx) {
-        var ujian   = examsData.find(function(e){ return e.id === s.exam_id; });
-        var kelasNm = ujian && ujian.school_class ? ujian.school_class.name : '-';
-        var ujianNm = ujian ? ujian.title : '-';
-        var mapelNm = s.subject ? s.subject.name : '-';
-        var pertanyaan = s.pertanyaan || s.question_text || '-';
-        var kunci   = s.jawaban_benar || s.answer_key || '';
+        var ujian      = examsData.find(function(e){ return e.id === s.exam_id; });
+        var kelasNm    = ujian && ujian.school_class ? ujian.school_class.name : '-';
+        var ujianNm    = ujian ? (ujian.title||ujian.nama||'-') : '-';
+        var mapelNm    = s.subject ? s.subject.name : '-';
+        var pertanyaan = (s.pertanyaan || s.question_text || '-').replace(/<[^>]*>/g, '');
+        var kunci      = s.jawaban_benar || s.answer_key || '';
 
         rows += '<tr>' +
             '<td>' + (idx+1) + '</td>' +
@@ -307,24 +362,17 @@ function renderTable(data) {
     tbody.innerHTML = rows;
 }
 
-/* ─── filter ─── */
+/* ─── Filter ─── */
 function applyFilters() {
-    var kelasId = document.getElementById('filter-kelas').value;
-    var mapelId = document.getElementById('filter-mapel').value;
-    var ujianId = document.getElementById('filter-ujian').value;
-    var q       = document.getElementById('searchSoal').value.toLowerCase().trim();
+    var kelasId  = document.getElementById('filter-kelas').value;
+    var mapelId  = document.getElementById('filter-mapel').value;
+    var ujianId  = document.getElementById('filter-ujian').value;
+    var q        = document.getElementById('searchSoal').value.toLowerCase().trim();
     var filtered = soalData;
-
-    if (kelasId) filtered = filtered.filter(function(s) {
-        var ujian = examsData.find(function(e){ return e.id === s.exam_id; });
-        return ujian && ujian.school_class && ujian.school_class.id == kelasId;
-    });
-    if (mapelId) filtered = filtered.filter(function(s){ return s.subject_id == mapelId; });
-    if (ujianId) filtered = filtered.filter(function(s){ return s.exam_id == ujianId; });
-    if (q) filtered = filtered.filter(function(s){
-        return (s.pertanyaan||s.question_text||'').toLowerCase().includes(q);
-    });
-
+    if (kelasId) filtered = filtered.filter(function(s){ var u=examsData.find(function(e){return e.id===s.exam_id;}); return u&&u.school_class&&u.school_class.id==kelasId; });
+    if (mapelId) filtered = filtered.filter(function(s){ return s.subject_id==mapelId; });
+    if (ujianId) filtered = filtered.filter(function(s){ return s.exam_id==ujianId; });
+    if (q)       filtered = filtered.filter(function(s){ return (s.pertanyaan||s.question_text||'').replace(/<[^>]*>/g,'').toLowerCase().includes(q); });
     renderTable(filtered);
 }
 
@@ -333,16 +381,17 @@ function openEdit(id) {
     var s = soalData.find(function(x){ return x.id === id; });
     if (!s) return;
 
-    document.getElementById('edit-id').value          = s.id;
-    document.getElementById('edit-pertanyaan').value  = s.pertanyaan || s.question_text || '';
-    document.getElementById('edit-type').value        = s.type || 'pg';
+    // Isi field sederhana
+    document.getElementById('edit-id').value           = s.id;
+    document.getElementById('edit-type').value         = s.type || 'multiple_choice';
+    document.getElementById('edit-opsi_a').value       = s.opsi_a || '';
+    document.getElementById('edit-opsi_b').value       = s.opsi_b || '';
+    document.getElementById('edit-opsi_c').value       = s.opsi_c || '';
+    document.getElementById('edit-opsi_d').value       = s.opsi_d || '';
     document.getElementById('edit-jawaban_benar').value = s.jawaban_benar || s.answer_key || '';
-    document.getElementById('edit-opsi_a').value      = s.opsi_a || '';
-    document.getElementById('edit-opsi_b').value      = s.opsi_b || '';
-    document.getElementById('edit-opsi_c').value      = s.opsi_c || '';
-    document.getElementById('edit-opsi_d').value      = s.opsi_d || '';
+    toggleOpsiEdit(s.type || 'multiple_choice');
 
-    // Populate selects
+    // Populate mapel
     var mSel = document.getElementById('edit-subject_id');
     mSel.innerHTML = '';
     subjectsData.forEach(function(m){
@@ -352,17 +401,45 @@ function openEdit(id) {
         mSel.appendChild(opt);
     });
 
-    var uSel = document.getElementById('edit-exam_id');
-    uSel.innerHTML = '';
-    examsData.forEach(function(e){
+    // Populate kelas
+    var kSel = document.getElementById('edit-kelas_id');
+    kSel.innerHTML = '<option value="">-- Pilih Kelas --</option>';
+    kelasData.forEach(function(k){
         var opt = document.createElement('option');
-        opt.value = e.id; opt.textContent = e.title || e.nama || '';
-        if (e.id == s.exam_id) opt.selected = true;
-        uSel.appendChild(opt);
+        opt.value = k.id; opt.textContent = k.name;
+        kSel.appendChild(opt);
     });
 
-    toggleOpsi(s.type || 'pg');
+    // Set kelas dari ujian soal ini
+    var ujian   = examsData.find(function(e){ return e.id === s.exam_id; });
+    var kelasId = ujian && ujian.school_class ? ujian.school_class.id : '';
+    kSel.value  = kelasId;
+
+    // Populate ujian (filtered by kelas)
+    var uSel = document.getElementById('edit-exam_id');
+    uSel.dataset.current = s.exam_id;
+    filterUjianByKelas(kelasId);
+    // set value setelah filter
+    setTimeout(function(){ uSel.value = s.exam_id; }, 0);
+
+    // Tampilkan modal
     document.getElementById('modal-edit').classList.add('active');
+
+    // Init / update CKEditor
+    var pertanyaan = s.pertanyaan || s.question_text || '';
+    var container  = document.getElementById('edit-ck-container');
+
+    if (editCKEditor) {
+        editCKEditor.setData(pertanyaan);
+    } else {
+        container.innerHTML = '';
+        ClassicEditor.create(container, CK_CONFIG)
+        .then(function(editor) {
+            editCKEditor = editor;
+            editor.setData(pertanyaan);
+        })
+        .catch(function(err){ console.error('CKEditor init error:', err); });
+    }
 }
 
 function closeEdit() {
@@ -372,36 +449,34 @@ function closeEdit() {
 function saveEdit() {
     var id  = document.getElementById('edit-id').value;
     var btn = document.getElementById('btn-save-edit');
+
+    var pertanyaan = editCKEditor ? editCKEditor.getData() : '';
+    if (!pertanyaan.trim()) { showToast('Pertanyaan tidak boleh kosong.', 'danger'); return; }
+
+    var examId = document.getElementById('edit-exam_id').value;
+    if (!examId) { showToast('Pilih ujian terlebih dahulu.', 'danger'); return; }
+
     btn.disabled = true;
     btn.innerHTML = '<span class="spinner-border spinner-border-sm me-1"></span> Menyimpan...';
 
-    var payload = {
-        // ❌ hapus baris _method: 'PUT'
-        pertanyaan:    document.getElementById('edit-pertanyaan').value,
-        type:          document.getElementById('edit-type').value,
-        jawaban_benar: document.getElementById('edit-jawaban_benar').value,
-        opsi_a:        document.getElementById('edit-opsi_a').value,
-        opsi_b:        document.getElementById('edit-opsi_b').value,
-        opsi_c:        document.getElementById('edit-opsi_c').value,
-        opsi_d:        document.getElementById('edit-opsi_d').value,
-        subject_id:    document.getElementById('edit-subject_id').value,
-        exam_id:       document.getElementById('edit-exam_id').value,
-    };
-
     fetch('/guru/soal/' + id, {
-        method: 'POST',  // tetap POST
-        headers: {
-            'Content-Type': 'application/json',
-            'Accept':        'application/json',
-            'X-CSRF-TOKEN':  csrfToken(),
-        },
-        body: JSON.stringify(payload),
+        method: 'POST',
+        headers: { 'Content-Type':'application/json', 'Accept':'application/json', 'X-CSRF-TOKEN': getCsrf() },
+        body: JSON.stringify({
+            pertanyaan:    pertanyaan,
+            type:          document.getElementById('edit-type').value,
+            jawaban_benar: document.getElementById('edit-jawaban_benar').value,
+            opsi_a:        document.getElementById('edit-opsi_a').value,
+            opsi_b:        document.getElementById('edit-opsi_b').value,
+            opsi_c:        document.getElementById('edit-opsi_c').value,
+            opsi_d:        document.getElementById('edit-opsi_d').value,
+            subject_id:    document.getElementById('edit-subject_id').value,
+            exam_id:       examId,
+        }),
     })
-
     .then(function(r){ return r.json(); })
     .then(function(res) {
         if (res.success) {
-            // Update local data
             var idx = soalData.findIndex(function(x){ return x.id == id; });
             if (idx !== -1) soalData[idx] = res.data;
             applyFilters();
@@ -412,10 +487,7 @@ function saveEdit() {
         }
     })
     .catch(function(){ showToast('Terjadi kesalahan server.', 'danger'); })
-    .finally(function(){
-        btn.disabled = false;
-        btn.innerHTML = '<i class="bi bi-check-lg me-1"></i> Simpan';
-    });
+    .finally(function(){ btn.disabled=false; btn.innerHTML='<i class="bi bi-check-lg me-1"></i> Simpan'; });
 }
 
 /* ─── HAPUS ─── */
@@ -423,11 +495,9 @@ function openHapus(id) {
     document.getElementById('hapus-id').value = id;
     document.getElementById('modal-hapus').classList.add('active');
 }
-
 function closeHapus() {
     document.getElementById('modal-hapus').classList.remove('active');
 }
-
 function confirmHapus() {
     var id  = document.getElementById('hapus-id').value;
     var btn = document.getElementById('btn-confirm-hapus');
@@ -436,10 +506,7 @@ function confirmHapus() {
 
     fetch('/guru/soal/' + id, {
         method: 'DELETE',
-        headers: {
-            'Accept':       'application/json',
-            'X-CSRF-TOKEN': csrfToken(),
-        },
+        headers: { 'Accept':'application/json', 'X-CSRF-TOKEN': getCsrf() },
     })
     .then(function(r){ return r.json(); })
     .then(function(res) {
@@ -449,33 +516,28 @@ function confirmHapus() {
             closeHapus();
             showToast('Soal berhasil dihapus.', 'success');
         } else {
-            showToast('Gagal menghapus. ' + (res.message||''), 'danger');
+            showToast(res.message || 'Gagal menghapus.', 'danger');
         }
     })
     .catch(function(){ showToast('Terjadi kesalahan server.', 'danger'); })
-    .finally(function(){
-        btn.disabled = false;
-        btn.innerHTML = '<i class="bi bi-trash me-1"></i> Ya, Hapus';
-    });
+    .finally(function(){ btn.disabled=false; btn.innerHTML='<i class="bi bi-trash me-1"></i> Ya, Hapus'; });
 }
 
-/* ─── Toast notifikasi ─── */
+/* ─── Toast ─── */
 function showToast(msg, type) {
-    var id = 'toast-' + Date.now();
     var color = type === 'success' ? '#198754' : '#dc3545';
     var icon  = type === 'success' ? 'bi-check-circle-fill' : 'bi-x-circle-fill';
     var el = document.createElement('div');
-    el.id = id;
-    el.style.cssText = 'position:fixed;bottom:24px;right:24px;z-index:9999;background:#fff;border-radius:12px;padding:12px 18px;box-shadow:0 8px 32px rgba(0,0,0,0.15);display:flex;align-items:center;gap:10px;font-size:0.875rem;font-weight:600;border-left:4px solid ' + color + ';animation:modalIn .22s ease;min-width:260px;';
-    el.innerHTML = '<i class="bi ' + icon + '" style="color:' + color + ';font-size:1.1rem;"></i>' + msg;
+    el.style.cssText = 'position:fixed;bottom:24px;right:24px;z-index:9999;background:#fff;border-radius:12px;padding:12px 18px;box-shadow:0 8px 32px rgba(0,0,0,0.15);display:flex;align-items:center;gap:10px;font-size:0.875rem;font-weight:600;border-left:4px solid '+color+';animation:modalIn .22s ease;min-width:260px;';
+    el.innerHTML = '<i class="bi ' + icon + '" style="color:'+color+';font-size:1.1rem;"></i>' + msg;
     document.body.appendChild(el);
-    setTimeout(function(){ var t = document.getElementById(id); if(t) t.remove(); }, 3500);
+    setTimeout(function(){ if(el.parentNode) el.remove(); }, 3500);
 }
 
-/* ─── close modal on overlay click ─── */
-['modal-edit','modal-hapus'].forEach(function(mid) {
+/* ─── Close overlay on backdrop click ─── */
+['modal-edit','modal-hapus'].forEach(function(mid){
     document.getElementById(mid).addEventListener('click', function(e){
-        if (e.target === this) { this.classList.remove('active'); }
+        if (e.target === this) this.classList.remove('active');
     });
 });
 
@@ -487,10 +549,10 @@ document.addEventListener('DOMContentLoaded', function () {
         subjectsData = filter.subjects || [];
         examsData    = filter.exams    || [];
 
-        var kelasSet = new Map();
-        subjectsData.forEach(function(m){ (m.classes||[]).forEach(function(k){ kelasSet.set(k.id, k.name); }); });
-        examsData.forEach(function(e){ if(e.school_class) kelasSet.set(e.school_class.id, e.school_class.name); });
-        kelasData = Array.from(kelasSet, function(e){ return {id:e[0],name:e[1]}; });
+        var kelasMap = new Map();
+        subjectsData.forEach(function(m){ (m.classes||[]).forEach(function(k){ kelasMap.set(k.id, k.name); }); });
+        examsData.forEach(function(e){ if(e.school_class) kelasMap.set(e.school_class.id, e.school_class.name); });
+        kelasData = Array.from(kelasMap, function(e){ return {id:e[0], name:e[1]}; });
 
         var kSel = document.getElementById('filter-kelas');
         kelasData.forEach(function(k){ kSel.innerHTML += '<option value="'+k.id+'">'+k.name+'</option>'; });
@@ -504,23 +566,19 @@ document.addEventListener('DOMContentLoaded', function () {
         return fetch('/guru/soal/list', { headers:{'Accept':'application/json'} });
     })
     .then(function(r){ return r.ok ? r.json() : []; })
-    .then(function(data) { soalData = data; renderTable(data); })
-    .catch(function() {
+    .then(function(data){ soalData = data; renderTable(data); })
+    .catch(function(){
         document.getElementById('soal-tbody').innerHTML = '<tr><td colspan="12"><div class="empty-state"><div class="empty-icon" style="background:rgba(220,53,69,.08);color:#dc3545;"><i class="bi bi-exclamation-circle"></i></div><h6>Gagal memuat data</h6></div></td></tr>';
     });
 
     document.getElementById('btn-filter').addEventListener('click', applyFilters);
     document.getElementById('searchSoal').addEventListener('input', applyFilters);
-    document.getElementById('btn-reset').addEventListener('click', function() {
+    document.getElementById('btn-reset').addEventListener('click', function(){
         document.getElementById('filter-kelas').value = '';
         document.getElementById('filter-mapel').value = '';
         document.getElementById('filter-ujian').value = '';
         document.getElementById('searchSoal').value   = '';
         renderTable(soalData);
-    });
-
-    document.getElementById('edit-type').addEventListener('change', function(){
-        toggleOpsi(this.value);
     });
 });
 </script>
