@@ -85,7 +85,7 @@
         // Route::get('hasil', ...)->name('hasil');
         Route::view('mapel', 'guru.mapel')->name('mapel');
         Route::get('mapel/list', [\App\Http\Controllers\Guru\MapelController::class, 'index'])->name('mapel.list');
-        Route::view('soal', 'guru.soal')->name('soal');
+        
         Route::view('soal/create', 'guru.soal-create')->name('soal.create');
         Route::get('soal/list', [\App\Http\Controllers\Guru\SoalController::class, 'index'])->name('soal.list');
         Route::post('soal/store', [\App\Http\Controllers\Guru\SoalStoreController::class, 'store'])->name('soal.store');
@@ -100,6 +100,10 @@
         Route::view('hasil', 'guru.hasil')->name('hasil');
         Route::get('hasil/list', [\App\Http\Controllers\Guru\HasilController::class, 'index'])->name('hasil.list');
         Route::post('ujian/{ujianId}/peserta/{userId}/nilai-per-soal', [\App\Http\Controllers\Guru\UjianController::class, 'simpanNilaiPerSoal'])->name('ujian.simpanNilaiPerSoal');
+        Route::get('soal/{id}',    [\App\Http\Controllers\Guru\SoalController::class, 'show'])   ->name('soal.show');
+        Route::post('soal/{id}',   [\App\Http\Controllers\Guru\SoalController::class, 'update']) ->name('soal.update');
+Route::delete('soal/{id}', [\App\Http\Controllers\Guru\SoalController::class, 'destroy'])->name('soal.destroy');
+Route::view('soal', 'guru.soal')->name('soal');
     });
     // Route dashboard siswa
     // Route::middleware(['auth', 'verified', 'role:student'])->prefix('siswa')->name('siswa.')->group(function () {
