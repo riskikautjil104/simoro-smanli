@@ -138,7 +138,7 @@ Route::view('soal', 'guru.soal')->name('soal');
         Route::get('ujian/{id}', [\App\Http\Controllers\Siswa\DashboardController::class, 'ujianDetail'])->name('ujian.detail');
         Route::post('ujian/{id}/reapply', [\App\Http\Controllers\Siswa\DashboardController::class, 'reapplyUjian'])->name('ujian.reapply');
         Route::get('ujian/{id}/hasil', [\App\Http\Controllers\Siswa\DashboardController::class, 'cetakHasilUjian'])->name('ujian.hasil');
-        Route::get('ujian/{id}/hasil/pdf', [\App\Http\Controllers\Siswa\HasilUjianPdfController::class, 'hasilPdf'])->name('ujian.hasil.pdf') ->middleware('signed');
+        Route::get('ujian/{id}/hasil/pdf', [\App\Http\Controllers\Siswa\HasilUjianPdfController::class, 'hasilPdf'])->name('ujian.hasil.pdf');
         Route::post('ujian/{id}/submit', [\App\Http\Controllers\Siswa\DashboardController::class, 'submitUjian'])->name('ujian.submit');
     });
 
