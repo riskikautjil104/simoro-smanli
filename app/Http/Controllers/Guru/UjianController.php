@@ -5,6 +5,9 @@ namespace App\Http\Controllers\Guru;
 use App\Http\Controllers\Controller;
 use App\Models\Exam;
 use App\Models\Subject;
+use App\Models\ExamSession;
+use App\Models\StudentAnswer;
+use App\Models\User;
 use Illuminate\Http\Request;
 
 class UjianController extends Controller
@@ -65,7 +68,7 @@ class UjianController extends Controller
             return response()->json(['message' => 'Ujian tidak ditemukan atau bukan milik Anda'], 404);
         }
 
-ExamSession::with(['user.class'])
+$results = ExamSession::with(['user'])
             ->where('exam_id', $exam->id)
             ->get()
             ->map(function ($session) {
@@ -84,6 +87,7 @@ ExamSession::with(['user.class'])
     }
 
     // Lihat jawaban siswa
+
     public function jawaban($ujianId, $userId, Request $request)
     {
         $user = $request->user();

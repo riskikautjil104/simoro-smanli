@@ -525,6 +525,11 @@
             .then(function(data) {
                 ujianList = data;
                 var sel = document.getElementById('ujian-select');
+                if (!data || data.length === 0) {
+                    sel.innerHTML = '<option value="">Tidak ada ujian tersedia</option>';
+                    document.getElementById('peserta-select').disabled = true;
+                    return;
+                }
                 data.forEach(function(u) {
                     sel.innerHTML += '<option value="' + u.id + '">' + (u.title || u.nama || '') + (u.subject ?
                         ' (' + u.subject.name + ')' : '') + '</option>';
@@ -562,9 +567,12 @@
                     });
                     pesertaSel.disabled = false;
                 })
-                .catch(function() {
-                    Swal.fire('Error', 'Gagal mengambil data peserta.', 'error');
-                });
+            .catch(function(err) {
+                console.error('Peserta fetch error:', err);
+                pesertaSel.innerHTML = '<option value="">Error: Tidak ada peserta</option>';
+                pesertaSel.disabled = true;
+                Swal.fire('Error', 'Gagal mengambil data peserta atau tidak ada peserta untuk ujian ini.', 'warning');
+            });
         });
 
         /* ── Pilih peserta ── */
@@ -595,6 +603,12 @@
                 })
                 .then(function(data) {
                     console.log('Jawaban data:', data); // Debug
+                    
+                    if (!data || data.length === 0) {
+                        document.getElementById('jawaban-list').innerHTML = '<div class="empty-state"><div class="empty-icon"><i class="bi bi-inbox"></i></div><h6>Belum ada jawaban</h6><p>Siswa belum menjawab ujian ini</p></div>';
+                        document.getElementById('jawaban-container').style.display = 'block';
+                        return;
+                    }
                     
                     document.getElementById('jawaban-container').style.display = 'block';
 
