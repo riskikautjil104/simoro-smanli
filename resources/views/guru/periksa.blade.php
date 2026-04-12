@@ -691,6 +691,27 @@
                             '</span>' +
                             '</div>';
                         
+                        // Tampilkan opsi lengkap untuk PG (seperti admin modal)
+                        if (isPG && j.question) {
+                            var opts = j.question.options || {};
+                            var opsiA = j.question.opsi_a || opts['A'] || opts[0] || '';
+                            var opsiB = j.question.opsi_b || opts['B'] || opts[1] || '';
+                            var opsiC = j.question.opsi_c || opts['C'] || opts[2] || '';
+                            var opsiD = j.question.opsi_d || opts['D'] || opts[3] || '';
+                            var pilihan = ['A', 'B', 'C', 'D'];
+                            var opsiArr = [opsiA, opsiB, opsiC, opsiD];
+                            
+                            html += '<div class="jawaban-row"><span class="label">Opsi Jawaban:</span>';
+                            pilihan.forEach(function(p, k) {
+                                var cls = '';
+                                if (p === correctKey && p === siswaJawab) cls = 'jawaban-benar';
+                                else if (p === siswaJawab) cls = 'jawaban-salah';
+                                else if (p === correctKey) cls = 'jawaban-benar';
+                                html += '<span class="value ' + cls + '" style="display:inline-block;margin-right:12px;font-size:0.82rem;padding:4px 8px;border:1px solid var(--border-color);border-radius:6px;background:#f8faff;"><strong>' + p + '.</strong> ' + wrapLatexFormulas(opsiArr[k] || '?') + '</span>';
+                            });
+                            html += '</div>';
+                        }
+                        
                         // Tampilkan kunci jawaban untuk PG
                         if (isPG && correctKey) {
                             html += '<div class="jawaban-row"><span class="label">Kunci Jawaban:</span><span class="value jawaban-benar">' +
