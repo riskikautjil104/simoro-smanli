@@ -331,6 +331,73 @@
             .rank-medal { width: 28px; height: 28px; font-size: 12px; }
             .siswa-name { font-size: 13px; }
         }
+        @media (max-width: 640px) {
+
+    table thead {
+        display: none;
+    }
+
+    table, tbody {
+        display: block;
+    }
+
+    table tr {
+        display: block;
+        background: #fff;
+        border: 1px solid #e5e7eb;
+        border-radius: 14px;
+        margin-bottom: 12px;
+        padding: 14px;
+        box-shadow: 0 1px 3px rgba(0,0,0,.05);
+    }
+
+    table td {
+        display: none; /* sembunyikan semua td default */
+    }
+
+    .mobile-only {
+        display: block !important;
+        width: 100%;
+    }
+
+    .row-top {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        margin-bottom: 10px;
+    }
+
+    .row-bottom {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .kelas-wrap {
+        display: flex;
+        flex-direction: column;
+    }
+
+    .label-mobile {
+        font-size: 11px;
+        color: #9ca3af;
+    }
+
+    .value-mobile {
+        font-size: 14px;
+        font-weight: 600;
+        color: #374151;
+    }
+
+    .nilai-wrap {
+        text-align: right;
+    }
+
+    .nilai-wrap .nilai-badge {
+        font-size: 14px;
+        padding: 6px 16px;
+    }
+}
     </style>
 </head>
 <body>
@@ -500,29 +567,76 @@
             + '</td></tr>';
     }
 
-    function renderRows(data) {
-        var html = '';
-        data.forEach(function(s, i) {
-            var rankNum  = i + 1;
-            var c        = avatarColors[i % avatarColors.length];
-            var initials = getInitials(s.nama);
-            var isTop    = rankNum <= 3;
-            var bestTag  = rankNum === 1 ? ' <span class="best-tag">terbaik</span>' : '';
-            var nameW    = isTop ? 'font-weight:600' : 'font-weight:400';
+    // function renderRows(data) {
+    //     var html = '';
+    //     data.forEach(function(s, i) {
+    //         var rankNum  = i + 1;
+    //         var c        = avatarColors[i % avatarColors.length];
+    //         var initials = getInitials(s.nama);
+    //         var isTop    = rankNum <= 3;
+    //         var bestTag  = rankNum === 1 ? ' <span class="best-tag">terbaik</span>' : '';
+    //         var nameW    = isTop ? 'font-weight:600' : 'font-weight:400';
 
-            html += '<tr class="' + (isTop ? 'top-row' : '') + '">'
-                + '<td>' + rankMedal(rankNum) + '</td>'
-                + '<td><div class="siswa-cell">'
-                + '<div class="avatar" style="background:' + c[0] + ';color:' + c[1] + '">' + initials + '</div>'
-                + '<span class="siswa-name" style="' + nameW + '">' + s.nama + bestTag + '</span>'
-                + '</div></td>'
-                + '<td><span class="kelas-text">' + s.kelas + '</span></td>'
-                + '<td>' + nilaiBadge(s.nilai) + '</td>'
-                + '</tr>';
-        });
-        return html;
-    }
+    //         html += '<tr class="' + (isTop ? 'top-row' : '') + '">'
+    //             + '<td>' + rankMedal(rankNum) + '</td>'
+    //             + '<td><div class="siswa-cell">'
+    //             + '<div class="avatar" style="background:' + c[0] + ';color:' + c[1] + '">' + initials + '</div>'
+    //             + '<span class="siswa-name" style="' + nameW + '">' + s.nama + bestTag + '</span>'
+    //             + '</div></td>'
+    //             + '<td><span class="kelas-text">' + s.kelas + '</span></td>'
+    //             + '<td>' + nilaiBadge(s.nilai) + '</td>'
+    //             + '</tr>';
+    //     });
+    //     return html;
+    // }
+function renderRows(data) {
+    var html = '';
 
+    data.forEach(function(s, i) {
+        var rankNum  = i + 1;
+        var c        = avatarColors[i % avatarColors.length];
+        var initials = getInitials(s.nama);
+        var isTop    = rankNum <= 3;
+        var bestTag  = rankNum === 1 ? ' <span class="best-tag">terbaik</span>' : '';
+        var nameW    = isTop ? 'font-weight:600' : 'font-weight:400';
+
+        html += '<tr class="' + (isTop ? 'top-row' : '') + '">';
+
+        /* DESKTOP (tetap normal) */
+        html += '<td>' + rankMedal(rankNum) + '</td>';
+        html += '<td><div class="siswa-cell">'
+            + '<div class="avatar" style="background:' + c[0] + ';color:' + c[1] + '">' + initials + '</div>'
+            + '<span class="siswa-name" style="' + nameW + '">' + s.nama + bestTag + '</span>'
+            + '</div></td>';
+        html += '<td><span class="kelas-text">' + s.kelas + '</span></td>';
+        html += '<td>' + nilaiBadge(s.nilai) + '</td>';
+
+        /* MOBILE CARD (tambahan, disembunyikan di desktop via CSS) */
+        html += '<td class="mobile-only">'
+    + '<div class="row-top">'
+        + rankMedal(rankNum)
+        + '<div class="avatar" style="background:' + c[0] + ';color:' + c[1] + '">' + initials + '</div>'
+        + '<div class="siswa-name" style="' + nameW + '">' + s.nama + bestTag + '</div>'
+    + '</div>'
+
+    + '<div class="row-bottom">'
+        + '<div class="kelas-wrap">'
+            + '<span class="label-mobile">Kelas</span>'
+            + '<span class="value-mobile">' + s.kelas + '</span>'
+        + '</div>'
+
+        + '<div class="nilai-wrap">'
+            + '<span class="label-mobile">Nilai</span><br>'
+            + nilaiBadge(s.nilai)
+        + '</div>'
+    + '</div>'
++ '</td>';
+
+        html += '</tr>';
+    });
+
+    return html;
+}
     examSelect.addEventListener('change', function () {
         var examId = this.value;
 
