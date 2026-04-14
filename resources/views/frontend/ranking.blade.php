@@ -398,6 +398,56 @@
         padding: 6px 16px;
     }
 }
+@media (max-width: 640px) {
+
+    .row-bottom {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 12px;
+        margin-top: 8px;
+    }
+
+    .kelas-wrap {
+        flex: 1; /* biar dorong nilai ke kanan tapi tetap dalam card */
+        min-width: 0;
+    }
+
+    .nilai-wrap {
+        flex-shrink: 0; /* jangan sampai keluar */
+        text-align: right;
+    }
+
+    .nilai-wrap .nilai-badge {
+        display: inline-block;
+        min-width: 48px;
+        text-align: center;
+    }
+}
+.nilai-wrap .nilai-badge {
+    font-size: 15px;
+    padding: 6px 14px;
+}
+@media (max-width: 640px) {
+    table {
+        min-width: 100% !important;
+    }
+}
+@media (max-width: 640px) {
+    .table-scroll {
+        overflow-x: hidden; /* matiin scroll horizontal */
+    }
+
+    table tr {
+        width: 100%;
+        overflow: hidden; /* penting biar isi gak keluar */
+    }
+}
+@media (max-width: 640px) {
+    body {
+        overflow-x: hidden;
+    }
+}
     </style>
 </head>
 <body>
@@ -620,16 +670,16 @@ function renderRows(data) {
     + '</div>'
 
     + '<div class="row-bottom">'
-        + '<div class="kelas-wrap">'
-            + '<span class="label-mobile">Kelas</span>'
-            + '<span class="value-mobile">' + s.kelas + '</span>'
-        + '</div>'
-
-        + '<div class="nilai-wrap">'
-            + '<span class="label-mobile">Nilai</span><br>'
-            + nilaiBadge(s.nilai)
-        + '</div>'
+    + '<div class="kelas-wrap">'
+        + '<span class="label-mobile">Kelas</span>'
+        + '<span class="value-mobile">' + s.kelas + '</span>'
     + '</div>'
+
+    + '<div class="nilai-wrap">'
+        + '<span class="label-mobile">Nilai</span>'
+        + '<div>' + nilaiBadge(s.nilai) + '</div>'
+    + '</div>'
++ '</div>'
 + '</td>';
 
         html += '</tr>';
