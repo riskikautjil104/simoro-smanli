@@ -244,72 +244,158 @@ class ExamController extends Controller
     }
 
     // Simpan penilaian essay siswa
+    // public function simpanNilai($ujianId, $userId, Request $request)
+    // {
+    //     $nilaiEssay = $request->input('nilai_essay', []);
+    //     $nilaiPgInput = $request->input('nilai_pg', []);
+
+    //     // Simpan nilai essay
+    //     foreach ($nilaiEssay as $questionId => $nilai) {
+    //         \App\Models\StudentAnswer::where('exam_id', $ujianId)
+    //             ->where('user_id', $userId)
+    //             ->where('question_id', $questionId)
+    //             ->update(['nilai_essay' => $nilai]);
+    //     }
+    //     // Simpan nilai PG manual jika ada
+    //     foreach ($nilaiPgInput as $questionId => $nilai) {
+    //         \App\Models\StudentAnswer::where('exam_id', $ujianId)
+    //             ->where('user_id', $userId)
+    //             ->where('question_id', $questionId)
+    //             ->update(['score' => $nilai]);
+    //     }
+
+
+    //     // Hitung nilai dinamis sesuai rumus
+    //     $exam = \App\Models\Exam::find($ujianId);
+    //     $questions = $exam ? $exam->questions : collect();
+    //     $pgQuestions = $questions->where('type', 'multiple_choice')->count();
+    //     $essayQuestions = $questions->where('type', 'essay')->count();
+
+    //     // Bobot PG dan Essay (default: 50:50, bisa diubah sesuai kebutuhan)
+    //     $bobotPg = 50;
+    //     $bobotEssay = 50;
+    //     if ($pgQuestions == 0) {
+    //         $bobotEssay = 100;
+    //         $bobotPg = 0;
+    //     } else if ($essayQuestions == 0) {
+    //         $bobotPg = 100;
+    //         $bobotEssay = 0;
+    //     }
+
+    //     // Nilai per soal
+    //     $nilaiPerPg = $pgQuestions > 0 ? $bobotPg / $pgQuestions : 0;
+    //     $nilaiPerEssay = $essayQuestions > 0 ? $bobotEssay / $essayQuestions : 0;
+
+    //     // Hitung jumlah PG benar
+    //     $jawabanBenar = \App\Models\StudentAnswer::where('student_answers.exam_id', $ujianId)
+    //         ->where('student_answers.user_id', $userId)
+    //         ->join('questions', 'student_answers.question_id', '=', 'questions.id')
+    //         ->where('questions.type', 'multiple_choice')
+    //         ->whereRaw('student_answers.answer = questions.jawaban_benar')
+    //         ->count();
+    //     $nilaiPg = $jawabanBenar * $nilaiPerPg;
+
+    //     // Hitung total nilai essay (dibatasi max per soal)
+    //     $nilaiEssayTotal = 0;
+    //     foreach ($nilaiEssay as $questionId => $nilai) {
+    //         $nilaiEssayTotal += min($nilai, $nilaiPerEssay);
+    //     }
+
+    //     // Total nilai max 100
+    //     $total = $nilaiPg + $nilaiEssayTotal;
+    //     if ($total > 100) $total = 100;
+
+    //     \App\Models\ExamSession::where('exam_id', $ujianId)
+    //         ->where('user_id', $userId)
+    //         ->update(['score' => $total]);
+    //     return response()->json(['success' => true, 'nilai_pg' => $nilaiPg, 'nilai_essay' => $nilaiEssayTotal, 'total' => $total]);
+    // }
     public function simpanNilai($ujianId, $userId, Request $request)
-    {
-        $nilaiEssay = $request->input('nilai_essay', []);
-        $nilaiPgInput = $request->input('nilai_pg', []);
+{
+    $nilaiEssayInput = $request->input('nilai_essay', []);
+    $nilaiPgInput    = $request->input('nilai_pg', []);
 
-        // Simpan nilai essay
-        foreach ($nilaiEssay as $questionId => $nilai) {
-            \App\Models\StudentAnswer::where('exam_id', $ujianId)
-                ->where('user_id', $userId)
-                ->where('question_id', $questionId)
-                ->update(['nilai_essay' => $nilai]);
-        }
-        // Simpan nilai PG manual jika ada
-        foreach ($nilaiPgInput as $questionId => $nilai) {
-            \App\Models\StudentAnswer::where('exam_id', $ujianId)
-                ->where('user_id', $userId)
-                ->where('question_id', $questionId)
-                ->update(['score' => $nilai]);
-        }
-
-
-        // Hitung nilai dinamis sesuai rumus
-        $exam = \App\Models\Exam::find($ujianId);
-        $questions = $exam ? $exam->questions : collect();
-        $pgQuestions = $questions->where('type', 'multiple_choice')->count();
-        $essayQuestions = $questions->where('type', 'essay')->count();
-
-        // Bobot PG dan Essay (default: 50:50, bisa diubah sesuai kebutuhan)
-        $bobotPg = 50;
-        $bobotEssay = 50;
-        if ($pgQuestions == 0) {
-            $bobotEssay = 100;
-            $bobotPg = 0;
-        } else if ($essayQuestions == 0) {
-            $bobotPg = 100;
-            $bobotEssay = 0;
-        }
-
-        // Nilai per soal
-        $nilaiPerPg = $pgQuestions > 0 ? $bobotPg / $pgQuestions : 0;
-        $nilaiPerEssay = $essayQuestions > 0 ? $bobotEssay / $essayQuestions : 0;
-
-        // Hitung jumlah PG benar
-        $jawabanBenar = \App\Models\StudentAnswer::where('student_answers.exam_id', $ujianId)
-            ->where('student_answers.user_id', $userId)
-            ->join('questions', 'student_answers.question_id', '=', 'questions.id')
-            ->where('questions.type', 'multiple_choice')
-            ->whereRaw('student_answers.answer = questions.jawaban_benar')
-            ->count();
-        $nilaiPg = $jawabanBenar * $nilaiPerPg;
-
-        // Hitung total nilai essay (dibatasi max per soal)
-        $nilaiEssayTotal = 0;
-        foreach ($nilaiEssay as $questionId => $nilai) {
-            $nilaiEssayTotal += min($nilai, $nilaiPerEssay);
-        }
-
-        // Total nilai max 100
-        $total = $nilaiPg + $nilaiEssayTotal;
-        if ($total > 100) $total = 100;
-
-        \App\Models\ExamSession::where('exam_id', $ujianId)
+    // Simpan nilai essay dari request
+    foreach ($nilaiEssayInput as $questionId => $nilai) {
+        \App\Models\StudentAnswer::where('exam_id', $ujianId)
             ->where('user_id', $userId)
-            ->update(['score' => $total]);
-        return response()->json(['success' => true, 'nilai_pg' => $nilaiPg, 'nilai_essay' => $nilaiEssayTotal, 'total' => $total]);
+            ->where('question_id', $questionId)
+            ->update(['nilai_essay' => $nilai]);
     }
+
+    foreach ($nilaiPgInput as $questionId => $nilai) {
+        \App\Models\StudentAnswer::where('exam_id', $ujianId)
+            ->where('user_id', $userId)
+            ->where('question_id', $questionId)
+            ->update(['score' => $nilai]);
+    }
+
+    // ── Load exam dengan questions (sama seperti guru) ──
+    $exam      = \App\Models\Exam::with('questions')->find($ujianId);
+    $questions = $exam ? $exam->questions : collect();
+
+    $pgQuestionsCount    = $questions->whereIn('type', ['multiple_choice', 'pg'])->count();
+    $essayQuestionsCount = $questions->where('type', 'essay')->count();
+
+    $bobotPg    = 50;
+    $bobotEssay = 50;
+    if ($pgQuestionsCount === 0) {
+        $bobotPg = 0; $bobotEssay = 100;
+    } elseif ($essayQuestionsCount === 0) {
+        $bobotPg = 100; $bobotEssay = 0;
+    }
+
+    $nilaiPerPg    = $pgQuestionsCount > 0    ? ($bobotPg    / $pgQuestionsCount)    : 0;
+    $nilaiPerEssay = $essayQuestionsCount > 0 ? ($bobotEssay / $essayQuestionsCount) : 0;
+
+    // ── Hitung PG benar di PHP (case-insensitive, sama seperti guru) ──
+    $studentAnswers = \App\Models\StudentAnswer::where('exam_id', $ujianId)
+        ->where('user_id', $userId)
+        ->get()
+        ->keyBy('question_id');
+
+    $pgQuestions   = $questions->whereIn('type', ['multiple_choice', 'pg']);
+    $correctPgCount = 0;
+    foreach ($pgQuestions as $q) {
+        $ans          = $studentAnswers->get($q->id);
+        $jawabanSiswa = $ans?->answer;
+        $jawabanBenar = $q->jawaban_benar ?? $q->answer_key;
+
+        if ($jawabanSiswa === null || $jawabanBenar === null) continue;
+
+        if (strtoupper((string) $jawabanSiswa) === strtoupper((string) $jawabanBenar)) {
+            $correctPgCount++;
+        }
+    }
+
+    $nilaiPg = $correctPgCount * $nilaiPerPg;
+
+    // ── Hitung essay dari DB (bukan hanya dari request) ──
+    $nilaiEssayTotal = \App\Models\StudentAnswer::where('student_answers.exam_id', $ujianId)
+        ->where('student_answers.user_id', $userId)
+        ->join('questions', 'student_answers.question_id', '=', 'questions.id')
+        ->where('questions.type', 'essay')
+        ->select('student_answers.nilai_essay')
+        ->get()
+        ->sum(function ($row) use ($nilaiPerEssay) {
+            $v = is_numeric($row->nilai_essay) ? (float) $row->nilai_essay : 0;
+            return min($v, $nilaiPerEssay);
+        });
+
+    $total = $nilaiPg + $nilaiEssayTotal;
+    if ($total > 100) $total = 100;
+
+    \App\Models\ExamSession::where('exam_id', $ujianId)
+        ->where('user_id', $userId)
+        ->update(['score' => $total]);
+
+    return response()->json([
+        'success'      => true,
+        'nilai_pg'     => $nilaiPg,
+        'nilai_essay'  => $nilaiEssayTotal,
+        'total'        => $total,
+    ]);
+}
 // Admin/guru menerima pengajuan ulang akses ujian siswa
     public function approveReapply($ujianId, $userId)
     {

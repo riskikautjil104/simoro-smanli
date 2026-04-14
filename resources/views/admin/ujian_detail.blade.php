@@ -579,7 +579,8 @@ document.addEventListener('DOMContentLoaded', function () {
             }
 
             var essayCount = data.filter(function(j) { return j.tipe === 'essay'; }).length;
-            var essayMax   = essayCount > 0 ? Math.floor(50 / essayCount) : 0;
+            // var essayMax   = essayCount > 0 ? Math.floor(50 / essayCount) : 0;
+            var essayMax = essayCount > 0 ? (50 / essayCount) : 0;
             var html       = '';
 
             data.forEach(function(j, idx) {
@@ -663,10 +664,22 @@ document.addEventListener('DOMContentLoaded', function () {
             body: JSON.stringify({ nilai_essay: nilaiEssay })
         })
         .then(function(r) { return r.json(); })
-        .then(function() {
-            bootstrap.Modal.getInstance(document.getElementById('modalPriksaJawaban')).hide();
-            Swal.fire({ icon: 'success', title: 'Penilaian disimpan!', timer: 1500, showConfirmButton: false });
-        })
+        // .then(function() {
+        //     bootstrap.Modal.getInstance(document.getElementById('modalPriksaJawaban')).hide();
+        //     Swal.fire({ icon: 'success', title: 'Penilaian disimpan!', timer: 1500, showConfirmButton: false });
+        // })
+        .then(function(res) {
+    bootstrap.Modal.getInstance(document.getElementById('modalPriksaJawaban')).hide();
+    var msg = 'Penilaian disimpan!';
+    if (res.total !== undefined) {
+        msg = 'Total: ' + parseFloat(res.total).toFixed(2) +
+              ' (PG: ' + parseFloat(res.nilai_pg).toFixed(2) +
+              ' · Essay: ' + parseFloat(res.nilai_essay).toFixed(2) + ')';
+    }
+    Swal.fire({ icon: 'success', title: 'Berhasil!', text: msg, timer: 2500, showConfirmButton: false });
+    // Reload peserta supaya nilai di tabel ikut update
+    setTimeout(function() { location.reload(); }, 2600);
+})
         .catch(function() { Swal.fire('Error', 'Gagal menyimpan penilaian.', 'error'); })
         .finally(function() { btn.disabled = false; btn.innerHTML = '<i class="bi bi-save me-1"></i> Simpan Penilaian'; });
     });
