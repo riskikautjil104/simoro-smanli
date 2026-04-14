@@ -158,6 +158,8 @@
             padding: 12px 20px;
             background: #f8fafc;
             border-bottom: 1px solid #f0f0f0;
+            flex-wrap: wrap;
+            gap: 8px;
         }
         .table-header-title {
             display: flex;
@@ -176,6 +178,30 @@
             border-radius: 20px;
             padding: 3px 10px;
             font-weight: 500;
+        }
+        /* indicator realtime kecil */
+        .realtime-indicator {
+            font-size: 10px;
+            background: #eef2ff;
+            padding: 4px 10px;
+            border-radius: 30px;
+            color: #185FA5;
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            font-weight: 500;
+        }
+        .realtime-dot {
+            width: 8px;
+            height: 8px;
+            background: #22c55e;
+            border-radius: 50%;
+            display: inline-block;
+            animation: pulseGreen 1.4s infinite;
+        }
+        @keyframes pulseGreen {
+            0% { opacity: 0.4; transform: scale(0.8);}
+            100% { opacity: 1; transform: scale(1.2);}
         }
 
         /* ── Table ── */
@@ -537,7 +563,12 @@ td.mobile-only {
                     </svg>
                     <span id="examTitleHeader">Ranking nilai</span>
                 </div>
-                <span class="count-badge" id="rankingCount">0 peserta</span>
+                <div style="display: flex; align-items: center; gap: 8px;">
+                    <span class="realtime-indicator">
+                        <span class="realtime-dot"></span> Live 2dtk
+                    </span>
+                    <span class="count-badge" id="rankingCount">0 peserta</span>
+                </div>
             </div>
 
             <div class="table-scroll">
@@ -599,6 +630,74 @@ td.mobile-only {
 
     if (!examSelect) return;
 
+    /* ---------- AUTO REFRESH REALTIME (2 DETIK) ---------- */
+    var refreshInterval = null;     // untuk menyimpan interval
+    var currentExamId   = null;     // ujian yang sedang aktif
+
+    /* Fungsi untuk berhenti refresh jika ada */
+    function stopAutoRefresh() {
+        if (refreshInterval) {
+            clearInterval(refreshInterval);
+            refreshInterval = null;
+        }
+    }
+
+    /* Fungsi memulai auto refresh untuk examId tertentu (setiap 2 detik) */
+    function startAutoRefresh(examId) {
+        if (!examId) return;
+        // hentikan dulu yang lama
+        stopAutoRefresh();
+        // simpan exam id yang aktif
+        currentExamId = examId;
+        // langsung fetch sekali (bisa juga opsional, tapi sudah dipanggil dari change)
+        // lalu pasang interval setiap 2000ms
+        refreshInterval = setInterval(function() {
+            // pastikan exam id masih sama dan tidak null
+            if (currentExamId && examSelect && examSelect.value == currentExamId) {
+                fetchRankingData(currentExamId);
+            } else {
+                // jika ternyata select berubah, hentikan refresh
+                stopAutoRefresh();
+            }
+        }, 2000);
+    }
+
+    /* Pisahkan fungsi fetch data agar reusable untuk manual & auto */
+    function fetchRankingData(examId) {
+        if (!examId) return Promise.resolve();
+
+        return fetch('/ranking/' + examId, {
+            headers: { 'Accept': 'application/json' }
+        })
+        .then(function(r) { return r.json(); })
+        .then(function(data) {
+            if (!data || data.length === 0) {
+                tableBody.innerHTML = '<tr><td colspan="4" class="state-cell">'
+                    + '<div class="state-icon" style="margin:0 auto 10px">'
+                    + '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#9ca3af" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">'
+                    + '<path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6"/>'
+                    + '<path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18"/>'
+                    + '<path d="M18 2H6v7a6 6 0 0 0 12 0V2Z"/></svg></div>'
+                    + '<div class="state-title">Belum ada ranking</div>'
+                    + '<div class="state-sub">Tidak ada siswa yang telah dinilai.</div>'
+                    + '</td></table>';
+                rankCount.textContent = '0 peserta';
+                return;
+            }
+            tableBody.innerHTML = renderRows(data);
+            rankCount.textContent = data.length + ' peserta';
+        })
+        .catch(function() {
+            // Tampilkan error, namun jangan sampai menghentikan auto refresh (tetap tampilkan error)
+            if (tableBody) {
+                tableBody.innerHTML = '<tr><td colspan="4" class="state-cell">'
+                    + '<div class="state-title" style="color:#991b1b">Gagal memuat ranking</div>'
+                    + '<div class="state-sub">Periksa koneksi dan coba lagi</div>'
+                    + '</td></tr>';
+            }
+        });
+    }
+
     /* Avatar colour pairs [bg, text] */
     var avatarColors = [
         ['#dbeafe','#1e40af'],
@@ -633,85 +732,67 @@ td.mobile-only {
             + '</td></tr>';
     }
 
-    // function renderRows(data) {
-    //     var html = '';
-    //     data.forEach(function(s, i) {
-    //         var rankNum  = i + 1;
-    //         var c        = avatarColors[i % avatarColors.length];
-    //         var initials = getInitials(s.nama);
-    //         var isTop    = rankNum <= 3;
-    //         var bestTag  = rankNum === 1 ? ' <span class="best-tag">terbaik</span>' : '';
-    //         var nameW    = isTop ? 'font-weight:600' : 'font-weight:400';
+    function renderRows(data) {
+        var html = '';
 
-    //         html += '<tr class="' + (isTop ? 'top-row' : '') + '">'
-    //             + '<td>' + rankMedal(rankNum) + '</td>'
-    //             + '<td><div class="siswa-cell">'
-    //             + '<div class="avatar" style="background:' + c[0] + ';color:' + c[1] + '">' + initials + '</div>'
-    //             + '<span class="siswa-name" style="' + nameW + '">' + s.nama + bestTag + '</span>'
-    //             + '</div></td>'
-    //             + '<td><span class="kelas-text">' + s.kelas + '</span></td>'
-    //             + '<td>' + nilaiBadge(s.nilai) + '</td>'
-    //             + '</tr>';
-    //     });
-    //     return html;
-    // }
-function renderRows(data) {
-    var html = '';
+        data.forEach(function(s, i) {
+            var rankNum  = i + 1;
+            var c        = avatarColors[i % avatarColors.length];
+            var initials = getInitials(s.nama);
+            var isTop    = rankNum <= 3;
+            var bestTag  = rankNum === 1 ? ' <span class="best-tag">terbaik</span>' : '';
+            var nameW    = isTop ? 'font-weight:600' : 'font-weight:400';
 
-    data.forEach(function(s, i) {
-        var rankNum  = i + 1;
-        var c        = avatarColors[i % avatarColors.length];
-        var initials = getInitials(s.nama);
-        var isTop    = rankNum <= 3;
-        var bestTag  = rankNum === 1 ? ' <span class="best-tag">terbaik</span>' : '';
-        var nameW    = isTop ? 'font-weight:600' : 'font-weight:400';
+            html += '<tr class="' + (isTop ? 'top-row' : '') + '">';
 
-        html += '<tr class="' + (isTop ? 'top-row' : '') + '">';
+            /* DESKTOP (tetap normal) */
+            html += '<td>' + rankMedal(rankNum) + '</td>';
+            html += '<td><div class="siswa-cell">'
+                + '<div class="avatar" style="background:' + c[0] + ';color:' + c[1] + '">' + initials + '</div>'
+                + '<span class="siswa-name" style="' + nameW + '">' + s.nama + bestTag + '</span>'
+                + '</div></td>';
+            html += '<td><span class="kelas-text">' + s.kelas + '</span></td>';
+            html += '<td>' + nilaiBadge(s.nilai) + '</td>';
 
-        /* DESKTOP (tetap normal) */
-        html += '<td>' + rankMedal(rankNum) + '</td>';
-        html += '<td><div class="siswa-cell">'
-            + '<div class="avatar" style="background:' + c[0] + ';color:' + c[1] + '">' + initials + '</div>'
-            + '<span class="siswa-name" style="' + nameW + '">' + s.nama + bestTag + '</span>'
-            + '</div></td>';
-        html += '<td><span class="kelas-text">' + s.kelas + '</span></td>';
-        html += '<td>' + nilaiBadge(s.nilai) + '</td>';
+            /* MOBILE CARD (tambahan, disembunyikan di desktop via CSS) */
+            html += '<td class="mobile-only">'
+                + '<div class="row-top">'
+                    + rankMedal(rankNum)
+                    + '<div class="avatar" style="background:' + c[0] + ';color:' + c[1] + '">' + initials + '</div>'
+                    + '<div class="siswa-name" style="' + nameW + '">' + s.nama + bestTag + '</div>'
+                + '</div>'
+                + '<div class="row-bottom">'
+                    + '<div class="kelas-wrap">'
+                        + '<span class="label-mobile">Kelas</span>'
+                        + '<span class="value-mobile">' + s.kelas + '</span>'
+                    + '</div>'
+                    + '<div class="nilai-wrap">'
+                        + '<span class="label-mobile">Nilai</span>'
+                        + '<div>' + nilaiBadge(s.nilai) + '</div>'
+                    + '</div>'
+                + '</div>'
+            + '</td>';
 
-        /* MOBILE CARD (tambahan, disembunyikan di desktop via CSS) */
-        html += '<td class="mobile-only">'
-    + '<div class="row-top">'
-        + rankMedal(rankNum)
-        + '<div class="avatar" style="background:' + c[0] + ';color:' + c[1] + '">' + initials + '</div>'
-        + '<div class="siswa-name" style="' + nameW + '">' + s.nama + bestTag + '</div>'
-    + '</div>'
+            html += '</tr>';
+        });
 
-    + '<div class="row-bottom">'
-    + '<div class="kelas-wrap">'
-        + '<span class="label-mobile">Kelas</span>'
-        + '<span class="value-mobile">' + s.kelas + '</span>'
-    + '</div>'
+        return html;
+    }
 
-    + '<div class="nilai-wrap">'
-        + '<span class="label-mobile">Nilai</span>'
-        + '<div>' + nilaiBadge(s.nilai) + '</div>'
-    + '</div>'
-+ '</div>'
-+ '</td>';
-
-        html += '</tr>';
-    });
-
-    return html;
-}
+    /* Event change pada select */
     examSelect.addEventListener('change', function () {
         var examId = this.value;
 
         if (!examId) {
+            // tidak ada ujian dipilih: sembunyikan ranking, hentikan auto refresh
             rankSection.style.display  = 'none';
             emptyState.style.display   = 'block';
+            stopAutoRefresh();
+            currentExamId = null;
             return;
         }
 
+        // Ada ujian dipilih: tampilkan section, mulai auto refresh
         rankSection.style.display = 'block';
         emptyState.style.display  = 'none';
         loadingState();
@@ -720,32 +801,13 @@ function renderRows(data) {
         var optText = this.options[this.selectedIndex].text;
         examTitle.textContent = optText.split('·')[0].trim() || 'Ranking nilai';
 
-        fetch('/ranking/' + examId, {
-            headers: { 'Accept': 'application/json' }
-        })
-        .then(function(r) { return r.json(); })
-        .then(function(data) {
-            if (!data || data.length === 0) {
-                tableBody.innerHTML = '<tr><td colspan="4" class="state-cell">'
-                    + '<div class="state-icon" style="margin:0 auto 10px">'
-                    + '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#9ca3af" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">'
-                    + '<path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6"/>'
-                    + '<path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18"/>'
-                    + '<path d="M18 2H6v7a6 6 0 0 0 12 0V2Z"/></svg></div>'
-                    + '<div class="state-title">Belum ada ranking</div>'
-                    + '<div class="state-sub">Tidak ada siswa yang telah dinilai.</div>'
-                    + '</td></tr>';
-                rankCount.textContent = '0 peserta';
-                return;
-            }
-            tableBody.innerHTML = renderRows(data);
-            rankCount.textContent = data.length + ' peserta';
-        })
-        .catch(function() {
-            tableBody.innerHTML = '<tr><td colspan="4" class="state-cell">'
-                + '<div class="state-title" style="color:#991b1b">Gagal memuat ranking</div>'
-                + '<div class="state-sub">Periksa koneksi dan coba lagi</div>'
-                + '</td></tr>';
+        // Fetch data pertama kali
+        fetchRankingData(examId).then(function() {
+            // setelah fetch pertama sukses, mulai auto refresh (2 detik)
+            startAutoRefresh(examId);
+        }).catch(function() {
+            // tetap coba mulai auto refresh walau error, supaya nanti coba lagi
+            startAutoRefresh(examId);
         });
     });
 
