@@ -448,6 +448,22 @@
         overflow-x: hidden;
     }
 }
+.mobile-only {
+    display: none !important;
+}
+@media (max-width: 640px) {
+    .mobile-only {
+        display: block !important;
+    }
+}
+@media (min-width: 641px) {
+    .mobile-only {
+        display: none !important;
+    }
+}
+td.mobile-only {
+    width: 100%;
+}
     </style>
 </head>
 <body>
