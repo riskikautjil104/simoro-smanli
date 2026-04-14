@@ -335,12 +335,15 @@ class StudentController extends Controller
             ];
         });
 
+        // Get current answers (progress)
+        $currentAnswers = StudentAnswer::where('user_id', $user->id)
+            ->where('exam_id', $exam->id)
+            ->pluck('answer', 'question_id');
+
         $startTime = $session ? $session->start_time : now();
-        $duration = $exam->duration * 60; // convert to seconds
+        $duration = $exam->duration * 60;
         $elapsed = $now->diffInSeconds($startTime, false);
-        if ($elapsed < 0) {
-            $elapsed = abs($elapsed);
-        }
+        if ($elapsed < 0) $elapsed = abs($elapsed);
         $remaining = max($duration - $elapsed, 0);
 
         return response()->json([
@@ -351,6 +354,8 @@ class StudentController extends Controller
                 'subject' => $exam->subject->name ?? '-',
                 'duration' => $exam->duration,
                 'remaining_seconds' => $remaining,
+                'is_session_active' => $session ? $session->is_active : false,
+                'current_answers' => $currentAnswers, // Load progress
                 'questions' => $questions,
             ]
         ]);
@@ -414,10 +419,10 @@ class StudentController extends Controller
                 'ip_address' => $request->ip(),
                 'session_id' => session()->getId(),
             ]);
-        } elseif (($session->status_logout != 1 || $session->reapply_status == 2) && !$session->end_time) {
-            // Jika sudah ada session, update start_time ke sekarang (mulai baru)
+        } else {
+            // TEMP: Always activate existing session without resetting timer
             $session->is_active = true;
-            $session->start_time = $now; // SELALU update ke waktu sekarang
+            // Preserve original start_time (no reset timer on reopen)
             $session->ip_address = $request->ip();
             $session->session_id = session()->getId();
             $session->save();
@@ -454,13 +459,14 @@ class StudentController extends Controller
             ->where('exam_id', $exam->id)
             ->first();
 
-        // [FIX #4] Pastikan siswa sudah mulai ujian (session aktif harus ada)
-        if (!$session || !$session->is_active) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Anda belum memulai ujian ini'
-            ], 403);
-        }
+// TEMP: Relaxed is_active check for mobile (allow submit even if inactive after reopen)
+//        if (!$session || !$session->is_active) {
+//            return response()->json([
+//                'success' => false,
+//                'message' => 'Anda belum memulai ujian ini'
+//            ], 403);
+//        }
+
 
         // [FIX #4] Pastikan ujian belum pernah di-submit sebelumnya
         if ($session->end_time) {
