@@ -160,7 +160,10 @@ Route::view('soal', 'guru.soal')->name('soal');
     });
 
     Route::get('/ujian', [App\Http\Controllers\Admin\ExamController::class, 'list']);
-    Route::get('/', [App\Http\Controllers\Frontend\HomeController::class, 'index']);
+Route::get('/ranking', [\App\Http\Controllers\Frontend\RankingController::class, 'index'])->name('public.ranking');
+Route::get('/ranking/{id}', [\App\Http\Controllers\Frontend\RankingController::class, 'show'])->name('public.ranking.show');
+
+Route::get('/', [App\Http\Controllers\Frontend\HomeController::class, 'index']);
 
     Route::get('/dashboard', function () {
         return view('admin.dashboard');
