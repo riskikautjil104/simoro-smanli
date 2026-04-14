@@ -343,15 +343,20 @@ function renderTable(data) {
 
         rows += '<tr>' +
             '<td>' + (idx+1) + '</td>' +
+            
             '<td><div class="soal-text-cell" title="' + pertanyaan.replace(/"/g,'&quot;') + '">' + pertanyaan + '</div></td>' +
             '<td>' + tipeBadge(s.type) + '</td>' +
             '<td><span class="badge-mapel">' + mapelNm + '</span></td>' +
             '<td><span class="badge-kelas">' + kelasNm + '</span></td>' +
             '<td style="font-size:.78rem;">' + ujianNm + '</td>' +
-            '<td style="font-size:.78rem;">' + (s.opsi_a||'-') + '</td>' +
-            '<td style="font-size:.78rem;">' + (s.opsi_b||'-') + '</td>' +
-            '<td style="font-size:.78rem;">' + (s.opsi_c||'-') + '</td>' +
-            '<td style="font-size:.78rem;">' + (s.opsi_d||'-') + '</td>' +
+            // '<td style="font-size:.78rem;">' + (s.opsi_a||'-') + '</td>' +
+            // '<td style="font-size:.78rem;">' + (s.opsi_b||'-') + '</td>' +
+            // '<td style="font-size:.78rem;">' + (s.opsi_c||'-') + '</td>' +
+            // '<td style="font-size:.78rem;">' + (s.opsi_d||'-') + '</td>' +
+            '<td style="font-size:.78rem;">' + (s.opsi_a || (s.options && s.options['A']) || '-') + '</td>' +
+'<td style="font-size:.78rem;">' + (s.opsi_b || (s.options && s.options['B']) || '-') + '</td>' +
+'<td style="font-size:.78rem;">' + (s.opsi_c || (s.options && s.options['C']) || '-') + '</td>' +
+'<td style="font-size:.78rem;">' + (s.opsi_d || (s.options && s.options['D']) || '-') + '</td>' +
             '<td>' + (kunci ? '<span class="kunci-badge">' + kunci + '</span>' : '<span style="color:#ccc;">—</span>') + '</td>' +
             '<td>' +
                 '<button class="btn-aksi btn-edit me-1" title="Edit" onclick="openEdit(' + s.id + ')"><i class="bi bi-pencil"></i></button>' +
