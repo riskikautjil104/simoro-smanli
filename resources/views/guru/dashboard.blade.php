@@ -314,9 +314,26 @@
 @endsection
 
 @push('scripts')
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script>
 document.addEventListener('DOMContentLoaded', function () {
-
+setTimeout(() => {
+    Swal.fire({
+        icon: 'success',
+        title: '🎉 Selamat Datang Guru!',
+        html: 'Sekarang Ada Yang Baru Ni <strong>Orang Tua Siswa Sudah Bisa Lihat Public<br>Skor Langsung Siswa Selama<br> Ujian Berlangsung</strong>!<br>' +
+              'Caranya: <em>Buka Simoro simoro.sma-n5-morotai.id, Lalu Pilih rangking atau <br>simoro.sma-n5-morotai.id/rangkin</em>',
+        timer: 15100,
+        timerProgressBar: true,
+        showConfirmButton: false,
+        allowOutsideClick: true,
+        allowEscapeKey: true,
+        width: '500px',
+        customClass: {
+            popup: 'animate__animated animate__bounceIn'
+        }
+    });
+}, 400);
     /* ─── FETCH STAT CARDS ─── */
     fetch('/guru/dashboard/stats', {
         headers: { 'Accept': 'application/json' },

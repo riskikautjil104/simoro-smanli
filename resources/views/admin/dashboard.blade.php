@@ -431,8 +431,29 @@
 
 @push('scripts')
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script>
 document.addEventListener('DOMContentLoaded', function () {
+
+    /* ── Admin Welcome Popup (show once per session) ── */
+   /* ── Admin Welcome Popup (muncul setiap buka dashboard) ── */
+setTimeout(() => {
+    Swal.fire({
+        icon: 'success',
+        title: '🎉 Selamat Datang Admin!',
+        html: 'Sekarang Anda sudah bisa <strong>input nilai</strong>!<br>' +
+              'Caranya: <em>periksa jawaban → berikan nilai → simpan</em>',
+        timer: 7000,
+        timerProgressBar: true,
+        showConfirmButton: false,
+        allowOutsideClick: true,
+        allowEscapeKey: true,
+        width: '500px',
+        customClass: {
+            popup: 'animate__animated animate__bounceIn'
+        }
+    });
+}, 300);
 
     /* ── Helpers ── */
     function setVal(id, value) {

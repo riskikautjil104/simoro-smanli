@@ -1,11 +1,4 @@
-{{-- ============================================================
-     FILE INI ADALAH welcome.blade.php LENGKAP
-     Hanya ada 3 tambahan dari file asli lo:
-     1. <style> dark mode  (ditambah di dalam <head>)
-     2. Dark mode toggle button (ditambah di .sm-header-actions)
-     3. Section #my-project  (ditambah sebelum section #contact)
-     4. <script> dark mode + upload gambar (ditambah sebelum </body>)
-     ============================================================ --}}
+
 <!DOCTYPE html>
 <html lang="{{ str_replace('_', '-', app()->getLocale()) }}" data-theme="light">
 <head>
@@ -1568,13 +1561,13 @@
                     <li><a href="#features"   class="sm-nav-link">Fitur</a></li>
                     <li><a href="#services"   class="sm-nav-link">Layanan</a></li>
                     <li><a href="#my-project" class="sm-nav-link">My Project</a></li>
+                    <li> <a href="https://simoro.sma-n5-morotai.id/ranking" target="_blank">Ranking Siswa</a></li>
                     <li><a href="#contact"    class="sm-nav-link">Kontak</a></li>
                 </ul>
             </nav>
 
             <div class="sm-header-actions">
 
-                {{-- ★ TAMBAHAN: Dark mode toggle button --}}
                 <button id="dm-toggle" title="Toggle dark mode" aria-label="Toggle dark mode">
                     <i class="bi bi-sun-fill icon-sun"></i>
                     <i class="bi bi-moon-stars-fill icon-moon"></i>

@@ -194,37 +194,62 @@
 </div>
 
 @endsection
-
 @push('scripts')
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script>
 document.addEventListener('DOMContentLoaded', function () {
 
+    /* ── Notif sambutan ── */
+    setTimeout(function() {
+        Swal.fire({
+            icon: 'success',
+            title: '🎉 Selamat Datang Siswaku!',
+            html: 'Sekarang Ada Yang Baru Ni <strong>Orang Tua Siswa Sudah Bisa Lihat Public<br>Skor Langsung Siswa Selama<br> Ujian Berlangsung</strong>!<br>' +
+                  'Caranya: <em>Buka Simoro simoro.sma-n5-morotai.id, Lalu Pilih rangking atau <br>simoro.sma-n5-morotai.id/rangkin</em>',
+            timer: 15100,
+            timerProgressBar: true,
+            showConfirmButton: false,
+            allowOutsideClick: true,
+            allowEscapeKey: true,
+            width: '500px',
+        });
+    }, 400);
+
     /* ── Ujian Aktif ── */
-    fetch('/siswa/ujian/aktif/json', { headers:{'Accept':'application/json'} })
-    .then(function(r){ return r.ok ? r.json() : []; })
-    .then(function(data) {
-        var data = res.data || res;
+    fetch('/siswa/ujian/aktif/json', { headers: { 'Accept': 'application/json' } })
+    .then(function(r) { return r.ok ? r.json() : { data: [] }; })
+    .then(function(res) {
+        var data = Array.isArray(res) ? res : (res.data || []);
+
         document.getElementById('statAktif').classList.remove('skeleton');
         document.getElementById('statAktif').textContent = data.length;
 
         if (!data.length) {
             document.getElementById('ujianAktifContent').innerHTML =
                 '<div class="empty-state"><div class="empty-icon"><i class="bi bi-clipboard-x"></i></div><p>Tidak ada ujian aktif saat ini</p></div>';
-                return response()->json([
-    'success' => true,
-    'data' => $result,
-]);
+            return;
         }
+
         var html = '';
         data.forEach(function(u) {
-            var inisial = (u.nama||u.title||'U').substring(0,2).toUpperCase();
+            var inisial = (u.nama || u.title || 'U').substring(0, 2).toUpperCase();
+            var tanggal = u.tanggal || '-';
+
+            // Format tanggal ISO jika perlu
+            if (tanggal && tanggal.includes('T')) {
+                var d = new Date(tanggal);
+                tanggal = d.getDate().toString().padStart(2,'0') + '-' +
+                          (d.getMonth()+1).toString().padStart(2,'0') + '-' +
+                          d.getFullYear();
+            }
+
             html += '<div class="ujian-item">' +
                 '<div class="ujian-avatar">' + inisial + '</div>' +
                 '<div class="ujian-info">' +
-                    '<div class="ujian-name">' + (u.nama||u.title||'-') + '</div>' +
+                    '<div class="ujian-name">' + (u.nama || u.title || '-') + '</div>' +
                     '<div class="ujian-meta">' +
-                        '<span class="ujian-tag tag-mapel"><i class="bi bi-journal me-1"></i>' + (u.mapel||'-') + '</span>' +
-                        '<span class="ujian-tag tag-date"><i class="bi bi-calendar me-1"></i>' + (u.tanggal||'-') + '</span>' +
+                        '<span class="ujian-tag tag-mapel"><i class="bi bi-journal me-1"></i>' + (u.mapel || '-') + '</span>' +
+                        '<span class="ujian-tag tag-date"><i class="bi bi-calendar me-1"></i>' + tanggal + '</span>' +
                     '</div>' +
                 '</div>' +
                 '<a href="/siswa/ujian/' + u.id + '" class="btn-ikuti"><i class="bi bi-play-fill"></i> Ikuti</a>' +
@@ -240,17 +265,20 @@ document.addEventListener('DOMContentLoaded', function () {
     });
 
     /* ── Riwayat Ujian ── */
-    fetch('/siswa/ujian/riwayat/json', { headers:{'Accept':'application/json'} })
-    .then(function(r){ return r.ok ? r.json() : []; })
-    .then(function(data) {
-        var data = res.data || res; 
+    fetch('/siswa/ujian/riwayat/json', { headers: { 'Accept': 'application/json' } })
+    .then(function(r) { return r.ok ? r.json() : { data: [] }; })
+    .then(function(res) {
+        var data = Array.isArray(res) ? res : (res.data || []);
+
         document.getElementById('statRiwayat').classList.remove('skeleton');
         document.getElementById('statRiwayat').textContent = data.length;
 
-        /* Rata-rata nilai */
-        var nilaiArr = data.filter(function(d){ return d.nilai != null && !isNaN(d.nilai); });
+        /* Rata-rata nilai — skip yang '-' atau null */
+        var nilaiArr = data.filter(function(d) {
+            return d.nilai !== null && d.nilai !== '-' && d.nilai !== '' && !isNaN(parseFloat(d.nilai));
+        });
         var rata = nilaiArr.length
-            ? (nilaiArr.reduce(function(s,d){ return s + parseFloat(d.nilai); }, 0) / nilaiArr.length).toFixed(1)
+            ? (nilaiArr.reduce(function(s, d) { return s + parseFloat(d.nilai); }, 0) / nilaiArr.length).toFixed(1)
             : '—';
         document.getElementById('statNilai').classList.remove('skeleton');
         document.getElementById('statNilai').textContent = rata;
@@ -260,18 +288,20 @@ document.addEventListener('DOMContentLoaded', function () {
                 '<div class="empty-state"><div class="empty-icon"><i class="bi bi-inbox"></i></div><p>Belum ada riwayat ujian</p></div>';
             return;
         }
+
         var html = '';
-        data.slice(0,5).forEach(function(r) {
-            var inisial = (r.nama||r.title||'U').substring(0,2).toUpperCase();
-            var nilaiVal = r.nilai != null ? r.nilai : '—';
+        data.slice(0, 5).forEach(function(r) {
+            var inisial  = (r.nama || r.title || 'U').substring(0, 2).toUpperCase();
+            var nilaiVal = (r.nilai !== null && r.nilai !== undefined && r.nilai !== '') ? r.nilai : '—';
+
             html += '<div class="ujian-item">' +
                 '<div class="ujian-avatar riwayat">' + inisial + '</div>' +
                 '<div class="ujian-info">' +
-                    '<div class="ujian-name">' + (r.nama||r.title||'-') + '</div>' +
+                    '<div class="ujian-name">' + (r.nama || r.title || '-') + '</div>' +
                     '<div class="ujian-meta">' +
-                        '<span class="ujian-tag tag-mapel"><i class="bi bi-journal me-1"></i>' + (r.mapel||'-') + '</span>' +
+                        '<span class="ujian-tag tag-mapel"><i class="bi bi-journal me-1"></i>' + (r.mapel || '-') + '</span>' +
                         '<span class="ujian-tag tag-nilai"><i class="bi bi-star me-1"></i>Nilai: ' + nilaiVal + '</span>' +
-                        '<span class="ujian-tag tag-date"><i class="bi bi-calendar me-1"></i>' + (r.tanggal||'-') + '</span>' +
+                        '<span class="ujian-tag tag-date"><i class="bi bi-calendar me-1"></i>' + (r.tanggal || '-') + '</span>' +
                     '</div>' +
                 '</div>' +
             '</div>';
@@ -282,9 +312,11 @@ document.addEventListener('DOMContentLoaded', function () {
         document.getElementById('statRiwayat').classList.remove('skeleton');
         document.getElementById('statRiwayat').textContent = '—';
         document.getElementById('statNilai').classList.remove('skeleton');
+        document.getElementById('statNilai').textContent = '—';
         document.getElementById('riwayatUjianContent').innerHTML =
             '<div class="empty-state"><div class="empty-icon" style="background:rgba(220,53,69,.08);color:#dc3545;"><i class="bi bi-exclamation-circle"></i></div><p>Gagal memuat data</p></div>';
     });
+
 });
 </script>
 @endpush

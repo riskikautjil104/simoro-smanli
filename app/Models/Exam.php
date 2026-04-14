@@ -9,6 +9,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 class Exam extends Model
 {
     use HasFactory;
+
     protected $fillable = [
         'title',
         'subject_id',
@@ -17,6 +18,11 @@ class Exam extends Model
         'end_time',
         'duration',
         'status'
+    ];
+
+    protected $casts = [
+        'start_time' => 'datetime',
+        'end_time' => 'datetime',
     ];
 
     public function subject(): BelongsTo
