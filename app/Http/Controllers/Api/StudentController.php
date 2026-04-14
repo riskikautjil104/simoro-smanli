@@ -303,25 +303,25 @@ class StudentController extends Controller
             ], 403);
         }
 
-// TEMP: Removed logout/reapply/detection blocks for mobile persistence (allow continue after exit)
-//        if ($session && $session->status_logout == 1 && $session->reapply_status != 2) {
-//            return response()->json([
-//                'success' => false,
-//                'message' => 'Akses ujian diblokir, menunggu persetujuan admin/guru',
-//                'reapply_status' => $session->reapply_status,
-//                'reapply_reason' => $session->reapply_reason,
-//            ], 403);
-//        }
-//
-//        // [FIX #2] Hapus kondisi is_detected + end_time di sini karena
-//        // sudah tertangkap oleh pengecekan end_time di atas
-//        if ($session && $session->is_detected && !$session->end_time) {
-//            return response()->json([
-//                'success' => false,
-//                'message' => 'Sesi ujian Anda sedang dalam pengawasan, hubungi pengawas',
-//                'reason' => $session->detection_reason,
-//            ], 403);
-//        }
+        // TEMP: Removed logout/reapply/detection blocks for mobile persistence (allow continue after exit)
+        //        if ($session && $session->status_logout == 1 && $session->reapply_status != 2) {
+        //            return response()->json([
+        //                'success' => false,
+        //                'message' => 'Akses ujian diblokir, menunggu persetujuan admin/guru',
+        //                'reapply_status' => $session->reapply_status,
+        //                'reapply_reason' => $session->reapply_reason,
+        //            ], 403);
+        //        }
+        //
+        //        // [FIX #2] Hapus kondisi is_detected + end_time di sini karena
+        //        // sudah tertangkap oleh pengecekan end_time di atas
+        //        if ($session && $session->is_detected && !$session->end_time) {
+        //            return response()->json([
+        //                'success' => false,
+        //                'message' => 'Sesi ujian Anda sedang dalam pengawasan, hubungi pengawas',
+        //                'reason' => $session->detection_reason,
+        //            ], 403);
+        //        }
 
 
         // Prepare questions (hide correct answer)
@@ -399,7 +399,7 @@ class StudentController extends Controller
             ], 403);
         }
 
-// TEMP: Removed detection block for mobile persistence (allow continue after exit)
+        // TEMP: Removed detection block for mobile persistence (allow continue after exit)
         // if ($session && $session->is_detected) {
         //     return response()->json([
         //         'success' => false,
@@ -410,21 +410,17 @@ class StudentController extends Controller
 
 
         if (!$session) {
-            // Buat session baru dengan start_time = now()
             $session = ExamSession::create([
                 'user_id' => $user->id,
                 'exam_id' => $exam->id,
                 'start_time' => $now,
                 'is_active' => true,
                 'ip_address' => $request->ip(),
-                'session_id' => session()->getId(),
+                'session_id' => $request->header('User-Agent', 'mobile'),
             ]);
         } else {
-            // TEMP: Always activate existing session without resetting timer
+            // Always safe activate (no timer reset)
             $session->is_active = true;
-            // Preserve original start_time (no reset timer on reopen)
-            $session->ip_address = $request->ip();
-            $session->session_id = session()->getId();
             $session->save();
         }
 
@@ -459,13 +455,11 @@ class StudentController extends Controller
             ->where('exam_id', $exam->id)
             ->first();
 
-// TEMP: Relaxed is_active check for mobile (allow submit even if inactive after reopen)
-//        if (!$session || !$session->is_active) {
-//            return response()->json([
-//                'success' => false,
-//                'message' => 'Anda belum memulai ujian ini'
-//            ], 403);
-//        }
+// REMOVED: All session checks for mobile persistence
+        // Always allow jawab/submit if session exists and not ended
+        if (!$session) {
+            return response()->json(['success' => false, 'message' => 'Session tidak ada'], 403);
+        }
 
 
         // [FIX #4] Pastikan ujian belum pernah di-submit sebelumnya
@@ -476,13 +470,13 @@ class StudentController extends Controller
             ], 403);
         }
 
-// TEMP: Removed logout/reapply block for mobile persistence (allow submit after exit)
-//        if ($session->status_logout == 1 && $session->reapply_status != 2) {
-//            return response()->json([
-//                'success' => false,
-//                'message' => 'Akses submit ujian diblokir'
-//            ], 403);
-//        }
+        // TEMP: Removed logout/reapply block for mobile persistence (allow submit after exit)
+        //        if ($session->status_logout == 1 && $session->reapply_status != 2) {
+        //            return response()->json([
+        //                'success' => false,
+        //                'message' => 'Akses submit ujian diblokir'
+        //            ], 403);
+        //        }
 
 
         $answers = $request->input('answers', []);
@@ -527,11 +521,10 @@ class StudentController extends Controller
             ->first();
 
         if ($session) {
-        $session->is_active = false;
-        $session->status_logout = 0; // TEMP: Set to 0, no block on reopen
-        $session->logout_time = now();
-        $session->save();
-
+            $session->is_active = false;
+            $session->status_logout = 0; // TEMP: Set to 0, no block on reopen
+            $session->logout_time = now();
+            $session->save();
         }
 
         return response()->json([
