@@ -105,6 +105,12 @@
         </a>
       </li>
       <li>
+        <a class="swirl-link {{ $active('admin/kelulusan*') }}" href="/admin/kelulusan">
+          <i class="bi bi-mortarboard"></i>
+          <span>Kelulusan Siswa</span>
+        </a>
+      </li>
+      <li>
         <a class="swirl-link {{ $active('admin/guru*') }}" href="/admin/guru">
           <i class="bi bi-person-badge"></i>
           <span>Data Guru</span>

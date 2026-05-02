@@ -55,6 +55,9 @@
         Route::resource('monitoring', MonitoringController::class);
         Route::get('laporan/data', [ReportController::class, 'data']);
         Route::resource('laporan', ReportController::class);
+        Route::get('kelulusan/export-excel', [\App\Http\Controllers\Admin\GraduationController::class, 'exportExcel'])->name('kelulusan.export-excel');
+        Route::get('kelulusan/export-pdf', [\App\Http\Controllers\Admin\GraduationController::class, 'exportPdf'])->name('kelulusan.export-pdf');
+        Route::resource('kelulusan', \App\Http\Controllers\Admin\GraduationController::class);
     });
     // Route::get('/admin/ujian/list', [App\Http\Controllers\Admin\ExamController::class, 'list']);
     Route::get('/admin/ujian-list', [App\Http\Controllers\Admin\ExamController::class, 'list'])->middleware(['auth', 'verified', 'role:admin']);
@@ -162,6 +165,9 @@ Route::view('soal', 'guru.soal')->name('soal');
     Route::get('/ujian', [App\Http\Controllers\Admin\ExamController::class, 'list']);
 Route::get('/ranking', [\App\Http\Controllers\Frontend\RankingController::class, 'index'])->name('public.ranking');
 Route::get('/ranking/{id}', [\App\Http\Controllers\Frontend\RankingController::class, 'show'])->name('public.ranking.show');
+
+Route::get('/pengumuman', [\App\Http\Controllers\Frontend\PengumumanController::class, 'index'])->name('public.pengumuman');
+Route::post('/pengumuman/cek', [\App\Http\Controllers\Frontend\PengumumanController::class, 'cek'])->name('public.pengumuman.cek');
 
 Route::get('/', [App\Http\Controllers\Frontend\HomeController::class, 'index']);
 
