@@ -795,18 +795,18 @@
                 </button>
 
                 @auth
-                    <a href="{{ url('/dashboard') }}" class="btn-school">
+                    {{-- <a href="{{ url('/dashboard') }}" class="btn-school">
                         <i class="bi bi-speedometer2"></i>
                         <span class="d-none d-md-inline">Dashboard</span>
-                    </a>
+                    </a> --}}
                 @else
                     <a href="{{ route('login') }}" class="btn-school">
                         <i class="bi bi-box-arrow-in-right"></i>
                         <span>Login</span>
                     </a>
-                    @if (Route::has('register'))
+                    {{-- @if (Route::has('register'))
                         <a href="{{ route('register') }}" class="btn-outline-school d-none d-sm-inline-flex">Daftar</a>
-                    @endif
+                    @endif --}}
                 @endauth
 
                 <button id="sm-burger" aria-label="Menu" aria-expanded="false">
