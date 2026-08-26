@@ -234,7 +234,6 @@ class StudentController extends Controller
             'message' => 'Data siswa berhasil dihapus'
         ]);
     }
-    }
 
     // =========================================================================
     // ====================== ENDPOINTS KHUSUS SISWA ============================
