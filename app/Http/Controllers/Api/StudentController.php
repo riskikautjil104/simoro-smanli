@@ -19,73 +19,159 @@ use App\Models\Subject;
 class StudentController extends Controller
 {
     /**
-     * Display a listing of the resource (students) for Admin/Teacher.
+     * Display a listing of the resource (students).
+     * GET /api/siswa
      */
-    public function index()
+    public function index(Request $request)
     {
-        $students = User::where('role', 'student')
-            ->with('class')
-            ->get();
+        $query = User::where('role', 'student')
+            ->with(['class:id,name', 'previousClass:id,name']);
+
+        // Filter status kelulusan (Default: hanya siswa aktif kecuali diminta spesifik)
+        if ($request->filled('status')) {
+            if ($request->status === 'active') {
+                $query->where('is_graduated', false);
+            } elseif ($request->status === 'graduated' || $request->status === 'alumni') {
+                $query->where('is_graduated', true);
+            }
+        } elseif ($request->filled('is_graduated')) {
+            $query->where('is_graduated', $request->boolean('is_graduated'));
+        }
+
+        // Filter kelas
+        if ($request->filled('class_id')) {
+            $query->where('class_id', $request->class_id);
+        }
+
+        // Filter angkatan
+        if ($request->filled('angkatan')) {
+            $query->where('angkatan', $request->angkatan);
+        }
+
+        // Pencarian nama, email, nis, phone
+        if ($request->filled('search')) {
+            $search = $request->search;
+            $query->where(function ($q) use ($search) {
+                $q->where('name', 'like', "%{$search}%")
+                  ->orWhere('email', 'like', "%{$search}%")
+                  ->orWhere('nis', 'like', "%{$search}%")
+                  ->orWhere('nik', 'like', "%{$search}%")
+                  ->orWhere('phone', 'like', "%{$search}%");
+            });
+        }
+
+        $query->orderBy('name', 'asc');
+
+        if ($request->boolean('paginate', false)) {
+            $perPage = $request->input('per_page', 20);
+            $students = $query->paginate($perPage);
+        } else {
+            $students = $query->get();
+        }
 
         return response()->json([
             'success' => true,
+            'message' => 'Daftar data siswa berhasil diambil',
             'data'    => $students
         ]);
     }
 
     /**
-     * Store a newly created student (Admin).
+     * Store a newly created student.
+     * POST /api/siswa
      */
     public function store(Request $request)
     {
         $validated = $request->validate([
-            'name'     => 'required|string|max:255',
-            'email'    => 'required|email|unique:users,email',
-            'password' => 'required|string|min:6',
-            'nis'      => 'required|string|unique:users,nis',
-            'class_id' => 'required|exists:classes,id',
+            'name'         => 'required|string|max:255',
+            'email'        => 'required|email|unique:users,email',
+            'password'     => 'required|string|min:6',
+            'nis'          => 'required|string|unique:users,nis',
+            'nik'          => 'nullable|string|max:50',
+            'phone'        => 'nullable|string|max:20',
+            'class_id'     => 'nullable|exists:classes,id',
+            'angkatan'     => 'nullable|string|max:50',
+            'is_graduated' => 'nullable|boolean',
+        ], [
+            'name.required'     => 'Nama siswa wajib diisi',
+            'email.required'    => 'Email siswa wajib diisi',
+            'email.unique'      => 'Email sudah terdaftar',
+            'password.required' => 'Kata sandi wajib diisi',
+            'nis.required'      => 'NIS siswa wajib diisi',
+            'nis.unique'        => 'NIS sudah terdaftar',
         ]);
 
         $student = User::create([
-            'name'     => $validated['name'],
-            'email'    => $validated['email'],
-            'password' => Hash::make($validated['password']),
-            'nis'      => $validated['nis'],
-            'class_id' => $validated['class_id'],
-            'role'     => 'student',
+            'name'              => $validated['name'],
+            'email'             => $validated['email'],
+            'password'          => Hash::make($validated['password']),
+            'nis'               => $validated['nis'],
+            'nik'               => $validated['nik'] ?? null,
+            'phone'             => $validated['phone'] ?? null,
+            'class_id'          => $validated['class_id'] ?? null,
+            'angkatan'          => $validated['angkatan'] ?? null,
+            'is_graduated'      => $request->boolean('is_graduated', false),
+            'role'              => 'student',
+            'email_verified_at' => now(),
         ]);
+
+        $student->load(['class:id,name']);
 
         return response()->json([
             'success' => true,
-            'message' => 'Siswa berhasil dibuat',
+            'message' => 'Data siswa berhasil ditambahkan',
             'data'    => $student
         ], 201);
     }
 
     /**
      * Display the specified student.
+     * GET /api/siswa/{id}
      */
     public function show(string $id)
     {
         $student = User::where('role', 'student')
-            ->with('class')
+            ->with(['class:id,name', 'previousClass:id,name'])
             ->find($id);
 
         if (!$student) {
             return response()->json([
                 'success' => false,
-                'message' => 'Siswa tidak ditemukan'
+                'message' => 'Data siswa tidak ditemukan'
             ], 404);
         }
 
+        // Ambil riwayat ujian selesai
+        $examHistory = ExamSession::where('user_id', $student->id)
+            ->whereNotNull('end_time')
+            ->with(['exam.subject:id,name,code'])
+            ->orderByDesc('end_time')
+            ->limit(10)
+            ->get()
+            ->map(function ($s) {
+                return [
+                    'session_id'   => $s->id,
+                    'exam_id'      => $s->exam_id,
+                    'exam_title'   => $s->exam?->title ?? 'Ujian',
+                    'subject_name' => $s->exam?->subject?->name ?? '-',
+                    'score'        => $s->score,
+                    'completed_at' => $s->end_time ? $s->end_time->format('d-m-Y H:i') : '-',
+                ];
+            });
+
         return response()->json([
             'success' => true,
-            'data'    => $student
+            'message' => 'Detail data siswa berhasil diambil',
+            'data'    => [
+                'siswa'        => $student,
+                'exam_history' => $examHistory,
+            ]
         ]);
     }
 
     /**
      * Update student data.
+     * PUT/PATCH /api/siswa/{id}
      */
     public function update(Request $request, string $id)
     {
@@ -94,23 +180,30 @@ class StudentController extends Controller
         if (!$student) {
             return response()->json([
                 'success' => false,
-                'message' => 'Siswa tidak ditemukan'
+                'message' => 'Data siswa tidak ditemukan'
             ], 404);
         }
 
         $validated = $request->validate([
-            'name'     => 'sometimes|string|max:255',
-            'email'    => 'sometimes|email|unique:users,email,' . $id,
-            'password' => 'sometimes|string|min:6',
-            'nis'      => 'sometimes|string|unique:users,nis,' . $id,
-            'class_id' => 'sometimes|exists:classes,id',
+            'name'         => 'sometimes|string|max:255',
+            'email'        => 'sometimes|email|unique:users,email,' . $id,
+            'password'     => 'nullable|string|min:6',
+            'nis'          => 'sometimes|string|unique:users,nis,' . $id,
+            'nik'          => 'nullable|string|max:50',
+            'phone'        => 'nullable|string|max:20',
+            'class_id'     => 'nullable|exists:classes,id',
+            'angkatan'     => 'nullable|string|max:50',
+            'is_graduated' => 'nullable|boolean',
         ]);
 
-        if (isset($validated['password'])) {
+        if (!empty($validated['password'])) {
             $validated['password'] = Hash::make($validated['password']);
+        } else {
+            unset($validated['password']);
         }
 
         $student->update($validated);
+        $student->load(['class:id,name', 'previousClass:id,name']);
 
         return response()->json([
             'success' => true,
@@ -121,6 +214,7 @@ class StudentController extends Controller
 
     /**
      * Remove the specified student.
+     * DELETE /api/siswa/{id}
      */
     public function destroy(string $id)
     {
@@ -129,7 +223,7 @@ class StudentController extends Controller
         if (!$student) {
             return response()->json([
                 'success' => false,
-                'message' => 'Siswa tidak ditemukan'
+                'message' => 'Data siswa tidak ditemukan'
             ], 404);
         }
 
@@ -137,8 +231,9 @@ class StudentController extends Controller
 
         return response()->json([
             'success' => true,
-            'message' => 'Siswa berhasil dihapus'
+            'message' => 'Data siswa berhasil dihapus'
         ]);
+    }
     }
 
     // =========================================================================
