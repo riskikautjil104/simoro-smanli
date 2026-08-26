@@ -23,6 +23,20 @@ class UserSeeder extends Seeder
             ]
         );
 
+        // Kepala Sekolah
+        \DB::table('users')->updateOrInsert(
+            ['email' => 'kepsek@sma5.sch.id'],
+            [
+                'name' => 'Drs. H. Ahmad Dahlan, M.Pd.',
+                'password' => bcrypt('kepsek123'),
+                'role' => 'kepala_sekolah',
+                'nip' => '197508152000031001',
+                'nik' => '8207011508750001',
+                'phone' => '081234567899',
+                'ttd_signature' => 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAEAAAABACAYAAACqaXHeAAAAFUlEQVR4nO3BMQEAAAgDoJvc6FEOhAAAAABJRU5ErkJggg==',
+            ]
+        );
+
         // Guru
         \DB::table('users')->updateOrInsert(
             ['email' => 'guru@sma5.sch.id'],

@@ -80,6 +80,8 @@
                 @include('layouts.partials.verticalMenuGuru')
             @elseif(auth()->check() && auth()->user()->role === 'student')
                 @include('layouts.partials.verticalMenuSiswa')
+            @elseif(auth()->check() && auth()->user()->role === 'kepala_sekolah')
+                @include('layouts.partials.verticalMenuKepsek')
             @else
                 @include('layouts.partials.verticalMenu')
             @endif
@@ -117,6 +119,10 @@
             <div class="offcanvas-body p-0">
                 @if(auth()->check() && auth()->user()->role === 'teacher')
                     @include('layouts.partials.verticalMenuGuru')
+                @elseif(auth()->check() && auth()->user()->role === 'student')
+                    @include('layouts.partials.verticalMenuSiswa')
+                @elseif(auth()->check() && auth()->user()->role === 'kepala_sekolah')
+                    @include('layouts.partials.verticalMenuKepsek')
                 @else
                     @include('layouts.partials.verticalMenu')
                 @endif

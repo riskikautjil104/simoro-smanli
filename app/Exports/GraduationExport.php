@@ -8,10 +8,12 @@ use Maatwebsite\Excel\Concerns\WithHeadings;
 class GraduationExport implements FromCollection, WithHeadings
 {
     protected $data;
+    protected $customHeadings;
 
-    public function __construct($data)
+    public function __construct($data, $customHeadings = null)
     {
         $this->data = $data;
+        $this->customHeadings = $customHeadings;
     }
 
     public function collection()
@@ -21,11 +23,24 @@ class GraduationExport implements FromCollection, WithHeadings
 
     public function headings(): array
     {
+        if ($this->customHeadings) {
+            return $this->customHeadings;
+        }
+
+        if (!empty($this->data)) {
+            $first = collect($this->data)->first();
+            if (is_array($first)) {
+                return array_keys($first);
+            }
+        }
+
         return [
             'NISN',
             'Nama Siswa',
-            'Status Kelulusan',
-            'Tanggal Dibuat',
+            'Kelas Asal',
+            'Angkatan',
+            'Status',
+            'Tanggal',
         ];
     }
 }

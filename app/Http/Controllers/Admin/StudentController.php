@@ -14,7 +14,7 @@ class StudentController extends Controller
     {
         // AJAX: return JSON
         if (request()->expectsJson() || request()->wantsJson()) {
-            $siswas = \App\Models\User::where('role', 'student')->with('class')->get()->map(function ($siswa) {
+            $siswas = \App\Models\User::activeStudents()->with('class')->get()->map(function ($siswa) {
                 return [
                     'id' => $siswa->id,
                     'nama' => $siswa->name,

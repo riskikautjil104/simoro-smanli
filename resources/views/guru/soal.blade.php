@@ -3,255 +3,651 @@
 
 @push('styles')
 <style>
-.page-header { background:linear-gradient(135deg,var(--primary),var(--accent)); border-radius:16px; padding:24px 28px; color:#fff; position:relative; overflow:hidden; margin-bottom:24px; }
-.page-header::before { content:''; position:absolute; width:220px; height:220px; background:rgba(255,255,255,0.07); border-radius:50%; top:-60px; right:-60px; pointer-events:none; }
-.page-header-content { position:relative; z-index:2; }
-.page-header h4 { font-size:1.3rem; font-weight:700; margin:0 0 4px; }
-.page-header p  { font-size:0.85rem; opacity:0.85; margin:0; }
-.count-badge { display:inline-flex; align-items:center; background:rgba(255,255,255,0.2); border:1px solid rgba(255,255,255,0.35); color:#fff; font-size:0.78rem; font-weight:600; padding:3px 10px; border-radius:20px; margin-left:10px; }
+/* ── Page Header ── */
+.page-header {
+    background: linear-gradient(135deg, var(--primary), var(--accent));
+    border-radius: 16px;
+    padding: 24px 28px;
+    color: #fff;
+    position: relative;
+    overflow: hidden;
+    margin-bottom: 20px;
+}
+.page-header::before {
+    content: '';
+    position: absolute;
+    width: 220px; height: 220px;
+    background: rgba(255,255,255,0.07);
+    border-radius: 50%;
+    top: -60px; right: -60px;
+    pointer-events: none;
+}
+.page-header-content { position: relative; z-index: 2; }
+.page-header h4 { font-size: 1.3rem; font-weight: 700; margin: 0 0 4px; }
+.page-header p  { font-size: 0.85rem; opacity: 0.85; margin: 0; }
+.count-badge {
+    display: inline-flex;
+    align-items: center;
+    background: rgba(255,255,255,0.2);
+    border: 1px solid rgba(255,255,255,0.35);
+    color: #fff;
+    font-size: 0.78rem;
+    font-weight: 600;
+    padding: 3px 10px;
+    border-radius: 20px;
+    margin-left: 10px;
+}
+.btn-header {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    background: rgba(255,255,255,0.2);
+    color: #fff !important;
+    border: 1.5px solid rgba(255,255,255,0.45);
+    padding: 9px 18px;
+    border-radius: 50px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    backdrop-filter: blur(8px);
+    cursor: pointer;
+    transition: var(--transition);
+    font-family: 'Poppins', sans-serif;
+    text-decoration: none;
+}
+.btn-header:hover {
+    background: rgba(255,255,255,0.35);
+    transform: translateY(-2px);
+    color: #fff !important;
+}
 
-.panel-card { background:#fff; border-radius:16px; border:1px solid var(--border-color); box-shadow:var(--shadow-sm); overflow:hidden; margin-bottom:20px; }
-.panel-card-header { padding:16px 20px; border-bottom:1px solid var(--border-color); background:#f0f4ff; display:flex; align-items:center; gap:8px; font-weight:700; font-size:0.9rem; color:var(--text-main); }
-.panel-card-header i { color:var(--primary); }
-.panel-card-body { padding:20px; }
+/* ── Focus Ujian Banner Card ── */
+.exam-focus-card {
+    background: #fff;
+    border-radius: 16px;
+    border: 1px solid var(--border-color);
+    box-shadow: var(--shadow-sm);
+    padding: 18px 22px;
+    margin-bottom: 20px;
+    transition: all 0.2s ease;
+}
+.exam-select-hero {
+    height: 44px;
+    border-radius: 12px;
+    border: 1.5px solid #0d6efd;
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: #0d6efd;
+    background-color: #f8faff;
+    cursor: pointer;
+}
+.exam-select-hero:focus {
+    box-shadow: 0 0 0 3px rgba(13,110,253,0.15);
+    border-color: #0d6efd;
+}
+.exam-meta-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 5px 12px;
+    border-radius: 30px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    background: #f1f5f9;
+    color: #475569;
+}
 
-.filter-select { height:40px; border-radius:50px; border:1.5px solid var(--border-color); font-size:0.875rem; padding:0 16px; transition:var(--transition); }
-.filter-select:focus { border-color:var(--primary); box-shadow:0 0 0 3px rgba(13,110,253,0.1); outline:none; }
+/* ── Filter Toolbar ── */
+.filter-card {
+    background: #fff;
+    border-radius: 14px;
+    border: 1px solid var(--border-color);
+    padding: 14px 18px;
+    margin-bottom: 18px;
+}
+.filter-input {
+    height: 38px;
+    border-radius: 50px;
+    border: 1.5px solid var(--border-color);
+    font-size: 0.84rem;
+    padding: 0 14px;
+}
+.search-wrap { position: relative; }
+.search-wrap i {
+    position: absolute;
+    left: 14px; top: 50%;
+    transform: translateY(-50%);
+    color: #94a3b8;
+    font-size: 0.88rem;
+    pointer-events: none;
+}
+.search-wrap input { padding-left: 36px; }
 
-.search-wrap { position:relative; }
-.search-wrap i { position:absolute; left:13px; top:50%; transform:translateY(-50%); color:#aaa; font-size:0.9rem; pointer-events:none; }
-.search-wrap input { padding-left:36px; border-radius:50px; border:1.5px solid var(--border-color); font-size:0.875rem; height:40px; transition:var(--transition); }
-.search-wrap input:focus { border-color:var(--primary); box-shadow:0 0 0 3px rgba(13,110,253,0.1); }
+/* ── Table Card ── */
+.table-card {
+    background: #fff;
+    border-radius: 16px;
+    overflow: hidden;
+    border: 1px solid var(--border-color);
+    box-shadow: var(--shadow-sm);
+}
+.table-card .table { margin: 0; font-size: 0.84rem; }
+.table-card .table thead th {
+    background: #f8faff;
+    font-weight: 700;
+    font-size: 0.74rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    padding: 13px 16px;
+    border-bottom: 1px solid var(--border-color);
+    color: var(--text-main);
+    white-space: nowrap;
+}
+.table-card .table tbody td {
+    padding: 14px 16px;
+    vertical-align: middle;
+    border-bottom: 1px solid rgba(13,110,253,0.04);
+    color: var(--text-main);
+}
+.table-card .table tbody tr:last-child td { border-bottom: none; }
+.table-card .table tbody tr:hover { background: rgba(13,110,253,0.025); }
 
-.table-card { background:#fff; border-radius:12px; overflow:hidden; border:1px solid var(--border-color); }
-.table-card .table { margin:0; font-size:0.83rem; }
-.table-card .table thead th { background:#f0f4ff; font-weight:600; font-size:0.73rem; text-transform:uppercase; letter-spacing:0.4px; padding:12px 14px; border-bottom:1px solid var(--border-color); color:var(--text-main); white-space:nowrap; }
-.table-card .table tbody td { padding:11px 14px; vertical-align:middle; border-bottom:1px solid rgba(13,110,253,0.04); color:var(--text-main); max-width:220px; }
-.table-card .table tbody tr:last-child td { border-bottom:none; }
-.table-card .table tbody tr:hover { background:rgba(13,110,253,0.025); }
+/* ── Soal Item Formatting ── */
+.soal-pertanyaan-box {
+    font-size: 0.88rem;
+    font-weight: 600;
+    color: #1e293b;
+    line-height: 1.45;
+    margin-bottom: 8px;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+.soal-opsi-chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+}
+.opsi-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    font-size: 0.76rem;
+    padding: 3px 9px;
+    border-radius: 6px;
+    background: #f8fafc;
+    border: 1px solid #e2e8f0;
+    color: #475569;
+    max-width: 220px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+.opsi-chip.is-correct {
+    background: rgba(25,135,84,0.1);
+    border-color: rgba(25,135,84,0.35);
+    color: #198754;
+    font-weight: 700;
+}
+.opsi-chip-key {
+    font-weight: 800;
+    font-size: 0.72rem;
+    width: 17px; height: 17px;
+    border-radius: 50%;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background: #cbd5e1;
+    color: #1e293b;
+}
+.opsi-chip.is-correct .opsi-chip-key {
+    background: #198754;
+    color: #fff;
+}
 
-.soal-text-cell { max-width:260px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; font-weight:500; }
-.badge-tipe { display:inline-flex; align-items:center; gap:4px; font-size:0.7rem; font-weight:700; padding:3px 9px; border-radius:20px; white-space:nowrap; }
-.badge-pg    { background:rgba(13,110,253,0.1); color:#0d6efd; }
-.badge-essay { background:rgba(111,66,193,0.1); color:#6f42c1; }
-.badge-mapel { background:rgba(13,110,253,0.08); color:#0d6efd; font-size:0.7rem; font-weight:600; padding:3px 9px; border-radius:20px; }
-.badge-kelas { background:rgba(32,201,151,0.1); color:#198754; font-size:0.7rem; font-weight:600; padding:3px 9px; border-radius:20px; }
-.kunci-badge { display:inline-flex; align-items:center; justify-content:center; width:24px; height:24px; border-radius:50%; background:linear-gradient(135deg,#0d6efd,#0dcaf0); color:#fff; font-size:0.72rem; font-weight:800; }
+/* ── Badges ── */
+.badge-tipe {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 0.72rem;
+    font-weight: 700;
+    padding: 3px 9px;
+    border-radius: 20px;
+    white-space: nowrap;
+}
+.badge-pg    { background: rgba(13,110,253,0.1); color: #0d6efd; }
+.badge-essay { background: rgba(111,66,193,0.1); color: #6f42c1; }
+.badge-mapel { background: rgba(13,110,253,0.08); color: #0d6efd; font-size: 0.72rem; font-weight: 600; padding: 4px 10px; border-radius: 20px; }
+.badge-kelas { background: rgba(32,201,151,0.1); color: #198754; font-size: 0.72rem; font-weight: 600; padding: 4px 10px; border-radius: 20px; }
+.badge-ujian { background: rgba(13,202,240,0.1); color: #0a9bba; font-size: 0.75rem; font-weight: 600; padding: 4px 10px; border-radius: 20px; border: 1px solid rgba(13,202,240,0.25); }
 
-.empty-state { text-align:center; padding:56px 24px; }
-.empty-state .empty-icon { width:72px; height:72px; background:rgba(13,110,253,0.07); border-radius:50%; display:inline-flex; align-items:center; justify-content:center; font-size:1.8rem; color:var(--primary); margin-bottom:16px; }
-.empty-state h6 { font-weight:700; margin-bottom:6px; }
-.empty-state p  { font-size:0.85rem; color:var(--text-muted); margin:0; }
+/* ── Action buttons ── */
+.btn-act {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px; height: 32px;
+    border-radius: 8px;
+    border: none;
+    cursor: pointer;
+    transition: all 0.18s ease;
+    font-size: 0.85rem;
+}
+.btn-act-preview { background: rgba(13,202,240,0.12); color: #0a9bba; }
+.btn-act-preview:hover { background: #0dcaf0; color: #fff; transform: translateY(-1px); }
+.btn-act-edit    { background: rgba(13,110,253,0.1);  color: #0d6efd; }
+.btn-act-edit:hover    { background: #0d6efd; color: #fff; transform: translateY(-1px); }
+.btn-act-delete  { background: rgba(220,53,69,0.1);   color: #dc3545; }
+.btn-act-delete:hover  { background: #dc3545; color: #fff; transform: translateY(-1px); }
 
-.btn-header { display:inline-flex; align-items:center; gap:7px; background:rgba(255,255,255,0.2); color:#fff !important; border:1.5px solid rgba(255,255,255,0.45); padding:9px 20px; border-radius:50px; font-size:0.875rem; font-weight:600; backdrop-filter:blur(8px); cursor:pointer; transition:var(--transition); font-family:'Poppins',sans-serif; text-decoration:none; }
-.btn-header:hover { background:rgba(255,255,255,0.32); transform:translateY(-2px); color:#fff !important; }
+/* ── Empty State ── */
+.empty-state { text-align: center; padding: 50px 24px; }
+.empty-state .empty-icon {
+    width: 68px; height: 68px;
+    background: rgba(13,110,253,0.07);
+    border-radius: 50%;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.8rem;
+    color: var(--primary);
+    margin-bottom: 14px;
+}
+.empty-state h6 { font-weight: 700; margin-bottom: 6px; }
+.empty-state p  { font-size: 0.85rem; color: var(--text-muted); margin: 0; }
 
-.btn-aksi { display:inline-flex; align-items:center; justify-content:center; width:30px; height:30px; border-radius:8px; border:none; cursor:pointer; transition:all .18s; font-size:0.82rem; }
-.btn-edit  { background:rgba(13,110,253,0.1); color:#0d6efd; }
-.btn-edit:hover  { background:#0d6efd; color:#fff; }
-.btn-hapus { background:rgba(220,53,69,0.1); color:#dc3545; }
-.btn-hapus:hover { background:#dc3545; color:#fff; }
+/* ── Modal Design ── */
+.modal-header-brand {
+    background: linear-gradient(135deg, var(--primary), var(--accent));
+    color: #fff;
+    padding: 16px 22px;
+}
+.modal-header-brand .modal-title { font-weight: 700; font-size: 1rem; }
+.modal-header-brand .btn-close { filter: brightness(0) invert(1); opacity: 0.85; }
+.modal-content {
+    border-radius: 18px;
+    overflow: hidden;
+    border: none;
+    box-shadow: 0 20px 60px rgba(13,110,253,0.2);
+}
 
-/* Modal */
-.modal-overlay { display:none; position:fixed; inset:0; background:rgba(0,0,0,0.45); z-index:1050; align-items:center; justify-content:center; backdrop-filter:blur(3px); }
-.modal-overlay.active { display:flex; }
-.modal-box { background:#fff; border-radius:20px; width:100%; max-width:700px; max-height:92vh; overflow-y:auto; box-shadow:0 20px 60px rgba(0,0,0,0.2); animation:modalIn .22s ease; }
-@keyframes modalIn { from{transform:translateY(24px);opacity:0} to{transform:translateY(0);opacity:1} }
-.modal-head { padding:20px 24px 16px; border-bottom:1px solid var(--border-color,#e5e7eb); display:flex; align-items:center; justify-content:space-between; position:sticky; top:0; background:#fff; z-index:10; border-radius:20px 20px 0 0; }
-.modal-head h5 { font-weight:700; font-size:1rem; margin:0; }
-.modal-close { background:none; border:none; font-size:1.3rem; color:#aaa; cursor:pointer; line-height:1; }
-.modal-close:hover { color:#dc3545; }
-.modal-body { padding:20px 24px; }
-.modal-foot { padding:14px 24px 20px; display:flex; gap:10px; justify-content:flex-end; border-top:1px solid var(--border-color,#e5e7eb); position:sticky; bottom:0; background:#fff; border-radius:0 0 20px 20px; }
+/* Opsi inputs in modal */
+.opsi-input-wrap { position: relative; margin-bottom: 10px; }
+.opsi-label-badge {
+    position: absolute;
+    left: 0; top: 0; bottom: 0;
+    width: 38px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(135deg, #0d6efd, #0dcaf0);
+    color: #fff;
+    font-weight: 800;
+    font-size: 0.82rem;
+    border-radius: 10px 0 0 10px;
+    pointer-events: none;
+}
+.opsi-input-wrap .form-control {
+    padding-left: 48px;
+    border-radius: 10px;
+    border: 1.5px solid var(--border-color);
+    font-size: 0.85rem;
+    height: 42px;
+}
+.opsi-input-wrap .form-control:focus {
+    border-color: #0d6efd;
+    box-shadow: 0 0 0 3px rgba(13,110,253,0.1);
+}
 
-.confirm-box { background:#fff; border-radius:20px; width:100%; max-width:380px; box-shadow:0 20px 60px rgba(0,0,0,0.2); animation:modalIn .22s ease; text-align:center; padding:32px 28px 24px; }
-.confirm-icon { width:64px; height:64px; background:rgba(220,53,69,0.1); border-radius:50%; display:inline-flex; align-items:center; justify-content:center; font-size:1.7rem; color:#dc3545; margin-bottom:14px; }
+/* CKEditor in Modal */
+.ck-editor__editable { min-height: 130px; }
+.ck.ck-editor { border-radius: 10px; overflow: hidden; }
 
-/* CKEditor dalam modal */
-.modal-body .ck-editor__editable { min-height:130px; }
-.modal-body .ck.ck-editor { border-radius:10px; overflow:hidden; }
-
-/* Opsi input */
-.opsi-input-wrap { position:relative; }
-.opsi-label-badge { position:absolute; left:0; top:0; bottom:0; width:36px; display:flex; align-items:center; justify-content:center; background:linear-gradient(135deg,#0d6efd,#0dcaf0); color:#fff; font-weight:800; font-size:0.78rem; border-radius:10px 0 0 10px; pointer-events:none; z-index:1; }
-.opsi-input-wrap .form-control { padding-left:48px; border-radius:10px; border:1.5px solid var(--border-color,#dee2e6); font-size:0.85rem; height:40px; }
-.opsi-input-wrap .form-control:focus { border-color:#0d6efd; box-shadow:0 0 0 3px rgba(13,110,253,0.1); }
+/* Preview Modal Card */
+.preview-question-card {
+    background: #f8fafc;
+    border: 1.5px solid #e2e8f0;
+    border-radius: 14px;
+    padding: 20px;
+    font-size: 0.95rem;
+    line-height: 1.6;
+    margin-bottom: 18px;
+}
+.preview-option-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    padding: 12px 16px;
+    border-radius: 10px;
+    background: #fff;
+    border: 1.5px solid #e2e8f0;
+    margin-bottom: 8px;
+    transition: all 0.15s ease;
+}
+.preview-option-item.is-answer {
+    background: rgba(25,135,84,0.07);
+    border-color: #198754;
+    font-weight: 600;
+    color: #198754;
+}
+.preview-opt-circle {
+    width: 26px; height: 26px;
+    border-radius: 50%;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 800;
+    font-size: 0.8rem;
+    background: #e2e8f0;
+    color: #334155;
+    flex-shrink: 0;
+}
+.preview-option-item.is-answer .preview-opt-circle {
+    background: #198754;
+    color: #fff;
+}
 </style>
 @endpush
 
 @section('layoutContent')
 
+{{-- ── 1. Page Header ── --}}
 <div class="page-header">
     <div class="page-header-content d-flex align-items-center justify-content-between flex-wrap gap-3">
         <div>
-            <h4><i class="bi bi-archive me-2"></i>Bank Soal <span class="count-badge" id="soal-count">0 soal</span></h4>
-            <p>Kelola seluruh soal yang telah Anda buat</p>
+            <h4><i class="bi bi-collection me-2"></i>Bank Soal Guru <span class="count-badge" id="soal-count">0 soal</span></h4>
+            <p>Kelola dan susun butir soal ujian dengan mudah dan terstruktur</p>
         </div>
-        <a href="{{ route('guru.soal.create') }}" class="btn-header">
-            <i class="bi bi-plus-lg"></i> Tambah Soal
-        </a>
-    </div>
-</div>
-
-<div class="panel-card">
-    <div class="panel-card-header"><i class="bi bi-funnel"></i> Filter & Pencarian</div>
-    <div class="panel-card-body">
-        <div class="row g-3 align-items-end">
-            <div class="col-md-3">
-                <label class="form-label">Kelas</label>
-                <select id="filter-kelas" class="form-select filter-select w-100"><option value="">Semua Kelas</option></select>
-            </div>
-            <div class="col-md-3">
-                <label class="form-label">Mata Pelajaran</label>
-                <select id="filter-mapel" class="form-select filter-select w-100"><option value="">Semua Mapel</option></select>
-            </div>
-            <div class="col-md-3">
-                <label class="form-label">Ujian</label>
-                <select id="filter-ujian" class="form-select filter-select w-100"><option value="">Semua Ujian</option></select>
-            </div>
-            <div class="col-md-3">
-                <label class="form-label">Cari Soal</label>
-                <div class="search-wrap">
-                    <i class="bi bi-search"></i>
-                    <input type="text" id="searchSoal" class="form-control" placeholder="Cari pertanyaan...">
-                </div>
-            </div>
-        </div>
-        <div class="mt-3">
-            <button id="btn-filter" class="btn btn-primary" style="border-radius:50px;padding:8px 22px;"><i class="bi bi-search me-1"></i> Terapkan</button>
-            <button id="btn-reset" class="btn btn-outline-secondary ms-2" style="border-radius:50px;padding:8px 20px;"><i class="bi bi-arrow-counterclockwise me-1"></i> Reset</button>
-            <span class="ms-3" style="font-size:0.82rem;color:var(--text-muted);">Menampilkan <span id="soal-shown">0</span> soal</span>
+        <div class="d-flex align-items-center gap-2 flex-wrap">
+            <button class="btn-header" id="btnTambahSoalModal">
+                <i class="bi bi-plus-lg"></i> Tambah Soal Satuan
+            </button>
+            <a href="{{ route('guru.soal.batch') }}" class="btn-header">
+                <i class="bi bi-lightning-charge"></i> Tambah Soal Batch
+            </a>
         </div>
     </div>
 </div>
 
+{{-- ── 2. Exam Focus Selector Card ── --}}
+<div class="exam-focus-card">
+    <div class="row align-items-center g-3">
+        <div class="col-lg-5 col-md-6">
+            <label class="form-label text-muted small fw-bold text-uppercase mb-1">
+                <i class="bi bi-folder2-open me-1 text-primary"></i> Pilih Ujian yang Ingin Dikelola:
+            </label>
+            <select id="examFocusSelect" class="form-select exam-select-hero">
+                <option value="">-- Tampilkan Semua Ujian --</option>
+            </select>
+        </div>
+        <div class="col-lg-7 col-md-6">
+            <div id="examInfoBox" class="d-flex flex-wrap align-items-center gap-2 pt-md-3">
+                <span class="exam-meta-pill"><i class="bi bi-collection text-primary"></i> Total: <strong id="infoTotalSoal">0</strong> Soal</span>
+                <span class="exam-meta-pill"><i class="bi bi-ui-radios text-info"></i> <strong id="infoTotalPg">0</strong> PG</span>
+                <span class="exam-meta-pill"><i class="bi bi-pencil-square text-purple" style="color:#6f42c1;"></i> <strong id="infoTotalEsai">0</strong> Esai</span>
+                <span class="exam-meta-pill" id="infoKelasPill" style="display:none;"><i class="bi bi-building text-success"></i> <span id="infoKelasText">-</span></span>
+                <span class="exam-meta-pill" id="infoMapelPill" style="display:none;"><i class="bi bi-journal-bookmark text-primary"></i> <span id="infoMapelText">-</span></span>
+            </div>
+        </div>
+    </div>
+</div>
+
+{{-- ── 3. Filter & Search Toolbar ── --}}
+<div class="filter-card">
+    <div class="row g-2 align-items-center">
+        <div class="col-md-4 col-sm-6">
+            <div class="search-wrap">
+                <i class="bi bi-search"></i>
+                <input type="text" id="searchSoal" class="form-control filter-input" placeholder="Cari teks soal atau pilihan jawaban...">
+            </div>
+        </div>
+        <div class="col-md-3 col-sm-6">
+            <select id="filterTipe" class="form-select filter-input">
+                <option value="">Semua Tipe (PG & Esai)</option>
+                <option value="multiple_choice">Pilihan Ganda (PG)</option>
+                <option value="essay">Esai</option>
+            </select>
+        </div>
+        <div class="col-md-3 col-sm-6">
+            <select id="filterMapel" class="form-select filter-input">
+                <option value="">Semua Mata Pelajaran</option>
+            </select>
+        </div>
+        <div class="col-md-2 col-sm-6 text-end">
+            <button id="btnResetFilter" class="btn btn-outline-secondary btn-sm w-100" style="border-radius:50px;height:38px;">
+                <i class="bi bi-arrow-counterclockwise me-1"></i> Reset
+            </button>
+        </div>
+    </div>
+</div>
+
+{{-- ── 4. Main Soal Table ── --}}
 <div class="table-card">
     <div class="table-responsive">
-        <table class="table" id="soal-table">
+        <table class="table align-middle" id="soalTable">
             <thead>
                 <tr>
-                    <th style="width:48px;">No</th>
-                    <th>Pertanyaan</th>
-                    <th>Tipe</th>
-                    <th>Mata Pelajaran</th>
-                    <th>Kelas</th>
-                    <th>Ujian</th>
-                    <th>Opsi A</th><th>Opsi B</th><th>Opsi C</th><th>Opsi D</th>
-                    <th>Kunci</th>
-                    <th style="width:80px;">Aksi</th>
+                    <th style="width:50px;">No</th>
+                    <th>Butir Pertanyaan & Pilihan Jawaban</th>
+                    <th style="width:160px;">Ujian & Kelas</th>
+                    <th style="width:140px;">Mata Pelajaran</th>
+                    <th style="width:110px;" class="text-center">Aksi</th>
                 </tr>
             </thead>
-            <tbody id="soal-tbody">
-                <tr><td colspan="12"><div class="empty-state"><div class="empty-icon"><i class="bi bi-hourglass-split"></i></div><h6>Memuat data...</h6></div></td></tr>
+            <tbody id="soalTbody">
+                <tr><td colspan="5"><div class="empty-state"><div class="empty-icon"><i class="bi bi-hourglass-split"></i></div><h6>Memuat bank soal...</h6></div></td></tr>
             </tbody>
         </table>
     </div>
 </div>
 
-{{-- ===== MODAL EDIT ===== --}}
-<div class="modal-overlay" id="modal-edit">
-    <div class="modal-box">
-        <div class="modal-head">
-            <h5><i class="bi bi-pencil-square me-2 text-primary"></i>Edit Soal</h5>
-            <button class="modal-close" onclick="closeEdit()">&times;</button>
-        </div>
-        <div class="modal-body">
-            <input type="hidden" id="edit-id">
-
-            {{-- Pertanyaan — CKEditor --}}
-            <div class="mb-3">
-                <label class="form-label fw-semibold">Pertanyaan <span class="text-danger">*</span></label>
-                <div id="edit-ck-container"></div>
+{{-- ===== MODAL TAMBAH SOAL SATUAN ===== --}}
+<div class="modal fade" id="modalTambahSoal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+        <div class="modal-content">
+            <div class="modal-header modal-header-brand">
+                <h5 class="modal-title"><i class="bi bi-plus-circle me-2"></i>Tambah Soal Baru</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
             </div>
-
-            <div class="row g-3 mb-3">
-                <div class="col-md-4">
-                    <label class="form-label fw-semibold">Tipe Soal <span class="text-danger">*</span></label>
-                    <select id="edit-type" class="form-select" style="border-radius:10px;" onchange="toggleOpsiEdit(this.value)">
-                        <option value="multiple_choice">Pilihan Ganda</option>
-                        <option value="essay">Essay</option>
-                    </select>
-                </div>
-                <div class="col-md-4">
-                    <label class="form-label fw-semibold">Mata Pelajaran <span class="text-danger">*</span></label>
-                    <select id="edit-subject_id" class="form-select" style="border-radius:10px;"></select>
-                </div>
-                <div class="col-md-4">
-                    <label class="form-label fw-semibold">Kelas <span class="text-danger">*</span></label>
-                    <select id="edit-kelas_id" class="form-select" style="border-radius:10px;" onchange="filterUjianByKelas(this.value)">
-                        <option value="">-- Pilih Kelas --</option>
-                    </select>
-                </div>
-            </div>
-
-            <div class="mb-3">
-                <label class="form-label fw-semibold">Ujian <span class="text-danger">*</span></label>
-                <select id="edit-exam_id" class="form-select" style="border-radius:10px;">
-                    <option value="">-- Pilih Kelas dulu --</option>
-                </select>
-            </div>
-
-            <div id="edit-opsi-wrapper">
-                <label class="form-label fw-semibold">Opsi Jawaban</label>
-                <div class="row g-2 mb-3">
-                    <div class="col-md-6">
-                        <div class="opsi-input-wrap">
-                            <div class="opsi-label-badge">A</div>
-                            <input type="text" id="edit-opsi_a" class="form-control" placeholder="Opsi A">
+            <form id="formTambahSoal">
+                <div class="modal-body p-4">
+                    <div class="row g-3 mb-3">
+                        <div class="col-md-6">
+                            <label class="form-label fw-bold">Ujian Tujuan <span class="text-danger">*</span></label>
+                            <select id="tambah-exam_id" name="exam_id" class="form-select" required onchange="onTambahExamChange(this.value)">
+                                <option value="">-- Pilih Ujian --</option>
+                            </select>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label fw-bold">Mata Pelajaran <span class="text-danger">*</span></label>
+                            <select id="tambah-subject_id" name="subject_id" class="form-select" required>
+                                <option value="">-- Pilih Mapel --</option>
+                            </select>
                         </div>
                     </div>
-                    <div class="col-md-6">
-                        <div class="opsi-input-wrap">
-                            <div class="opsi-label-badge">B</div>
-                            <input type="text" id="edit-opsi_b" class="form-control" placeholder="Opsi B">
-                        </div>
+
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">Tipe Soal <span class="text-danger">*</span></label>
+                        <select id="tambah-type" name="type" class="form-select" onchange="toggleOpsiForm('tambah', this.value)">
+                            <option value="multiple_choice">Pilihan Ganda (PG)</option>
+                            <option value="essay">Esai</option>
+                        </select>
                     </div>
-                    <div class="col-md-6">
-                        <div class="opsi-input-wrap">
-                            <div class="opsi-label-badge">C</div>
-                            <input type="text" id="edit-opsi_c" class="form-control" placeholder="Opsi C">
-                        </div>
+
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">Teks Pertanyaan <span class="text-danger">*</span></label>
+                        <div id="tambah-ck-container"></div>
                     </div>
-                    <div class="col-md-6">
-                        <div class="opsi-input-wrap">
-                            <div class="opsi-label-badge">D</div>
-                            <input type="text" id="edit-opsi_d" class="form-control" placeholder="Opsi D">
+
+                    {{-- Opsi untuk Pilihan Ganda --}}
+                    <div id="tambah-opsi-section">
+                        <label class="form-label fw-bold mb-2">Pilihan Jawaban (Opsi A - D)</label>
+                        <div class="row g-2">
+                            <div class="col-md-6">
+                                <div class="opsi-input-wrap">
+                                    <div class="opsi-label-badge">A</div>
+                                    <input type="text" id="tambah-opsi_a" name="opsi_a" class="form-control" placeholder="Pilihan A">
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="opsi-input-wrap">
+                                    <div class="opsi-label-badge">B</div>
+                                    <input type="text" id="tambah-opsi_b" name="opsi_b" class="form-control" placeholder="Pilihan B">
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="opsi-input-wrap">
+                                    <div class="opsi-label-badge">C</div>
+                                    <input type="text" id="tambah-opsi_c" name="opsi_c" class="form-control" placeholder="Pilihan C">
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="opsi-input-wrap">
+                                    <div class="opsi-label-badge">D</div>
+                                    <input type="text" id="tambah-opsi_d" name="opsi_d" class="form-control" placeholder="Pilihan D">
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="mt-2" style="max-width:240px;">
+                            <label class="form-label fw-bold">Kunci Jawaban Benar <span class="text-danger">*</span></label>
+                            <select id="tambah-jawaban_benar" name="jawaban_benar" class="form-select" style="border-radius:50px;">
+                                <option value="">-- Pilih Kunci --</option>
+                                <option value="A">Opsi A</option>
+                                <option value="B">Opsi B</option>
+                                <option value="C">Opsi C</option>
+                                <option value="D">Opsi D</option>
+                            </select>
                         </div>
                     </div>
                 </div>
-                <div style="max-width:200px;">
-                    <label class="form-label fw-semibold">Kunci Jawaban</label>
-                    <select id="edit-jawaban_benar" class="form-select" style="border-radius:50px;">
-                        <option value="">Pilih</option>
-                        <option value="A">A</option>
-                        <option value="B">B</option>
-                        <option value="C">C</option>
-                        <option value="D">D</option>
-                    </select>
+                <div class="modal-footer border-0 px-4 pb-4 pt-0">
+                    <button type="button" class="btn btn-secondary rounded-pill px-4" data-bs-dismiss="modal">Batal</button>
+                    <button type="submit" class="btn btn-primary rounded-pill px-4" id="btnSimpanTambah">
+                        <i class="bi bi-save me-1"></i> Simpan Soal
+                    </button>
                 </div>
-            </div>
-        </div>
-        <div class="modal-foot">
-            <button class="btn btn-outline-secondary" style="border-radius:50px;padding:8px 20px;" onclick="closeEdit()">Batal</button>
-            <button class="btn btn-primary" style="border-radius:50px;padding:8px 22px;" id="btn-save-edit" onclick="saveEdit()">
-                <i class="bi bi-check-lg me-1"></i> Simpan
-            </button>
+            </form>
         </div>
     </div>
 </div>
 
-{{-- ===== MODAL HAPUS ===== --}}
-<div class="modal-overlay" id="modal-hapus">
-    <div class="confirm-box">
-        <div class="confirm-icon"><i class="bi bi-trash3"></i></div>
-        <h6 class="fw-bold mb-2">Hapus Soal?</h6>
-        <p style="font-size:0.85rem;color:#6c757d;margin-bottom:20px;">Soal ini akan dihapus permanen dan tidak dapat dikembalikan.</p>
-        <input type="hidden" id="hapus-id">
-        <div class="d-flex gap-2 justify-content-center">
-            <button class="btn btn-outline-secondary" style="border-radius:50px;padding:8px 20px;" onclick="closeHapus()">Batal</button>
-            <button class="btn btn-danger" style="border-radius:50px;padding:8px 22px;" id="btn-confirm-hapus" onclick="confirmHapus()">
-                <i class="bi bi-trash me-1"></i> Ya, Hapus
-            </button>
+{{-- ===== MODAL EDIT SOAL ===== --}}
+<div class="modal fade" id="modalEditSoal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+        <div class="modal-content">
+            <div class="modal-header modal-header-brand">
+                <h5 class="modal-title"><i class="bi bi-pencil-square me-2"></i>Edit Soal</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <form id="formEditSoal">
+                <div class="modal-body p-4">
+                    <input type="hidden" id="edit-id">
+
+                    <div class="row g-3 mb-3">
+                        <div class="col-md-6">
+                            <label class="form-label fw-bold">Ujian Tujuan <span class="text-danger">*</span></label>
+                            <select id="edit-exam_id" name="exam_id" class="form-select" required onchange="onEditExamChange(this.value)">
+                                <option value="">-- Pilih Ujian --</option>
+                            </select>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label fw-bold">Mata Pelajaran <span class="text-danger">*</span></label>
+                            <select id="edit-subject_id" name="subject_id" class="form-select" required>
+                                <option value="">-- Pilih Mapel --</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">Tipe Soal <span class="text-danger">*</span></label>
+                        <select id="edit-type" name="type" class="form-select" onchange="toggleOpsiForm('edit', this.value)">
+                            <option value="multiple_choice">Pilihan Ganda (PG)</option>
+                            <option value="essay">Esai</option>
+                        </select>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">Teks Pertanyaan <span class="text-danger">*</span></label>
+                        <div id="edit-ck-container"></div>
+                    </div>
+
+                    {{-- Opsi untuk Pilihan Ganda --}}
+                    <div id="edit-opsi-section">
+                        <label class="form-label fw-bold mb-2">Pilihan Jawaban (Opsi A - D)</label>
+                        <div class="row g-2">
+                            <div class="col-md-6">
+                                <div class="opsi-input-wrap">
+                                    <div class="opsi-label-badge">A</div>
+                                    <input type="text" id="edit-opsi_a" name="opsi_a" class="form-control" placeholder="Pilihan A">
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="opsi-input-wrap">
+                                    <div class="opsi-label-badge">B</div>
+                                    <input type="text" id="edit-opsi_b" name="opsi_b" class="form-control" placeholder="Pilihan B">
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="opsi-input-wrap">
+                                    <div class="opsi-label-badge">C</div>
+                                    <input type="text" id="edit-opsi_c" name="opsi_c" class="form-control" placeholder="Pilihan C">
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="opsi-input-wrap">
+                                    <div class="opsi-label-badge">D</div>
+                                    <input type="text" id="edit-opsi_d" name="opsi_d" class="form-control" placeholder="Pilihan D">
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="mt-2" style="max-width:240px;">
+                            <label class="form-label fw-bold">Kunci Jawaban Benar <span class="text-danger">*</span></label>
+                            <select id="edit-jawaban_benar" name="jawaban_benar" class="form-select" style="border-radius:50px;">
+                                <option value="">-- Pilih Kunci --</option>
+                                <option value="A">Opsi A</option>
+                                <option value="B">Opsi B</option>
+                                <option value="C">Opsi C</option>
+                                <option value="D">Opsi D</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer border-0 px-4 pb-4 pt-0">
+                    <button type="button" class="btn btn-secondary rounded-pill px-4" data-bs-dismiss="modal">Batal</button>
+                    <button type="submit" class="btn btn-primary rounded-pill px-4" id="btnSimpanEdit">
+                        <i class="bi bi-check-lg me-1"></i> Simpan Perubahan
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+{{-- ===== MODAL PREVIEW SOAL ===== --}}
+<div class="modal fade" id="modalPreviewSoal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+        <div class="modal-content">
+            <div class="modal-header modal-header-brand">
+                <h5 class="modal-title"><i class="bi bi-eye me-2"></i>Preview Soal</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body p-4">
+                <div class="d-flex align-items-center justify-content-between mb-3">
+                    <div id="previewMetaBadges" class="d-flex gap-2"></div>
+                    <span class="badge bg-light text-dark border" id="previewUjianText"></span>
+                </div>
+                <div class="preview-question-card" id="previewQuestionText"></div>
+                <div id="previewOptionsWrapper"></div>
+            </div>
+            <div class="modal-footer border-0 px-4 pb-4 pt-0">
+                <button type="button" class="btn btn-secondary rounded-pill px-4" data-bs-dismiss="modal">Tutup</button>
+                <button type="button" class="btn btn-primary rounded-pill px-4" id="btnPreviewToEdit">
+                    <i class="bi bi-pencil me-1"></i> Edit Soal Ini
+                </button>
+            </div>
         </div>
     </div>
 </div>
@@ -259,22 +655,29 @@
 @endsection
 
 @push('scripts')
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script src="https://cdn.ckeditor.com/ckeditor5/41.4.2/classic/ckeditor.js"></script>
 <script>
-var soalData     = [];
-var examsData    = [];
-var subjectsData = [];
-var kelasData    = [];
-var editCKEditor = null; // satu instance CKEditor untuk modal edit
+var allSoal      = [];
+var allExams     = [];
+var allSubjects  = [];
+var tambahEditor = null;
+var editEditor   = null;
+var currentPreviewSoalId = null;
 
-/* ─── Upload Adapter ─── */
+function getCsrfToken() {
+    var meta = document.querySelector('meta[name="csrf-token"]');
+    return meta ? meta.getAttribute('content') : '';
+}
+
+/* ─── CKEditor Upload Adapter ─── */
 class CustomUploadAdapter {
     constructor(loader) { this.loader = loader; }
     upload() {
         return this.loader.file.then(file => new Promise((resolve, reject) => {
             const fd = new FormData();
             fd.append('upload', file);
-            fetch('/guru/upload-image', { method:'POST', headers:{'X-CSRF-TOKEN': getCsrf()}, body:fd })
+            fetch('/guru/upload-image', { method:'POST', headers:{'X-CSRF-TOKEN': getCsrfToken()}, body:fd })
             .then(r => r.json())
             .then(d => d.url ? resolve({ default: d.url }) : reject('Upload failed'))
             .catch(reject);
@@ -291,300 +694,500 @@ var CK_CONFIG = {
     extraPlugins: [UploadAdapterPlugin]
 };
 
-/* ─── Helpers ─── */
-function getCsrf() {
-    var m = document.querySelector('meta[name="csrf-token"]');
-    return m ? m.content : '';
-}
-function tipeBadge(type) {
-    var t = (type||'').toLowerCase();
-    if (t === 'essay') return '<span class="badge-tipe badge-essay"><i class="bi bi-pencil-square"></i> Esai</span>';
-    return '<span class="badge-tipe badge-pg"><i class="bi bi-ui-radios"></i> PG</span>';
-}
-function toggleOpsiEdit(type) {
-    document.getElementById('edit-opsi-wrapper').style.display = (type === 'essay') ? 'none' : '';
+/* ─── Helper UI ─── */
+function toggleOpsiForm(mode, type) {
+    var section = document.getElementById(mode + '-opsi-section');
+    if (section) {
+        section.style.display = (type === 'essay') ? 'none' : 'block';
+    }
 }
 
-/* ─── Filter ujian by kelas di modal ─── */
-function filterUjianByKelas(kelasId) {
-    var uSel       = document.getElementById('edit-exam_id');
-    var currentVal = uSel.dataset.current || '';
-    uSel.innerHTML = '<option value="">-- Pilih Ujian --</option>';
-    var list = kelasId
-        ? examsData.filter(function(e){ return e.school_class && e.school_class.id == kelasId; })
-        : examsData;
-    list.forEach(function(e){
-        var opt = document.createElement('option');
-        opt.value = e.id;
-        opt.textContent = e.title || e.nama || '';
-        if (e.id == currentVal) opt.selected = true;
-        uSel.appendChild(opt);
-    });
+function onTambahExamChange(examId) {
+    var exam = allExams.find(function(e){ return e.id == examId; });
+    if (exam && exam.subject) {
+        document.getElementById('tambah-subject_id').value = exam.subject.id || exam.subject_id;
+    }
 }
 
-/* ─── Render table ─── */
-function renderTable(data) {
-    var tbody = document.getElementById('soal-tbody');
-    document.getElementById('soal-count').textContent = soalData.length + ' soal';
-    document.getElementById('soal-shown').textContent = data.length;
+function onEditExamChange(examId) {
+    var exam = allExams.find(function(e){ return e.id == examId; });
+    if (exam && exam.subject) {
+        document.getElementById('edit-subject_id').value = exam.subject.id || exam.subject_id;
+    }
+}
+
+/* ─── Render Table ─── */
+function renderSoal(data) {
+    var tbody = document.getElementById('soalTbody');
+    var count = document.getElementById('soal-count');
+    
+    count.textContent = allSoal.length + ' soal';
+    
+    // Hitung statistik Ujian Terfokus
+    var focusedExamId = document.getElementById('examFocusSelect').value;
+    var scopeData     = focusedExamId ? allSoal.filter(function(s){ return s.exam_id == focusedExamId; }) : allSoal;
+    
+    var totalPg   = scopeData.filter(function(s){ return s.type === 'multiple_choice' || s.type === 'pg'; }).length;
+    var totalEsai = scopeData.filter(function(s){ return s.type === 'essay'; }).length;
+    
+    document.getElementById('infoTotalSoal').textContent = scopeData.length;
+    document.getElementById('infoTotalPg').textContent   = totalPg;
+    document.getElementById('infoTotalEsai').textContent = totalEsai;
+
+    if (focusedExamId) {
+        var u = allExams.find(function(x){ return x.id == focusedExamId; });
+        if (u) {
+            document.getElementById('infoKelasPill').style.display = 'inline-flex';
+            document.getElementById('infoKelasText').textContent   = u.school_class ? u.school_class.name : '-';
+            document.getElementById('infoMapelPill').style.display = 'inline-flex';
+            document.getElementById('infoMapelText').textContent   = u.subject ? u.subject.name : '-';
+        }
+    } else {
+        document.getElementById('infoKelasPill').style.display = 'none';
+        document.getElementById('infoMapelPill').style.display = 'none';
+    }
 
     if (!data.length) {
-        tbody.innerHTML = '<tr><td colspan="12"><div class="empty-state"><div class="empty-icon"><i class="bi bi-inbox"></i></div><h6>Data tidak ditemukan</h6><p>Coba ubah filter atau tambah soal baru</p></div></td></tr>';
+        tbody.innerHTML = '<tr><td colspan="5"><div class="empty-state"><div class="empty-icon"><i class="bi bi-inbox"></i></div><h6>Belum ada butir soal</h6><p>Coba ubah filter atau klik tombol "Tambah Soal" untuk mulai membuat soal.</p></div></td></tr>';
         return;
     }
+
     var rows = '';
     data.forEach(function(s, idx) {
-        var ujian      = examsData.find(function(e){ return e.id === s.exam_id; });
-        var kelasNm    = ujian && ujian.school_class ? ujian.school_class.name : '-';
-        var ujianNm    = ujian ? (ujian.title||ujian.nama||'-') : '-';
-        var mapelNm    = s.subject ? s.subject.name : '-';
-        var pertanyaan = (s.pertanyaan || s.question_text || '-').replace(/<[^>]*>/g, '');
-        var kunci      = s.jawaban_benar || s.answer_key || '';
+        var isEssay   = (s.type === 'essay');
+        var tipeBadge = isEssay
+            ? '<span class="badge-tipe badge-essay"><i class="bi bi-pencil-square"></i> Esai</span>'
+            : '<span class="badge-tipe badge-pg"><i class="bi bi-ui-radios"></i> Pilihan Ganda</span>';
+        
+        var cleanText = (s.pertanyaan || s.question_text || '-').replace(/<[^>]*>/g, '').trim();
+        var ujian     = allExams.find(function(e){ return e.id === s.exam_id; });
+        var ujianNm   = ujian ? (ujian.title || ujian.nama || '-') : '-';
+        var kelasNm   = ujian && ujian.school_class ? ujian.school_class.name : '-';
+        var mapelNm   = s.subject ? s.subject.name : '-';
+
+        // Opsi preview
+        var opsiHtml = '';
+        if (!isEssay) {
+            var kunci = (s.jawaban_benar || s.answer_key || '').toUpperCase();
+            var optA = s.opsi_a || (s.options && s.options['A']) || '';
+            var optB = s.opsi_b || (s.options && s.options['B']) || '';
+            var optC = s.opsi_c || (s.options && s.options['C']) || '';
+            var optD = s.opsi_d || (s.options && s.options['D']) || '';
+
+            opsiHtml = '<div class="soal-opsi-chips mt-2">' +
+                (optA ? '<span class="opsi-chip ' + (kunci==='A'?'is-correct':'') + '"><span class="opsi-chip-key">A</span> ' + optA + '</span>' : '') +
+                (optB ? '<span class="opsi-chip ' + (kunci==='B'?'is-correct':'') + '"><span class="opsi-chip-key">B</span> ' + optB + '</span>' : '') +
+                (optC ? '<span class="opsi-chip ' + (kunci==='C'?'is-correct':'') + '"><span class="opsi-chip-key">C</span> ' + optC + '</span>' : '') +
+                (optD ? '<span class="opsi-chip ' + (kunci==='D'?'is-correct':'') + '"><span class="opsi-chip-key">D</span> ' + optD + '</span>' : '') +
+            '</div>';
+        }
 
         rows += '<tr>' +
-            '<td>' + (idx+1) + '</td>' +
-            
-            '<td><div class="soal-text-cell" title="' + pertanyaan.replace(/"/g,'&quot;') + '">' + pertanyaan + '</div></td>' +
-            '<td>' + tipeBadge(s.type) + '</td>' +
-            '<td><span class="badge-mapel">' + mapelNm + '</span></td>' +
-            '<td><span class="badge-kelas">' + kelasNm + '</span></td>' +
-            '<td style="font-size:.78rem;">' + ujianNm + '</td>' +
-            // '<td style="font-size:.78rem;">' + (s.opsi_a||'-') + '</td>' +
-            // '<td style="font-size:.78rem;">' + (s.opsi_b||'-') + '</td>' +
-            // '<td style="font-size:.78rem;">' + (s.opsi_c||'-') + '</td>' +
-            // '<td style="font-size:.78rem;">' + (s.opsi_d||'-') + '</td>' +
-            '<td style="font-size:.78rem;">' + (s.opsi_a || (s.options && s.options['A']) || '-') + '</td>' +
-'<td style="font-size:.78rem;">' + (s.opsi_b || (s.options && s.options['B']) || '-') + '</td>' +
-'<td style="font-size:.78rem;">' + (s.opsi_c || (s.options && s.options['C']) || '-') + '</td>' +
-'<td style="font-size:.78rem;">' + (s.opsi_d || (s.options && s.options['D']) || '-') + '</td>' +
-            '<td>' + (kunci ? '<span class="kunci-badge">' + kunci + '</span>' : '<span style="color:#ccc;">—</span>') + '</td>' +
+            '<td class="fw-bold text-muted">' + (idx + 1) + '</td>' +
             '<td>' +
-                '<button class="btn-aksi btn-edit me-1" title="Edit" onclick="openEdit(' + s.id + ')"><i class="bi bi-pencil"></i></button>' +
-                '<button class="btn-aksi btn-hapus" title="Hapus" onclick="openHapus(' + s.id + ')"><i class="bi bi-trash"></i></button>' +
+                '<div class="mb-1">' + tipeBadge + '</div>' +
+                '<div class="soal-pertanyaan-box" title="' + cleanText.replace(/"/g,'&quot;') + '">' + cleanText + '</div>' +
+                opsiHtml +
+            '</td>' +
+            '<td>' +
+                '<div class="d-flex flex-column gap-1">' +
+                    '<span class="badge-ujian"><i class="bi bi-file-earmark-text me-1"></i>' + ujianNm + '</span>' +
+                    '<span class="badge-kelas"><i class="bi bi-building me-1"></i>' + kelasNm + '</span>' +
+                '</div>' +
+            '</td>' +
+            '<td><span class="badge-mapel"><i class="bi bi-journal-bookmark me-1"></i>' + mapelNm + '</span></td>' +
+            '<td class="text-center">' +
+                '<div class="d-flex align-items-center justify-content-center gap-1">' +
+                    '<button class="btn-act btn-act-preview" data-id="' + s.id + '" title="Preview Tampilan Siswa"><i class="bi bi-eye"></i></button>' +
+                    '<button class="btn-act btn-act-edit" data-id="' + s.id + '" title="Edit Soal"><i class="bi bi-pencil"></i></button>' +
+                    '<button class="btn-act btn-act-delete" data-id="' + s.id + '" title="Hapus Soal"><i class="bi bi-trash"></i></button>' +
+                '</div>' +
             '</td>' +
         '</tr>';
     });
+
     tbody.innerHTML = rows;
 }
 
-/* ─── Filter ─── */
+/* ─── Apply Filters ─── */
 function applyFilters() {
-    var kelasId  = document.getElementById('filter-kelas').value;
-    var mapelId  = document.getElementById('filter-mapel').value;
-    var ujianId  = document.getElementById('filter-ujian').value;
-    var q        = document.getElementById('searchSoal').value.toLowerCase().trim();
-    var filtered = soalData;
-    if (kelasId) filtered = filtered.filter(function(s){ var u=examsData.find(function(e){return e.id===s.exam_id;}); return u&&u.school_class&&u.school_class.id==kelasId; });
-    if (mapelId) filtered = filtered.filter(function(s){ return s.subject_id==mapelId; });
-    if (ujianId) filtered = filtered.filter(function(s){ return s.exam_id==ujianId; });
-    if (q)       filtered = filtered.filter(function(s){ return (s.pertanyaan||s.question_text||'').replace(/<[^>]*>/g,'').toLowerCase().includes(q); });
-    renderTable(filtered);
-}
+    var examFocus = document.getElementById('examFocusSelect').value;
+    var tipe      = document.getElementById('filterTipe').value;
+    var mapelId   = document.getElementById('filterMapel').value;
+    var q         = document.getElementById('searchSoal').value.toLowerCase().trim();
 
-/* ─── EDIT ─── */
-function openEdit(id) {
-    var s = soalData.find(function(x){ return x.id === id; });
-    if (!s) return;
+    var filtered = allSoal;
 
-    // Isi field sederhana
-    document.getElementById('edit-id').value           = s.id;
-    document.getElementById('edit-type').value         = s.type || 'multiple_choice';
-    document.getElementById('edit-opsi_a').value       = s.opsi_a || '';
-    document.getElementById('edit-opsi_b').value       = s.opsi_b || '';
-    document.getElementById('edit-opsi_c').value       = s.opsi_c || '';
-    document.getElementById('edit-opsi_d').value       = s.opsi_d || '';
-    document.getElementById('edit-jawaban_benar').value = s.jawaban_benar || s.answer_key || '';
-    toggleOpsiEdit(s.type || 'multiple_choice');
-
-    // Populate mapel
-    var mSel = document.getElementById('edit-subject_id');
-    mSel.innerHTML = '';
-    subjectsData.forEach(function(m){
-        var opt = document.createElement('option');
-        opt.value = m.id; opt.textContent = m.name;
-        if (m.id == s.subject_id) opt.selected = true;
-        mSel.appendChild(opt);
-    });
-
-    // Populate kelas
-    var kSel = document.getElementById('edit-kelas_id');
-    kSel.innerHTML = '<option value="">-- Pilih Kelas --</option>';
-    kelasData.forEach(function(k){
-        var opt = document.createElement('option');
-        opt.value = k.id; opt.textContent = k.name;
-        kSel.appendChild(opt);
-    });
-
-    // Set kelas dari ujian soal ini
-    var ujian   = examsData.find(function(e){ return e.id === s.exam_id; });
-    var kelasId = ujian && ujian.school_class ? ujian.school_class.id : '';
-    kSel.value  = kelasId;
-
-    // Populate ujian (filtered by kelas)
-    var uSel = document.getElementById('edit-exam_id');
-    uSel.dataset.current = s.exam_id;
-    filterUjianByKelas(kelasId);
-    // set value setelah filter
-    setTimeout(function(){ uSel.value = s.exam_id; }, 0);
-
-    // Tampilkan modal
-    document.getElementById('modal-edit').classList.add('active');
-
-    // Init / update CKEditor
-    var pertanyaan = s.pertanyaan || s.question_text || '';
-    var container  = document.getElementById('edit-ck-container');
-
-    if (editCKEditor) {
-        editCKEditor.setData(pertanyaan);
-    } else {
-        container.innerHTML = '';
-        ClassicEditor.create(container, CK_CONFIG)
-        .then(function(editor) {
-            editCKEditor = editor;
-            editor.setData(pertanyaan);
-        })
-        .catch(function(err){ console.error('CKEditor init error:', err); });
+    if (examFocus) {
+        filtered = filtered.filter(function(s){ return s.exam_id == examFocus; });
     }
-}
-
-function closeEdit() {
-    document.getElementById('modal-edit').classList.remove('active');
-}
-
-function saveEdit() {
-    var id  = document.getElementById('edit-id').value;
-    var btn = document.getElementById('btn-save-edit');
-
-    var pertanyaan = editCKEditor ? editCKEditor.getData() : '';
-    if (!pertanyaan.trim()) { showToast('Pertanyaan tidak boleh kosong.', 'danger'); return; }
-
-    var examId = document.getElementById('edit-exam_id').value;
-    if (!examId) { showToast('Pilih ujian terlebih dahulu.', 'danger'); return; }
-
-    btn.disabled = true;
-    btn.innerHTML = '<span class="spinner-border spinner-border-sm me-1"></span> Menyimpan...';
-
-    fetch('/guru/soal/' + id, {
-        method: 'POST',
-        headers: { 'Content-Type':'application/json', 'Accept':'application/json', 'X-CSRF-TOKEN': getCsrf() },
-        body: JSON.stringify({
-            pertanyaan:    pertanyaan,
-            type:          document.getElementById('edit-type').value,
-            jawaban_benar: document.getElementById('edit-jawaban_benar').value,
-            opsi_a:        document.getElementById('edit-opsi_a').value,
-            opsi_b:        document.getElementById('edit-opsi_b').value,
-            opsi_c:        document.getElementById('edit-opsi_c').value,
-            opsi_d:        document.getElementById('edit-opsi_d').value,
-            subject_id:    document.getElementById('edit-subject_id').value,
-            exam_id:       examId,
-        }),
-    })
-    .then(function(r){ return r.json(); })
-    .then(function(res) {
-        if (res.success) {
-            var idx = soalData.findIndex(function(x){ return x.id == id; });
-            if (idx !== -1) soalData[idx] = res.data;
-            applyFilters();
-            closeEdit();
-            showToast('Soal berhasil diperbarui!', 'success');
-        } else {
-            showToast('Gagal menyimpan. ' + (res.message||''), 'danger');
+    if (tipe) {
+        if (tipe === 'multiple_choice') {
+            filtered = filtered.filter(function(s){ return s.type === 'multiple_choice' || s.type === 'pg'; });
+        } else if (tipe === 'essay') {
+            filtered = filtered.filter(function(s){ return s.type === 'essay'; });
         }
-    })
-    .catch(function(){ showToast('Terjadi kesalahan server.', 'danger'); })
-    .finally(function(){ btn.disabled=false; btn.innerHTML='<i class="bi bi-check-lg me-1"></i> Simpan'; });
+    }
+    if (mapelId) {
+        filtered = filtered.filter(function(s){ return s.subject_id == mapelId; });
+    }
+    if (q) {
+        filtered = filtered.filter(function(s){
+            var text  = (s.pertanyaan || s.question_text || '').toLowerCase();
+            var optA  = (s.opsi_a || '').toLowerCase();
+            var optB  = (s.opsi_b || '').toLowerCase();
+            var optC  = (s.opsi_c || '').toLowerCase();
+            var optD  = (s.opsi_d || '').toLowerCase();
+            return text.includes(q) || optA.includes(q) || optB.includes(q) || optC.includes(q) || optD.includes(q);
+        });
+    }
+
+    renderSoal(filtered);
 }
 
-/* ─── HAPUS ─── */
-function openHapus(id) {
-    document.getElementById('hapus-id').value = id;
-    document.getElementById('modal-hapus').classList.add('active');
-}
-function closeHapus() {
-    document.getElementById('modal-hapus').classList.remove('active');
-}
-function confirmHapus() {
-    var id  = document.getElementById('hapus-id').value;
-    var btn = document.getElementById('btn-confirm-hapus');
-    btn.disabled = true;
-    btn.innerHTML = '<span class="spinner-border spinner-border-sm me-1"></span> Menghapus...';
-
-    fetch('/guru/soal/' + id, {
-        method: 'DELETE',
-        headers: { 'Accept':'application/json', 'X-CSRF-TOKEN': getCsrf() },
-    })
-    .then(function(r){ return r.json(); })
-    .then(function(res) {
-        if (res.success) {
-            soalData = soalData.filter(function(x){ return x.id != id; });
-            applyFilters();
-            closeHapus();
-            showToast('Soal berhasil dihapus.', 'success');
-        } else {
-            showToast(res.message || 'Gagal menghapus.', 'danger');
-        }
-    })
-    .catch(function(){ showToast('Terjadi kesalahan server.', 'danger'); })
-    .finally(function(){ btn.disabled=false; btn.innerHTML='<i class="bi bi-trash me-1"></i> Ya, Hapus'; });
-}
-
-/* ─── Toast ─── */
-function showToast(msg, type) {
-    var color = type === 'success' ? '#198754' : '#dc3545';
-    var icon  = type === 'success' ? 'bi-check-circle-fill' : 'bi-x-circle-fill';
-    var el = document.createElement('div');
-    el.style.cssText = 'position:fixed;bottom:24px;right:24px;z-index:9999;background:#fff;border-radius:12px;padding:12px 18px;box-shadow:0 8px 32px rgba(0,0,0,0.15);display:flex;align-items:center;gap:10px;font-size:0.875rem;font-weight:600;border-left:4px solid '+color+';animation:modalIn .22s ease;min-width:260px;';
-    el.innerHTML = '<i class="bi ' + icon + '" style="color:'+color+';font-size:1.1rem;"></i>' + msg;
-    document.body.appendChild(el);
-    setTimeout(function(){ if(el.parentNode) el.remove(); }, 3500);
-}
-
-/* ─── Close overlay on backdrop click ─── */
-['modal-edit','modal-hapus'].forEach(function(mid){
-    document.getElementById(mid).addEventListener('click', function(e){
-        if (e.target === this) this.classList.remove('active');
-    });
-});
-
-/* ─── DOMContentLoaded ─── */
-document.addEventListener('DOMContentLoaded', function () {
+/* ─── Fetch All Initial Data ─── */
+function loadData() {
     fetch('/guru/soal/filters', { headers:{'Accept':'application/json'} })
     .then(function(r){ return r.ok ? r.json() : {}; })
-    .then(function(filter) {
-        subjectsData = filter.subjects || [];
-        examsData    = filter.exams    || [];
+    .then(function(res) {
+        allSubjects = res.subjects || [];
+        allExams    = res.exams    || [];
 
-        var kelasMap = new Map();
-        subjectsData.forEach(function(m){ (m.classes||[]).forEach(function(k){ kelasMap.set(k.id, k.name); }); });
-        examsData.forEach(function(e){ if(e.school_class) kelasMap.set(e.school_class.id, e.school_class.name); });
-        kelasData = Array.from(kelasMap, function(e){ return {id:e[0], name:e[1]}; });
+        // Isi dropdown filter
+        var examSelectHero = document.getElementById('examFocusSelect');
+        var tambahExamSel  = document.getElementById('tambah-exam_id');
+        var editExamSel    = document.getElementById('edit-exam_id');
 
-        var kSel = document.getElementById('filter-kelas');
-        kelasData.forEach(function(k){ kSel.innerHTML += '<option value="'+k.id+'">'+k.name+'</option>'; });
+        var examOpt = '<option value="">-- Tampilkan Semua Ujian --</option>';
+        var examOptForm = '<option value="">-- Pilih Ujian --</option>';
 
-        var mSel = document.getElementById('filter-mapel');
-        subjectsData.forEach(function(m){ mSel.innerHTML += '<option value="'+m.id+'">'+m.name+'</option>'; });
+        allExams.forEach(function(e) {
+            var label = (e.title || e.nama || '') + ' (' + (e.school_class ? e.school_class.name : '-') + ')';
+            examOpt     += '<option value="' + e.id + '">' + label + '</option>';
+            examOptForm += '<option value="' + e.id + '">' + label + '</option>';
+        });
 
-        var uSel = document.getElementById('filter-ujian');
-        examsData.forEach(function(u){ uSel.innerHTML += '<option value="'+u.id+'">'+(u.title||u.nama||'')+'</option>'; });
+        examSelectHero.innerHTML = examOpt;
+        tambahExamSel.innerHTML  = examOptForm;
+        editExamSel.innerHTML    = examOptForm;
+
+        // Isi mapel
+        var mapelFilterSel = document.getElementById('filterMapel');
+        var tambahMapelSel = document.getElementById('tambah-subject_id');
+        var editMapelSel   = document.getElementById('edit-subject_id');
+
+        var mapelOptFilter = '<option value="">Semua Mata Pelajaran</option>';
+        var mapelOptForm   = '<option value="">-- Pilih Mapel --</option>';
+
+        allSubjects.forEach(function(m) {
+            mapelOptFilter += '<option value="' + m.id + '">' + m.name + '</option>';
+            mapelOptForm   += '<option value="' + m.id + '">' + m.name + '</option>';
+        });
+
+        mapelFilterSel.innerHTML = mapelOptFilter;
+        tambahMapelSel.innerHTML = mapelOptForm;
+        editMapelSel.innerHTML   = mapelOptForm;
 
         return fetch('/guru/soal/list', { headers:{'Accept':'application/json'} });
     })
     .then(function(r){ return r.ok ? r.json() : []; })
-    .then(function(data){ soalData = data; renderTable(data); })
-    .catch(function(){
-        document.getElementById('soal-tbody').innerHTML = '<tr><td colspan="12"><div class="empty-state"><div class="empty-icon" style="background:rgba(220,53,69,.08);color:#dc3545;"><i class="bi bi-exclamation-circle"></i></div><h6>Gagal memuat data</h6></div></td></tr>';
+    .then(function(data) {
+        allSoal = data;
+        applyFilters();
+    })
+    .catch(function(err) {
+        console.error(err);
+        document.getElementById('soalTbody').innerHTML = '<tr><td colspan="5"><div class="empty-state"><div class="empty-icon" style="background:rgba(220,53,69,.08);color:#dc3545;"><i class="bi bi-exclamation-circle"></i></div><h6>Gagal memuat data bank soal</h6></div></td></tr>';
+    });
+}
+
+/* ─── Event Handlers ─── */
+document.addEventListener('DOMContentLoaded', function () {
+    var csrf = getCsrfToken();
+
+    loadData();
+
+    // Filter listeners
+    document.getElementById('examFocusSelect').addEventListener('change', applyFilters);
+    document.getElementById('filterTipe').addEventListener('change', applyFilters);
+    document.getElementById('filterMapel').addEventListener('change', applyFilters);
+    document.getElementById('searchSoal').addEventListener('input', applyFilters);
+
+    document.getElementById('btnResetFilter').addEventListener('click', function(){
+        document.getElementById('examFocusSelect').value = '';
+        document.getElementById('filterTipe').value = '';
+        document.getElementById('filterMapel').value = '';
+        document.getElementById('searchSoal').value = '';
+        applyFilters();
     });
 
-    document.getElementById('btn-filter').addEventListener('click', applyFilters);
-    document.getElementById('searchSoal').addEventListener('input', applyFilters);
-    document.getElementById('btn-reset').addEventListener('click', function(){
-        document.getElementById('filter-kelas').value = '';
-        document.getElementById('filter-mapel').value = '';
-        document.getElementById('filter-ujian').value = '';
-        document.getElementById('searchSoal').value   = '';
-        renderTable(soalData);
+    /* ─── Open Tambah Modal ─── */
+    document.getElementById('btnTambahSoalModal').addEventListener('click', function() {
+        document.getElementById('formTambahSoal').reset();
+        toggleOpsiForm('tambah', 'multiple_choice');
+
+        // Jika ada ujian yang sedang difokuskan, set otomatis
+        var currentFocusExam = document.getElementById('examFocusSelect').value;
+        if (currentFocusExam) {
+            document.getElementById('tambah-exam_id').value = currentFocusExam;
+            onTambahExamChange(currentFocusExam);
+        }
+
+        var container = document.getElementById('tambah-ck-container');
+        if (!tambahEditor) {
+            container.innerHTML = '';
+            ClassicEditor.create(container, CK_CONFIG)
+            .then(function(editor) {
+                tambahEditor = editor;
+                editor.setData('');
+            });
+        } else {
+            tambahEditor.setData('');
+        }
+
+        bootstrap.Modal.getOrCreateInstance(document.getElementById('modalTambahSoal')).show();
     });
+
+    /* ─── Submit Tambah Soal ─── */
+    document.getElementById('formTambahSoal').addEventListener('submit', function(e) {
+        e.preventDefault();
+        var pertanyaan = tambahEditor ? tambahEditor.getData() : '';
+        if (!pertanyaan.trim()) {
+            Swal.fire('Peringatan', 'Teks pertanyaan wajib diisi!', 'warning');
+            return;
+        }
+
+        var examId    = document.getElementById('tambah-exam_id').value;
+        var subjectId = document.getElementById('tambah-subject_id').value;
+        var type      = document.getElementById('tambah-type').value;
+
+        var payload = {
+            exam_id:       examId,
+            subject_id:    subjectId,
+            type:          type,
+            pertanyaan:    pertanyaan,
+            opsi_a:        document.getElementById('tambah-opsi_a').value,
+            opsi_b:        document.getElementById('tambah-opsi_b').value,
+            opsi_c:        document.getElementById('tambah-opsi_c').value,
+            opsi_d:        document.getElementById('tambah-opsi_d').value,
+            jawaban_benar: document.getElementById('tambah-jawaban_benar').value,
+        };
+
+        if (type === 'multiple_choice' && !payload.jawaban_benar) {
+            Swal.fire('Peringatan', 'Silakan pilih kunci jawaban yang benar untuk soal PG!', 'warning');
+            return;
+        }
+
+        var btn = document.getElementById('btnSimpanTambah');
+        btn.disabled = true;
+        btn.innerHTML = '<span class="spinner-border spinner-border-sm me-1"></span> Menyimpan...';
+
+        fetch('/guru/soal/store', {
+            method: 'POST',
+            headers: { 'Content-Type':'application/json', 'Accept':'application/json', 'X-CSRF-TOKEN': csrf },
+            body: JSON.stringify(payload)
+        })
+        .then(function(r){ return r.json(); })
+        .then(function(res) {
+            if (res.success) {
+                if (res.question) allSoal.unshift(res.question);
+                applyFilters();
+                bootstrap.Modal.getOrCreateInstance(document.getElementById('modalTambahSoal')).hide();
+                Swal.fire({ icon:'success', title:'Berhasil!', text:'Soal baru berhasil ditambahkan.', timer:1500, showConfirmButton:false });
+            } else {
+                Swal.fire('Gagal', res.message || 'Gagal menambahkan soal.', 'error');
+            }
+        })
+        .catch(function(){ Swal.fire('Error', 'Terjadi kesalahan sistem saat menyimpan.', 'error'); })
+        .finally(function(){ btn.disabled = false; btn.innerHTML = '<i class="bi bi-save me-1"></i> Simpan Soal'; });
+    });
+
+    /* ─── Submit Edit Soal ─── */
+    document.getElementById('formEditSoal').addEventListener('submit', function(e) {
+        e.preventDefault();
+        var id = document.getElementById('edit-id').value;
+        var pertanyaan = editEditor ? editEditor.getData() : '';
+        if (!pertanyaan.trim()) {
+            Swal.fire('Peringatan', 'Teks pertanyaan tidak boleh kosong!', 'warning');
+            return;
+        }
+
+        var examId    = document.getElementById('edit-exam_id').value;
+        var subjectId = document.getElementById('edit-subject_id').value;
+        var type      = document.getElementById('edit-type').value;
+
+        var payload = {
+            exam_id:       examId,
+            subject_id:    subjectId,
+            type:          type,
+            pertanyaan:    pertanyaan,
+            opsi_a:        document.getElementById('edit-opsi_a').value,
+            opsi_b:        document.getElementById('edit-opsi_b').value,
+            opsi_c:        document.getElementById('edit-opsi_c').value,
+            opsi_d:        document.getElementById('edit-opsi_d').value,
+            jawaban_benar: document.getElementById('edit-jawaban_benar').value,
+        };
+
+        var btn = document.getElementById('btnSimpanEdit');
+        btn.disabled = true;
+        btn.innerHTML = '<span class="spinner-border spinner-border-sm me-1"></span> Menyimpan...';
+
+        fetch('/guru/soal/' + id, {
+            method: 'POST',
+            headers: { 'Content-Type':'application/json', 'Accept':'application/json', 'X-CSRF-TOKEN': csrf },
+            body: JSON.stringify(payload)
+        })
+        .then(function(r){ return r.json(); })
+        .then(function(res) {
+            if (res.success) {
+                var idx = allSoal.findIndex(function(x){ return x.id == id; });
+                if (idx !== -1 && res.data) allSoal[idx] = res.data;
+                applyFilters();
+                bootstrap.Modal.getOrCreateInstance(document.getElementById('modalEditSoal')).hide();
+                Swal.fire({ icon:'success', title:'Tersimpan!', text:'Perubahan soal berhasil disimpan.', timer:1500, showConfirmButton:false });
+            } else {
+                Swal.fire('Gagal', res.message || 'Gagal menyimpan soal.', 'error');
+            }
+        })
+        .catch(function(){ Swal.fire('Error', 'Gagal menghubungi server.', 'error'); })
+        .finally(function(){ btn.disabled = false; btn.innerHTML = '<i class="bi bi-check-lg me-1"></i> Simpan Perubahan'; });
+    });
+
+    /* ─── Table Delegation (Preview, Edit, Delete) ─── */
+    document.getElementById('soalTbody').addEventListener('click', function(e) {
+        var btnPreview = e.target.closest('.btn-act-preview');
+        var btnEdit    = e.target.closest('.btn-act-edit');
+        var btnDelete  = e.target.closest('.btn-act-delete');
+
+        /* PREVIEW */
+        if (btnPreview) {
+            var id = btnPreview.getAttribute('data-id');
+            var s  = allSoal.find(function(x){ return x.id == id; });
+            if (!s) return;
+
+            currentPreviewSoalId = id;
+            var isEssay = (s.type === 'essay');
+            var ujian   = allExams.find(function(e){ return e.id === s.exam_id; });
+
+            document.getElementById('previewUjianText').textContent = ujian ? (ujian.title || ujian.nama) : '-';
+            
+            var metaBadges = isEssay
+                ? '<span class="badge-tipe badge-essay"><i class="bi bi-pencil-square"></i> Esai</span>'
+                : '<span class="badge-tipe badge-pg"><i class="bi bi-ui-radios"></i> Pilihan Ganda</span>';
+            metaBadges += '<span class="badge-mapel ms-2">' + (s.subject ? s.subject.name : '-') + '</span>';
+            document.getElementById('previewMetaBadges').innerHTML = metaBadges;
+
+            document.getElementById('previewQuestionText').innerHTML = s.pertanyaan || s.question_text || '-';
+
+            var optWrapper = document.getElementById('previewOptionsWrapper');
+            if (isEssay) {
+                optWrapper.innerHTML = '<div class="alert alert-info py-2 px-3 small border-0"><i class="bi bi-info-circle me-1"></i> Soal tipe esai dijawab dengan teks bebas oleh siswa dan dinilai secara manual.</div>';
+            } else {
+                var kunci = (s.jawaban_benar || s.answer_key || '').toUpperCase();
+                var optA  = s.opsi_a || (s.options && s.options['A']) || '';
+                var optB  = s.opsi_b || (s.options && s.options['B']) || '';
+                var optC  = s.opsi_c || (s.options && s.options['C']) || '';
+                var optD  = s.opsi_d || (s.options && s.options['D']) || '';
+
+                var optList = '';
+                [
+                    {k:'A', v:optA},
+                    {k:'B', v:optB},
+                    {k:'C', v:optC},
+                    {k:'D', v:optD}
+                ].forEach(function(item) {
+                    if (!item.v) return;
+                    var isAns = (kunci === item.k);
+                    optList += '<div class="preview-option-item ' + (isAns ? 'is-answer' : '') + '">' +
+                        '<div class="preview-opt-circle">' + item.k + '</div>' +
+                        '<div class="flex-grow-1">' + item.v + '</div>' +
+                        (isAns ? '<span class="badge bg-success rounded-pill px-2 py-1"><i class="bi bi-check-lg me-1"></i> Kunci Jawaban</span>' : '') +
+                    '</div>';
+                });
+                optWrapper.innerHTML = optList;
+            }
+
+            bootstrap.Modal.getOrCreateInstance(document.getElementById('modalPreviewSoal')).show();
+        }
+
+        /* EDIT */
+        if (btnEdit) {
+            var id = btnEdit.getAttribute('data-id');
+            openEditModal(id);
+        }
+
+        /* DELETE */
+        if (btnDelete) {
+            var id = btnDelete.getAttribute('data-id');
+            Swal.fire({
+                title: 'Hapus Butir Soal Ini?',
+                text: 'Soal akan dihapus permanen dari ujian.',
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#dc3545',
+                cancelButtonColor: '#6c757d',
+                confirmButtonText: 'Ya, Hapus!',
+                cancelButtonText: 'Batal'
+            }).then(function(res) {
+                if (!res.isConfirmed) return;
+                fetch('/guru/soal/' + id, {
+                    method: 'DELETE',
+                    headers: { 'Accept':'application/json', 'X-CSRF-TOKEN': csrf }
+                })
+                .then(function(r){ return r.json(); })
+                .then(function(res) {
+                    if (res.success) {
+                        allSoal = allSoal.filter(function(x){ return x.id != id; });
+                        applyFilters();
+                        Swal.fire({ icon:'success', title:'Terhapus!', text:'Soal berhasil dihapus.', timer:1400, showConfirmButton:false });
+                    } else {
+                        Swal.fire('Gagal', res.message || 'Soal tidak dapat dihapus.', 'error');
+                    }
+                })
+                .catch(function(){ Swal.fire('Error', 'Gagal menghapus soal.', 'error'); });
+            });
+        }
+    });
+
+    document.getElementById('btnPreviewToEdit').addEventListener('click', function() {
+        if (currentPreviewSoalId) {
+            bootstrap.Modal.getOrCreateInstance(document.getElementById('modalPreviewSoal')).hide();
+            openEditModal(currentPreviewSoalId);
+        }
+    });
+
+    function openEditModal(id) {
+        var s = allSoal.find(function(x){ return x.id == id; });
+        if (!s) return;
+
+        document.getElementById('edit-id').value            = s.id;
+        document.getElementById('edit-exam_id').value       = s.exam_id || '';
+        document.getElementById('edit-subject_id').value    = s.subject_id || '';
+        document.getElementById('edit-type').value          = s.type || 'multiple_choice';
+        document.getElementById('edit-opsi_a').value        = s.opsi_a || (s.options && s.options['A']) || '';
+        document.getElementById('edit-opsi_b').value        = s.opsi_b || (s.options && s.options['B']) || '';
+        document.getElementById('edit-opsi_c').value        = s.opsi_c || (s.options && s.options['C']) || '';
+        document.getElementById('edit-opsi_d').value        = s.opsi_d || (s.options && s.options['D']) || '';
+        document.getElementById('edit-jawaban_benar').value = s.jawaban_benar || s.answer_key || '';
+
+        toggleOpsiForm('edit', s.type || 'multiple_choice');
+
+        var container = document.getElementById('edit-ck-container');
+        var content   = s.pertanyaan || s.question_text || '';
+
+        if (!editEditor) {
+            container.innerHTML = '';
+            ClassicEditor.create(container, CK_CONFIG)
+            .then(function(editor) {
+                editEditor = editor;
+                editor.setData(content);
+            });
+        } else {
+            editEditor.setData(content);
+        }
+
+        bootstrap.Modal.getOrCreateInstance(document.getElementById('modalEditSoal')).show();
+    }
 });
 </script>
 @endpush

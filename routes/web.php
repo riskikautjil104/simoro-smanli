@@ -37,6 +37,10 @@
         Route::get('laporan/export-excel', [ReportController::class, 'exportExcel']);
         Route::get('laporan/export-pdf', [ReportController::class, 'exportPdf']);
         // Detail ujian: peserta, ranking, jawaban, simpan nilai, detail page
+        Route::get('ujian/arsip', [ExamController::class, 'arsipView'])->name('ujian.arsip');
+        Route::get('ujian/arsip/list', [ExamController::class, 'arsipList'])->name('ujian.arsip.list');
+        Route::post('ujian/{id}/archive', [ExamController::class, 'archive'])->name('ujian.archive');
+        Route::post('ujian/{id}/unarchive', [ExamController::class, 'unarchive'])->name('ujian.unarchive');
         Route::get('ujian/{id}/detail', [ExamController::class, 'detail'])->name('ujian.detail');
         Route::get('ujian/{id}/peserta', [ExamController::class, 'peserta']);
         Route::get('ujian/{id}/ranking', [ExamController::class, 'ranking']);
@@ -55,12 +59,25 @@
         Route::resource('monitoring', MonitoringController::class);
         Route::get('laporan/data', [ReportController::class, 'data']);
         Route::resource('laporan', ReportController::class);
+        Route::get('kelulusan/alumni', [\App\Http\Controllers\Admin\GraduationController::class, 'alumniView'])->name('kelulusan.alumni');
+        Route::get('kelulusan/arsip', [\App\Http\Controllers\Admin\GraduationController::class, 'alumniView'])->name('kelulusan.arsip');
+        Route::post('kelulusan/pull-kelas', [\App\Http\Controllers\Admin\GraduationController::class, 'pullKelas'])->name('kelulusan.pull-kelas');
+        Route::post('kelulusan/kelulusan-massal', [\App\Http\Controllers\Admin\GraduationController::class, 'kelulusanMassal'])->name('kelulusan.kelulusan-massal');
+        Route::post('kelulusan/{id}/set-status', [\App\Http\Controllers\Admin\GraduationController::class, 'setStatus'])->name('kelulusan.set-status');
+        Route::post('kelulusan/archive-all', [\App\Http\Controllers\Admin\GraduationController::class, 'archiveAll'])->name('kelulusan.archive-all');
+        Route::post('kelulusan/{id}/archive', [\App\Http\Controllers\Admin\GraduationController::class, 'archive'])->name('kelulusan.archive');
+        Route::post('kelulusan/{id}/unarchive', [\App\Http\Controllers\Admin\GraduationController::class, 'unarchive'])->name('kelulusan.unarchive');
+        Route::get('kelulusan/alumni/export-excel', [\App\Http\Controllers\Admin\GraduationController::class, 'exportArsipExcel'])->name('kelulusan.alumni.export-excel');
+        Route::get('kelulusan/alumni/export-pdf', [\App\Http\Controllers\Admin\GraduationController::class, 'exportArsipPdf'])->name('kelulusan.alumni.export-pdf');
+        Route::get('kelulusan/arsip/export-excel', [\App\Http\Controllers\Admin\GraduationController::class, 'exportArsipExcel'])->name('kelulusan.arsip.export-excel');
+        Route::get('kelulusan/arsip/export-pdf', [\App\Http\Controllers\Admin\GraduationController::class, 'exportArsipPdf'])->name('kelulusan.arsip.export-pdf');
         Route::get('kelulusan/export-excel', [\App\Http\Controllers\Admin\GraduationController::class, 'exportExcel'])->name('kelulusan.export-excel');
         Route::get('kelulusan/export-pdf', [\App\Http\Controllers\Admin\GraduationController::class, 'exportPdf'])->name('kelulusan.export-pdf');
         Route::resource('kelulusan', \App\Http\Controllers\Admin\GraduationController::class);
     });
     // Route::get('/admin/ujian/list', [App\Http\Controllers\Admin\ExamController::class, 'list']);
     Route::get('/admin/ujian-list', [App\Http\Controllers\Admin\ExamController::class, 'list'])->middleware(['auth', 'verified', 'role:admin']);
+    Route::get('/admin/ujian-arsip-list', [App\Http\Controllers\Admin\ExamController::class, 'arsipList'])->middleware(['auth', 'verified', 'role:admin']);
 
     // Route group untuk guru
     Route::middleware(['auth', 'verified', 'role:teacher'])->prefix('guru')->name('guru.')->group(function () {
@@ -105,8 +122,14 @@
         Route::post('ujian/{ujianId}/peserta/{userId}/nilai-per-soal', [\App\Http\Controllers\Guru\UjianController::class, 'simpanNilaiPerSoal'])->name('ujian.simpanNilaiPerSoal');
         Route::get('soal/{id}',    [\App\Http\Controllers\Guru\SoalController::class, 'show'])   ->name('soal.show');
         Route::post('soal/{id}',   [\App\Http\Controllers\Guru\SoalController::class, 'update']) ->name('soal.update');
-Route::delete('soal/{id}', [\App\Http\Controllers\Guru\SoalController::class, 'destroy'])->name('soal.destroy');
-Route::view('soal', 'guru.soal')->name('soal');
+        Route::delete('soal/{id}', [\App\Http\Controllers\Guru\SoalController::class, 'destroy'])->name('soal.destroy');
+        Route::view('soal', 'guru.soal')->name('soal');
+
+        // Berita Acara Ujian Guru
+        Route::get('berita-acara', [\App\Http\Controllers\Guru\BeritaAcaraController::class, 'index'])->name('berita-acara.index');
+        Route::get('berita-acara/{examId}', [\App\Http\Controllers\Guru\BeritaAcaraController::class, 'show'])->name('berita-acara.show');
+        Route::get('berita-acara/{examId}/pdf', [\App\Http\Controllers\Guru\BeritaAcaraController::class, 'exportPdf'])->name('berita-acara.pdf');
+        Route::get('berita-acara/{examId}/excel', [\App\Http\Controllers\Guru\BeritaAcaraController::class, 'exportExcel'])->name('berita-acara.excel');
     });
     // Route dashboard siswa
     // Route::middleware(['auth', 'verified', 'role:student'])->prefix('siswa')->name('siswa.')->group(function () {
@@ -162,12 +185,36 @@ Route::view('soal', 'guru.soal')->name('soal');
         Route::delete('/siswa/{id}', [App\Http\Controllers\Admin\StudentController::class, 'destroy']);
     });
 
+    // Route group untuk Kepala Sekolah
+    Route::middleware(['auth', 'verified', 'role:kepala_sekolah'])->prefix('kepala-sekolah')->name('kepala-sekolah.')->group(function () {
+        Route::get('dashboard', [\App\Http\Controllers\Kepsek\DashboardController::class, 'index'])->name('dashboard');
+        Route::get('monitoring', [\App\Http\Controllers\Kepsek\MonitoringController::class, 'index'])->name('monitoring');
+        Route::get('monitoring/data', [\App\Http\Controllers\Kepsek\MonitoringController::class, 'data'])->name('monitoring.data');
+        Route::get('laporan', [\App\Http\Controllers\Kepsek\LaporanController::class, 'index'])->name('laporan');
+        Route::get('laporan/data', [\App\Http\Controllers\Kepsek\LaporanController::class, 'data'])->name('laporan.data');
+        Route::get('berita-acara', [\App\Http\Controllers\Kepsek\BeritaAcaraController::class, 'index'])->name('berita-acara');
+        Route::get('berita-acara/{examId}', [\App\Http\Controllers\Kepsek\BeritaAcaraController::class, 'show'])->name('berita-acara.show');
+        Route::get('berita-acara/{examId}/pdf', [\App\Http\Controllers\Kepsek\BeritaAcaraController::class, 'exportPdf'])->name('berita-acara.pdf');
+        Route::get('ttd', [\App\Http\Controllers\Kepsek\TtdController::class, 'edit'])->name('ttd.edit');
+        Route::post('ttd', [\App\Http\Controllers\Kepsek\TtdController::class, 'update'])->name('ttd.update');
+    });
+
     Route::get('/ujian', [App\Http\Controllers\Admin\ExamController::class, 'list']);
 Route::get('/ranking', [\App\Http\Controllers\Frontend\RankingController::class, 'index'])->name('public.ranking');
 Route::get('/ranking/{id}', [\App\Http\Controllers\Frontend\RankingController::class, 'show'])->name('public.ranking.show');
 
 Route::get('/pengumuman', [\App\Http\Controllers\Frontend\PengumumanController::class, 'index'])->name('public.pengumuman');
 Route::post('/pengumuman/cek', [\App\Http\Controllers\Frontend\PengumumanController::class, 'cek'])->name('public.pengumuman.cek');
+
+Route::get('/docs', function () {
+    return view('frontend.docs');
+})->name('public.docs');
+Route::get('/dokumentasi', function () {
+    return view('frontend.docs');
+});
+Route::get('/panduan', function () {
+    return view('frontend.docs');
+});
 
 Route::get('/', [App\Http\Controllers\Frontend\HomeController::class, 'index']);
 

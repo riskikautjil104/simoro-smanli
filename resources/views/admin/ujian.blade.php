@@ -44,9 +44,11 @@
 .badge-mapel { display:inline-flex; align-items:center; gap:4px; background:rgba(13,110,253,0.08); color:var(--primary); font-size:0.72rem; font-weight:600; padding:3px 9px; border-radius:20px; }
 .badge-kelas { display:inline-flex; align-items:center; gap:4px; background:rgba(32,201,151,0.1); color:#198754; font-size:0.72rem; font-weight:600; padding:3px 9px; border-radius:20px; }
 
-.btn-act { display:inline-flex; align-items:center; gap:5px; padding:6px 12px; border-radius:8px; font-size:0.78rem; font-weight:600; border:none; cursor:pointer; transition:var(--transition); font-family:'Poppins',sans-serif; white-space:nowrap; margin:2px 2px 0 0; }
+.btn-act { display:inline-flex; align-items:center; gap:5px; padding:6px 12px; border-radius:8px; font-size:0.78rem; font-weight:600; border:none; cursor:pointer; transition:var(--transition); font-family:'Poppins',sans-serif; white-space:nowrap; margin:2px 2px 0 0; text-decoration:none; }
 .btn-act-edit   { background:rgba(13,110,253,0.1); color:var(--primary); }
 .btn-act-edit:hover   { background:var(--primary); color:#fff; transform:translateY(-1px); }
+.btn-act-archive { background:rgba(108,117,125,0.1); color:#495057; }
+.btn-act-archive:hover { background:#6c757d; color:#fff; transform:translateY(-1px); }
 .btn-act-delete { background:rgba(220,53,69,0.1); color:#dc3545; }
 .btn-act-delete:hover { background:#dc3545; color:#fff; transform:translateY(-1px); }
 .btn-act-detail { background:rgba(13,202,240,0.1); color:#0a9bba; }
@@ -75,9 +77,14 @@
             <h4><i class="bi bi-file-earmark-text me-2"></i>Data Ujian <span class="count-badge" id="ujian-count">0 ujian</span></h4>
             <p>Kelola jadwal dan data ujian SMA Negeri 5 Morotai</p>
         </div>
-        <button class="btn-header" data-bs-toggle="modal" data-bs-target="#modalUjian" id="btnTambahUjian">
-            <i class="bi bi-plus-lg"></i> Tambah Ujian
-        </button>
+        <div class="d-flex align-items-center gap-2">
+            <a href="/admin/ujian/arsip" class="btn-header">
+                <i class="bi bi-archive"></i> Arsip Ujian
+            </a>
+            <button class="btn-header" data-bs-toggle="modal" data-bs-target="#modalUjian" id="btnTambahUjian">
+                <i class="bi bi-plus-lg"></i> Tambah Ujian
+            </button>
+        </div>
     </div>
 </div>
 
@@ -225,6 +232,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 '<td>' +
                     '<button class="btn-act btn-act-edit" data-id="' + u.id + '"><i class="bi bi-pencil"></i> Edit</button>' +
                     '<a class="btn-act btn-act-detail" href="/admin/ujian/' + u.id + '/detail"><i class="bi bi-eye"></i> Detail</a>' +
+                    '<button class="btn-act btn-act-archive" data-id="' + u.id + '" data-nama="' + (u.nama||'') + '" title="Arsipkan Ujian"><i class="bi bi-archive"></i> Arsip</button>' +
                     '<button class="btn-act btn-act-delete" data-id="' + u.id + '" data-nama="' + (u.nama||'') + '"><i class="bi bi-trash"></i></button>' +
                 '</td>' +
             '</tr>';
@@ -293,8 +301,9 @@ document.addEventListener('DOMContentLoaded', function () {
 
     /* ── Delegation ── */
     document.getElementById('ujianTbody').addEventListener('click', function(e) {
-        var btnEdit   = e.target.closest('.btn-act-edit');
-        var btnDelete = e.target.closest('.btn-act-delete');
+        var btnEdit    = e.target.closest('.btn-act-edit');
+        var btnArchive = e.target.closest('.btn-act-archive');
+        var btnDelete  = e.target.closest('.btn-act-delete');
 
         if (btnEdit) {
             var id = btnEdit.getAttribute('data-id');
@@ -310,6 +319,35 @@ document.addEventListener('DOMContentLoaded', function () {
                 document.getElementById('durasiUjian').value     = u.duration || '';
                 document.getElementById('modalUjianLabel').innerHTML = '<i class="bi bi-pencil me-2"></i>Edit Ujian';
                 bootstrap.Modal.getOrCreateInstance(document.getElementById('modalUjian')).show();
+            });
+        }
+
+        if (btnArchive) {
+            var id   = btnArchive.getAttribute('data-id');
+            var nama = btnArchive.getAttribute('data-nama');
+            Swal.fire({
+                title: 'Arsipkan "' + nama + '"?',
+                text: 'Ujian ini akan dipindahkan ke Arsip Ujian dan disembunyikan dari daftar aktif.',
+                icon: 'info',
+                showCancelButton: true,
+                confirmButtonColor: '#6c757d',
+                cancelButtonColor: '#adb5bd',
+                confirmButtonText: '<i class="bi bi-archive me-1"></i> Ya, Arsipkan!',
+                cancelButtonText: 'Batal'
+            }).then(function(r) {
+                if (!r.isConfirmed) return;
+                fetch('/admin/ujian/' + id + '/archive', {
+                    method: 'POST',
+                    headers: { 'X-CSRF-TOKEN': csrfToken, 'Accept': 'application/json' }
+                })
+                .then(function(res) { if (!res.ok) throw new Error(); return res.json(); })
+                .then(function(res) {
+                    fetchUjian();
+                    Swal.fire({ icon:'success', title:'Diarsipkan!', text: res.message || 'Ujian berhasil diarsipkan.', timer:1500, showConfirmButton:false });
+                })
+                .catch(function() {
+                    Swal.fire('Error', 'Gagal mengarsipkan ujian.', 'error');
+                });
             });
         }
 

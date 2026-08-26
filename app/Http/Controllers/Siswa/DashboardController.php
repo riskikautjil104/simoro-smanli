@@ -226,7 +226,8 @@ class DashboardController extends Controller
         $user = Auth::user();
         $now  = now();
 
-        $ujians = \App\Models\Exam::where('class_id', $user->class_id)
+        $ujians = \App\Models\Exam::active()
+            ->where('class_id', $user->class_id)
             ->where('start_time', '<=', $now)
             ->where(function ($q) use ($now) {
                 $q->whereNull('end_time')->orWhere('end_time', '>=', $now);

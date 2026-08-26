@@ -15,7 +15,7 @@ class ExamController extends Controller
      */
     public function list()
     {
-        $ujians = \App\Models\Exam::with(['subject', 'schoolClass'])->get();
+        $ujians = \App\Models\Exam::active()->with(['subject', 'schoolClass'])->get();
         $result = $ujians->map(function ($ujian) {
             // Handle start_time as Carbon instance if possible
             $tanggal = null;
@@ -43,7 +43,7 @@ class ExamController extends Controller
     {
         // Jika request expects JSON (AJAX), return data ujian sebagai JSON
         if (request()->wantsJson()) {
-            $ujians = \App\Models\Exam::with(['subject', 'schoolClass'])->get();
+            $ujians = \App\Models\Exam::active()->with(['subject', 'schoolClass'])->get();
             $result = $ujians->map(function ($ujian) {
                 $tanggal = null;
                 if ($ujian->start_time) {
@@ -415,6 +415,97 @@ class ExamController extends Controller
         $session->save();
         return response()->json(['success' => true]);
     }
+
+    /**
+     * Halaman daftar ujian yang diarsipkan.
+     */
+    public function arsipView()
+    {
+        return view('admin.ujian_arsip');
+    }
+
+    /**
+     * Data JSON daftar ujian yang diarsipkan.
+     */
+    public function arsipList()
+    {
+        $ujians = \App\Models\Exam::archived()
+            ->with(['subject', 'schoolClass'])
+            ->orderByDesc('archived_at')
+            ->get();
+
+        $result = $ujians->map(function ($ujian) {
+            $tanggal = null;
+            if ($ujian->start_time) {
+                if ($ujian->start_time instanceof \Carbon\Carbon) {
+                    $tanggal = $ujian->start_time->format('Y-m-d H:i');
+                } else {
+                    $tanggal = date('Y-m-d H:i', strtotime($ujian->start_time));
+                }
+            }
+
+            $tglArsip = null;
+            if ($ujian->archived_at) {
+                if ($ujian->archived_at instanceof \Carbon\Carbon) {
+                    $tglArsip = $ujian->archived_at->format('d-m-Y H:i');
+                } else {
+                    $tglArsip = date('d-m-Y H:i', strtotime($ujian->archived_at));
+                }
+            }
+
+            $totalPeserta = \App\Models\ExamSession::where('exam_id', $ujian->id)->count();
+
+            return [
+                'id' => $ujian->id,
+                'nama' => $ujian->title,
+                'mapel' => $ujian->subject ? ['id' => $ujian->subject->id, 'nama' => $ujian->subject->name] : null,
+                'kelas' => $ujian->schoolClass ? ['id' => $ujian->schoolClass->id, 'nama' => $ujian->schoolClass->name] : null,
+                'tanggal' => $tanggal,
+                'archived_at' => $tglArsip,
+                'status' => $ujian->status,
+                'duration' => $ujian->duration,
+                'total_peserta' => $totalPeserta,
+            ];
+        });
+
+        return response()->json($result);
+    }
+
+    /**
+     * Mengarsipkan ujian.
+     */
+    public function archive($id)
+    {
+        $ujian = \App\Models\Exam::findOrFail($id);
+        $ujian->update([
+            'is_archived' => true,
+            'archived_at' => now(),
+            'status' => 'finished',
+        ]);
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Ujian "' . $ujian->title . '" berhasil diarsipkan.'
+        ]);
+    }
+
+    /**
+     * Memulihkan ujian dari arsip ke daftar ujian aktif.
+     */
+    public function unarchive($id)
+    {
+        $ujian = \App\Models\Exam::findOrFail($id);
+        $ujian->update([
+            'is_archived' => false,
+            'archived_at' => null,
+        ]);
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Ujian "' . $ujian->title . '" berhasil dipulihkan dari arsip.'
+        ]);
+    }
+
     /**
      * Show the form for creating a new resource.
      */
@@ -422,8 +513,4 @@ class ExamController extends Controller
     {
         //
     }
-
-    /**
-     * Store a newly created resource in storage.
-     */
 }

@@ -123,8 +123,10 @@ document.addEventListener('DOMContentLoaded', function () {
                 '<td style="font-size:.8rem;">' + (u.start_time||'-') + '</td>' +
                 '<td style="font-size:.8rem;">' + (u.end_time||'-') + '</td>' +
                 '<td style="font-size:.8rem;">' + (u.duration ? u.duration + ' mnt' : '-') + '</td>' +
-                '<td>' + statusBadge(u.status) + '</td>' +
-                '<td><a class="btn-act btn-act-detail" href="/guru/ujian/' + u.id + '/detail"><i class="bi bi-eye"></i> Detail</a></td>' +
+                '<td>' +
+                    '<a class="btn-act btn-act-detail me-1" href="/guru/ujian/' + u.id + '/detail"><i class="bi bi-eye"></i> Detail</a>' +
+                    '<a class="btn-act" style="background:rgba(13,110,253,0.1);color:#0d6efd;" href="/guru/berita-acara/' + u.id + '"><i class="bi bi-file-earmark-ruled"></i> Berita Acara</a>' +
+                '</td>' +
             '</tr>';
         });
         tbody.innerHTML = rows;

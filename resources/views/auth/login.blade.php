@@ -42,6 +42,11 @@
             <x-primary-button class="ms-3">
                 {{ __('Log in') }}
             </x-primary-button>
+        <div class="mt-6 pt-4 border-t border-gray-200 text-center text-sm text-gray-500">
+            Butuh bantuan / panduan penggunaan? 
+            <a href="{{ route('public.docs') }}" target="_blank" class="text-indigo-600 hover:text-indigo-800 font-semibold underline">
+                Buka Dokumentasi &amp; Panduan
+            </a>
         </div>
     </form>
 </x-guest-layout>

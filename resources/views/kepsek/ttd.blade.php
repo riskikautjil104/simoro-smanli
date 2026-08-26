@@ -1,6 +1,6 @@
 @extends('layouts.master')
 
-@section('title', 'Tanda Tangan Digital Guru')
+@section('title', 'Tanda Tangan Digital Kepala Sekolah')
 
 @push('styles')
 <style>
@@ -50,9 +50,16 @@
 @section('layoutContent')
 
 <div class="page-header">
-    <h4 class="fw-bold mb-1"><i class="bi bi-vector-pen me-2"></i>Tanda Tangan Digital Guru</h4>
-    <p class="mb-0 text-white-50">Atur tanda tangan digital Anda untuk disematkan pada Berita Acara Ujian dan Lembar Hasil Siswa</p>
+    <h4 class="fw-bold mb-1"><i class="bi bi-vector-pen me-2"></i>Tanda Tangan Digital Kepala Sekolah</h4>
+    <p class="mb-0 text-white-50">Atur tanda tangan digital resmi Kepala Sekolah untuk disematkan pada seluruh dokumen Berita Acara dan Laporan Ujian</p>
 </div>
+
+@if(session('success'))
+<div class="alert alert-success alert-dismissible fade show shadow-sm rounded-4" role="alert">
+    <i class="bi bi-check-circle-fill me-2"></i>{{ session('success') }}
+    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+</div>
+@endif
 
 <div class="row g-4">
     <div class="col-lg-8">
@@ -74,11 +81,16 @@
                 </div>
             </div>
 
-            <div class="d-flex justify-content-end">
-                <button type="button" class="btn btn-primary rounded-pill px-4 shadow-sm" id="btnSimpanTtd">
-                    <i class="bi bi-save me-1"></i> Simpan Tanda Tangan
-                </button>
-            </div>
+            <form method="POST" action="{{ route('kepala-sekolah.ttd.update') }}" id="formTtdKepsek">
+                @csrf
+                <input type="hidden" name="ttd_signature" id="ttdSignatureInput" value="{{ $user->ttd_signature }}">
+
+                <div class="d-flex justify-content-end">
+                    <button type="submit" class="btn btn-primary rounded-pill px-4 shadow-sm" id="btnSimpanTtd">
+                        <i class="bi bi-save me-1"></i> Simpan Tanda Tangan
+                    </button>
+                </div>
+            </form>
         </div>
     </div>
 
@@ -86,14 +98,20 @@
         <div class="card border-0 shadow-sm rounded-4 p-4 bg-white text-center">
             <h6 class="fw-bold mb-3"><i class="bi bi-shield-check me-2 text-success"></i>TTD Aktif Saat Ini</h6>
             <div class="ttd-preview-box mx-auto mb-3">
-                @if(auth()->user()->ttd_signature)
-                    <img src="{{ auth()->user()->ttd_signature }}" id="activeTtdImg" alt="TTD Guru">
+                @if($user->ttd_signature)
+                    <img src="{{ $user->ttd_signature }}" id="activeTtdImg" alt="TTD Kepala Sekolah">
                 @else
                     <span class="text-muted small" id="activeTtdPlaceholder">Belum ada TTD</span>
                 @endif
             </div>
-            <div class="fw-bold text-dark">{{ auth()->user()->name }}</div>
-            <div class="text-muted small">NIP: {{ auth()->user()->nip ?? '-' }}</div>
+            <div class="fw-bold text-dark">{{ $user->name }}</div>
+            <div class="text-muted small">Kepala SMA Negeri 5 Pulau Morotai</div>
+            <div class="text-muted small mt-1">NIP: <strong>{{ $user->nip ?? '-' }}</strong> | NIK: <strong>{{ $user->nik ?? '-' }}</strong></div>
+            <div class="mt-3">
+                <a href="{{ route('profile.edit') }}" class="btn btn-sm btn-outline-secondary rounded-pill px-3">
+                    <i class="bi bi-pencil me-1"></i> Edit Profil / NIP
+                </a>
+            </div>
         </div>
     </div>
 </div>
@@ -101,29 +119,28 @@
 @endsection
 
 @push('scripts')
-<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script>
 document.addEventListener('DOMContentLoaded', function() {
-    const canvas   = document.getElementById('ttdCanvas');
-    const ctx      = canvas.getContext('2d');
-    const upload   = document.getElementById('uploadTtdFile');
+    const canvas = document.getElementById('ttdCanvas');
+    const ctx    = canvas.getContext('2d');
+    const input  = document.getElementById('ttdSignatureInput');
+    const upload = document.getElementById('uploadTtdFile');
     const btnClear = document.getElementById('btnClearCanvas');
-    const btnSave  = document.getElementById('btnSimpanTtd');
-    let isDrawing  = false;
-    let hasDrawn   = false;
+    let isDrawing = false;
+    let hasDrawn  = false;
 
     ctx.strokeStyle = '#000';
     ctx.lineWidth   = 2.5;
     ctx.lineCap     = 'round';
     ctx.lineJoin    = 'round';
 
-    @if(auth()->user()->ttd_signature)
+    @if($user->ttd_signature)
         let img = new Image();
         img.onload = function() {
             ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
             hasDrawn = true;
         };
-        img.src = @json(auth()->user()->ttd_signature);
+        img.src = @json($user->ttd_signature);
     @endif
 
     function getPos(e) {
@@ -160,7 +177,10 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     function endDraw(e) {
-        isDrawing = false;
+        if (isDrawing) {
+            isDrawing = false;
+            input.value = canvas.toDataURL('image/png');
+        }
     }
 
     canvas.addEventListener('mousedown', startDraw);
@@ -173,6 +193,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
     btnClear.addEventListener('click', function() {
         ctx.clearRect(0, 0, canvas.width, canvas.height);
+        input.value = '';
         hasDrawn = false;
     });
 
@@ -185,6 +206,7 @@ document.addEventListener('DOMContentLoaded', function() {
             uploadedImg.onload = function() {
                 ctx.clearRect(0, 0, canvas.width, canvas.height);
                 ctx.drawImage(uploadedImg, 0, 0, canvas.width, canvas.height);
+                input.value = canvas.toDataURL('image/png');
                 hasDrawn = true;
             };
             uploadedImg.src = evt.target.result;
@@ -192,39 +214,10 @@ document.addEventListener('DOMContentLoaded', function() {
         reader.readAsDataURL(file);
     });
 
-    btnSave.addEventListener('click', function() {
-        const signatureBase64 = canvas.toDataURL('image/png');
-        btnSave.disabled = true;
-        btnSave.innerHTML = '<span class="spinner-border spinner-border-sm me-1"></span> Menyimpan...';
-
-        fetch('{{ route("guru.ttd.update") }}', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'Accept': 'application/json',
-                'X-CSRF-TOKEN': '{{ csrf_token() }}'
-            },
-            body: JSON.stringify({ ttd_signature: signatureBase64 })
-        })
-        .then(r => r.json())
-        .then(res => {
-            Swal.fire({
-                icon: 'success',
-                title: 'Berhasil!',
-                text: 'Tanda tangan digital Anda berhasil disimpan.',
-                timer: 1500,
-                showConfirmButton: false
-            }).then(() => {
-                location.reload();
-            });
-        })
-        .catch(err => {
-            Swal.fire('Error', 'Gagal menyimpan tanda tangan.', 'error');
-        })
-        .finally(() => {
-            btnSave.disabled = false;
-            btnSave.innerHTML = '<i class="bi bi-save me-1"></i> Simpan Tanda Tangan';
-        });
+    document.getElementById('formTtdKepsek').addEventListener('submit', function(e) {
+        if (hasDrawn) {
+            input.value = canvas.toDataURL('image/png');
+        }
     });
 });
 </script>

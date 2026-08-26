@@ -20,6 +20,11 @@ class User extends Authenticatable
         return $this->belongsTo(SchoolClass::class, 'class_id');
     }
 
+    public function previousClass(): BelongsTo
+    {
+        return $this->belongsTo(SchoolClass::class, 'previous_class_id');
+    }
+
     // Relasi ke mapel (untuk guru)
     public function subjects(): HasMany
     {
@@ -37,8 +42,13 @@ class User extends Authenticatable
         'password',
         'role',
         'nip',
+        'nik',
         'phone',
         'class_id',
+        'is_graduated',
+        'graduated_at',
+        'angkatan',
+        'previous_class_id',
         'nis',
         'ttd_signature',
     ];
@@ -63,6 +73,18 @@ class User extends Authenticatable
         return [
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
+            'is_graduated' => 'boolean',
+            'graduated_at' => 'datetime',
         ];
+    }
+
+    public function scopeActiveStudents($query)
+    {
+        return $query->where('role', 'student')->where('is_graduated', false);
+    }
+
+    public function scopeGraduatedStudents($query)
+    {
+        return $query->where('role', 'student')->where('is_graduated', true);
     }
 }

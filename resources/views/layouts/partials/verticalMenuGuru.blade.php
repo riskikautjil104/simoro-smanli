@@ -129,6 +129,12 @@
           <span>Hasil Ujian</span>
         </a>
       </li>
+      <li>
+        <a class="swirl-link {{ request()->routeIs('guru.berita-acara*') ? 'active' : '' }}" href="{{ route('guru.berita-acara.index') }}">
+          <i class="bi bi-file-earmark-ruled"></i>
+          <span>Berita Acara</span>
+        </a>
+      </li>
     </ul>
 
     <div class="swirl-divider"></div>

@@ -17,13 +17,27 @@ class Exam extends Model
         'start_time',
         'end_time',
         'duration',
-        'status'
+        'status',
+        'is_archived',
+        'archived_at'
     ];
 
     protected $casts = [
         'start_time' => 'datetime',
         'end_time' => 'datetime',
+        'is_archived' => 'boolean',
+        'archived_at' => 'datetime',
     ];
+
+    public function scopeActive($query)
+    {
+        return $query->where('is_archived', false);
+    }
+
+    public function scopeArchived($query)
+    {
+        return $query->where('is_archived', true);
+    }
 
     public function subject(): BelongsTo
     {
@@ -38,5 +52,15 @@ class Exam extends Model
     public function questions()
     {
         return $this->hasMany(Question::class);
+    }
+
+    public function sessions()
+    {
+        return $this->hasMany(ExamSession::class, 'exam_id');
+    }
+
+    public function examSessions()
+    {
+        return $this->hasMany(ExamSession::class, 'exam_id');
     }
 }

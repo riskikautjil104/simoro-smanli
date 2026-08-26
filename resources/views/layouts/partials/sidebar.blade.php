@@ -6,6 +6,7 @@
     <li class="nav-item mb-2"><a class="nav-link" href="/admin/kelas"><i class="bx bx-building-house"></i> Kelas</a></li>
     <li class="nav-item mb-2"><a class="nav-link" href="/mapel"><i class="bx bx-book"></i> Mapel</a></li>
     <li class="nav-item mb-2"><a class="nav-link" href="/admin/ujian"><i class="bx bx-task"></i> Ujian</a></li>
+    <li class="nav-item mb-2"><a class="nav-link" href="/admin/ujian/arsip"><i class="bx bx-archive"></i> Arsip Ujian</a></li>
     <li class="nav-item mb-2"><a class="nav-link" href="/soal"><i class="bx bx-edit"></i> Soal</a></li>
     <li class="nav-item mb-2"><a class="nav-link" href="/monitoring"><i class="bx bx-desktop"></i> Monitoring</a></li>
     <li class="nav-item mb-2"><a class="nav-link" href="/laporan"><i class="bx bx-bar-chart"></i> Laporan</a></li>

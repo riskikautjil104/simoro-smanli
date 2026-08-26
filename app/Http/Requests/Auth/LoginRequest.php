@@ -49,6 +49,16 @@ class LoginRequest extends FormRequest
             ]);
         }
 
+        $user = Auth::user();
+        if ($user && $user->role === 'student' && $user->is_graduated) {
+            Auth::logout();
+            RateLimiter::hit($this->throttleKey());
+
+            throw ValidationException::withMessages([
+                'email' => 'Akun Anda telah dinonaktifkan karena sudah dinyatakan Lulus / Alumni SMA Negeri 5 Pulau Morotai.',
+            ]);
+        }
+
         RateLimiter::clear($this->throttleKey());
     }
 

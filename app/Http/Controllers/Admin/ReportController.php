@@ -120,7 +120,7 @@ class ReportController extends Controller
         if ($kelasId) $query->whereHas('user', function ($q) use ($kelasId) {
             $q->where('class_id', $kelasId);
         });
-        $ttd = $request->input('ttd');
+        $ttd = $request->input('ttd') ?: (auth()->user() ? auth()->user()->ttd_signature : null);
         $sessions = $query->get();
         $data = $sessions->map(function ($s) {
             $score = $s->score;
@@ -164,7 +164,7 @@ class ReportController extends Controller
     {
         $ujianId = $request->input('ujian_id');
         $kelasId = $request->input('kelas_id');
-        $ttd = $request->input('ttd');
+        $ttd = $request->input('ttd') ?: (auth()->user() ? auth()->user()->ttd_signature : null);
         $query = \App\Models\ExamSession::with(['user', 'exam']);
         if ($ujianId) $query->where('exam_id', $ujianId);
         if ($kelasId) $query->whereHas('user', function ($q) use ($kelasId) {

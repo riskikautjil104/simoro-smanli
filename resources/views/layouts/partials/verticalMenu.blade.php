@@ -107,7 +107,7 @@
       <li>
         <a class="swirl-link {{ $active('admin/kelulusan*') }}" href="/admin/kelulusan">
           <i class="bi bi-mortarboard"></i>
-          <span>Kelulusan Siswa</span>
+          <span>Kelulusan &amp; Alumni</span>
         </a>
       </li>
       <li>
@@ -134,9 +134,15 @@
     <span class="swirl-section-label">Ujian</span>
     <ul class="swirl-nav">
       <li>
-        <a class="swirl-link {{ $active('admin/ujian*') }}" href="/admin/ujian">
+        <a class="swirl-link {{ (request()->is('admin/ujian') || (request()->is('admin/ujian/*') && !request()->is('admin/ujian/arsip*'))) ? 'active' : '' }}" href="/admin/ujian">
           <i class="bi bi-file-earmark-text"></i>
           <span>Data Ujian</span>
+        </a>
+      </li>
+      <li>
+        <a class="swirl-link {{ $active('admin/ujian/arsip*') }}" href="/admin/ujian/arsip">
+          <i class="bi bi-archive"></i>
+          <span>Arsip Ujian</span>
         </a>
       </li>
       <li>

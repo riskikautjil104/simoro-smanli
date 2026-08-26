@@ -198,7 +198,8 @@ class StudentController extends Controller
         $user = $request->user();
         $now = now();
 
-        $ujians = Exam::where('class_id', $user->class_id)
+        $ujians = Exam::active()
+            ->where('class_id', $user->class_id)
             ->where('start_time', '<=', $now)
             ->where(function ($q) use ($now) {
                 $q->whereNull('end_time')->orWhere('end_time', '>=', $now);

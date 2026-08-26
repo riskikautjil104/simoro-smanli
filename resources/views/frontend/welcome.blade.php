@@ -776,12 +776,13 @@
             <nav id="sm-nav">
                 <ul id="sm-nav-list">
                     <li><a href="#hero"       class="sm-nav-link active">Beranda</a></li>
-                    <li><a href="{{ route('public.pengumuman') }}" target="_blank" class="sm-nav-link active">Pengumuman Kelulusan</a></li>
+                    <li><a href="{{ route('public.docs') }}" target="_blank" class="sm-nav-link"><i class="bi bi-book me-1"></i> Dokumentasi</a></li>
+                    <li><a href="{{ route('public.pengumuman') }}" target="_blank" class="sm-nav-link">Pengumuman Kelulusan</a></li>
                     <li><a href="#about"      class="sm-nav-link">Tentang</a></li>
                     <li><a href="#features"   class="sm-nav-link">Fitur</a></li>
                     <li><a href="#services"   class="sm-nav-link">Layanan</a></li>
                     <li><a href="#my-project" class="sm-nav-link">My Project</a></li>
-                    <li> <a href="https://simoro.sma-n5-morotai.id/ranking" target="_blank">Ranking Siswa</a></li>
+                    <li><a href="{{ route('public.ranking') }}" target="_blank">Ranking Siswa</a></li>
                     <li><a href="#contact"    class="sm-nav-link">Kontak</a></li>
                 </ul>
             </nav>

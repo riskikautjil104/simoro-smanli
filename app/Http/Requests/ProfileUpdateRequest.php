@@ -25,6 +25,10 @@ class ProfileUpdateRequest extends FormRequest
                 'max:255',
                 Rule::unique(User::class)->ignore($this->user()->id),
             ],
+            'nip' => ['nullable', 'string', 'max:50'],
+            'nik' => ['nullable', 'string', 'max:50'],
+            'phone' => ['nullable', 'string', 'max:30'],
+            'ttd_signature' => ['nullable', 'string'],
         ];
     }
 }

@@ -32,15 +32,14 @@ class AuthenticatedSessionController extends Controller
         $user = auth()->user();
         if ($user->role === 'admin') {
             return redirect()->intended(route('admin.dashboard'));
-        } 
-        elseif ($user->role === 'teacher') {
+        } elseif ($user->role === 'kepala_sekolah') {
+            return redirect()->intended(route('kepala-sekolah.dashboard'));
+        } elseif ($user->role === 'teacher') {
             return redirect()->intended(route('guru.dashboard'));
         } elseif ($user->role === 'mobile') {
             return redirect()->intended(route('mobile.dashboard'));
-        }
-        else {
-           
-return redirect()->intended(route('siswa.dashboard'));
+        } else {
+            return redirect()->intended(route('siswa.dashboard'));
         }
     }
 

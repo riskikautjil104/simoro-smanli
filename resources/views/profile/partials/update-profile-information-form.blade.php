@@ -47,31 +47,93 @@
                 <div class="invalid-feedback">{{ $message }}</div>
             @enderror
 
-            {{-- Email Verification Alert --}}
-            @if ($user instanceof \Illuminate\Contracts\Auth\MustVerifyEmail && ! $user->hasVerifiedEmail())
-                <div class="alert alert-warning mt-3 mb-0">
-                    <small>
-                        <i class="bi bi-exclamation-circle me-1"></i>
-                        Email Anda belum diverifikasi.
-                        <button 
-                            form="send-verification" 
-                            class="btn btn-link btn-sm p-0 align-baseline text-decoration-underline"
-                        >
-                            Klik di sini untuk mengirim ulang email verifikasi.
-                        </button>
-                    </small>
+        {{-- NIP & NIK Field (untuk Guru, Kepala Sekolah, Admin) --}}
+        @if(in_array($user->role, ['admin', 'teacher', 'kepala_sekolah']))
+        <div class="row g-3 mb-3">
+            <div class="col-md-6">
+                <label for="nip" class="form-label fw-semibold">NIP</label>
+                <input 
+                    type="text" 
+                    class="form-control @error('nip') is-invalid @enderror" 
+                    id="nip" 
+                    name="nip" 
+                    value="{{ old('nip', $user->nip) }}" 
+                    placeholder="Contoh: 198001012005011001"
+                >
+                @error('nip')
+                    <div class="invalid-feedback">{{ $message }}</div>
+                @enderror
+            </div>
+            <div class="col-md-6">
+                <label for="nik" class="form-label fw-semibold">NIK</label>
+                <input 
+                    type="text" 
+                    class="form-control @error('nik') is-invalid @enderror" 
+                    id="nik" 
+                    name="nik" 
+                    value="{{ old('nik', $user->nik) }}" 
+                    placeholder="Nomor Induk Kependudukan (16 digit)"
+                >
+                @error('nik')
+                    <div class="invalid-feedback">{{ $message }}</div>
+                @enderror
+            </div>
+        </div>
+        @endif
 
-                    @if (session('status') === 'verification-link-sent')
-                        <div class="mt-2">
-                            <small class="text-success fw-semibold">
-                                <i class="bi bi-check-circle me-1"></i>
-                                Link verifikasi baru telah dikirim ke email Anda.
-                            </small>
-                        </div>
+        {{-- Phone Field --}}
+        <div class="mb-3">
+            <label for="phone" class="form-label fw-semibold">Nomor WhatsApp / HP</label>
+            <input 
+                type="text" 
+                class="form-control @error('phone') is-invalid @enderror" 
+                id="phone" 
+                name="phone" 
+                value="{{ old('phone', $user->phone) }}" 
+                placeholder="Contoh: 081234567890"
+            >
+            @error('phone')
+                <div class="invalid-feedback">{{ $message }}</div>
+            @enderror
+        </div>
+
+        {{-- Tanda Tangan Digital (untuk Admin, Guru, Kepala Sekolah) --}}
+        @if(in_array($user->role, ['admin', 'teacher', 'kepala_sekolah']))
+        <div class="mb-4 p-3 bg-light rounded-3 border">
+            <label class="form-label fw-bold text-dark d-flex align-items-center justify-content-between">
+                <span><i class="bi bi-vector-pen me-1 text-primary"></i> Tanda Tangan Digital (TTD)</span>
+                @if($user->ttd_signature)
+                    <span class="badge bg-success"><i class="bi bi-check-circle me-1"></i> TTD Terpasang</span>
+                @else
+                    <span class="badge bg-secondary">Belum Diatur</span>
+                @endif
+            </label>
+            <p class="text-muted small mb-2">Tanda tangan ini akan otomatis digunakan pada dokumen resmi (Berita Acara, Laporan Nilai, dan Lembar Hasil Ujian).</p>
+            
+            <div class="d-flex align-items-center gap-3 flex-wrap">
+                @if($user->ttd_signature)
+                <div class="border rounded bg-white p-2 text-center" style="width:160px;height:80px;display:flex;align-items:center;justify-content:center;">
+                    <img src="{{ $user->ttd_signature }}" style="max-height:65px;max-width:140px;" alt="TTD Saya">
+                </div>
+                @endif
+                <div>
+                    @if($user->role === 'kepala_sekolah')
+                        <a href="{{ route('kepala-sekolah.ttd.edit') }}" class="btn btn-sm btn-outline-primary rounded-pill px-3">
+                            <i class="bi bi-pencil me-1"></i> Gambar / Upload TTD Baru
+                        </a>
+                    @elseif($user->role === 'teacher')
+                        <a href="{{ route('guru.ttd.edit') }}" class="btn btn-sm btn-outline-primary rounded-pill px-3">
+                            <i class="bi bi-pencil me-1"></i> Gambar / Upload TTD Baru
+                        </a>
+                    @else
+                        <a href="{{ route('admin.ttd.edit') }}" class="btn btn-sm btn-outline-primary rounded-pill px-3">
+                            <i class="bi bi-pencil me-1"></i> Gambar / Upload TTD Baru
+                        </a>
                     @endif
                 </div>
-            @endif
+            </div>
         </div>
+        @endif
 
         {{-- Submit Button --}}
         <div class="d-flex align-items-center gap-3">

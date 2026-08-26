@@ -272,11 +272,16 @@
                 <i class="bi bi-people me-2"></i>Data Siswa
                 <span class="count-badge" id="siswa-count">0 siswa</span>
             </h4>
-            <p>Kelola data siswa SMA Negeri 5 Morotai</p>
+            <p>Kelola data siswa aktif SMA Negeri 5 Morotai</p>
         </div>
-        <button class="btn-header" data-bs-toggle="modal" data-bs-target="#modalSiswa" id="btnTambahSiswa">
-            <i class="bi bi-plus-lg"></i> Tambah Siswa
-        </button>
+        <div class="d-flex align-items-center gap-2">
+            <a href="/admin/kelulusan/alumni" class="btn-header">
+                <i class="bi bi-mortarboard"></i> Tabel Alumni SMA 5
+            </a>
+            <button class="btn-header" data-bs-toggle="modal" data-bs-target="#modalSiswa" id="btnTambahSiswa">
+                <i class="bi bi-plus-lg"></i> Tambah Siswa
+            </button>
+        </div>
     </div>
 </div>
 
