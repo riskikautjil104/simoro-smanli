@@ -36,6 +36,7 @@ class ExamSession extends Model
         'is_detected',
         'detection_time', 
         'detection_reason',
+        'score',
     ];
 
     public function user(): BelongsTo

@@ -82,6 +82,8 @@
                 @include('layouts.partials.verticalMenuSiswa')
             @elseif(auth()->check() && auth()->user()->role === 'kepala_sekolah')
                 @include('layouts.partials.verticalMenuKepsek')
+            @elseif(auth()->check() && auth()->user()->role === 'mobile')
+                @include('layouts.partials.verticalMenuMobile')
             @else
                 @include('layouts.partials.verticalMenu')
             @endif
@@ -123,6 +125,8 @@
                     @include('layouts.partials.verticalMenuSiswa')
                 @elseif(auth()->check() && auth()->user()->role === 'kepala_sekolah')
                     @include('layouts.partials.verticalMenuKepsek')
+                @elseif(auth()->check() && auth()->user()->role === 'mobile')
+                    @include('layouts.partials.verticalMenuMobile')
                 @else
                     @include('layouts.partials.verticalMenu')
                 @endif

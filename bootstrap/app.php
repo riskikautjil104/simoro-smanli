@@ -15,6 +15,13 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->alias([
             'role' => \App\Http\Middleware\RoleMiddleware::class,
         ]);
+
+        // Bebaskan endpoint login publik dari kegagalan 419 CSRF
+        $middleware->validateCsrfTokens(except: [
+            'login',
+            'siswa/login',
+            'api/*',
+        ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {
         //

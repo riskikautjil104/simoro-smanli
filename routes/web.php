@@ -1,7 +1,6 @@
+<?php
 
-    <?php
-
-    use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\Route;
     use App\Http\Controllers\Admin\ClassController;
     use App\Http\Controllers\Admin\TeacherController;
     use App\Http\Controllers\Admin\StudentController;
@@ -12,7 +11,7 @@
     use App\Http\Controllers\Admin\ReportController;
     use App\Http\Controllers\ProfileController;
 
-    Route::middleware(['auth', 'verified', 'role:admin'])->prefix('admin')->name('admin.')->group(function () {
+    Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->group(function () {
         // CKEditor image upload
         Route::post('upload-image', [\App\Http\Controllers\Admin\CkeditorUploadController::class, 'upload'])->name('ckeditor.upload');
         Route::post('ujian/{ujianId}/peserta/{userId}/reapply/approve', [\App\Http\Controllers\Admin\ExamController::class, 'approveReapply'])->name('ujian.reapply.approve');
@@ -76,11 +75,11 @@
         Route::resource('kelulusan', \App\Http\Controllers\Admin\GraduationController::class);
     });
     // Route::get('/admin/ujian/list', [App\Http\Controllers\Admin\ExamController::class, 'list']);
-    Route::get('/admin/ujian-list', [App\Http\Controllers\Admin\ExamController::class, 'list'])->middleware(['auth', 'verified', 'role:admin']);
-    Route::get('/admin/ujian-arsip-list', [App\Http\Controllers\Admin\ExamController::class, 'arsipList'])->middleware(['auth', 'verified', 'role:admin']);
+    Route::get('/admin/ujian-list', [App\Http\Controllers\Admin\ExamController::class, 'list'])->middleware(['auth', 'role:admin']);
+    Route::get('/admin/ujian-arsip-list', [App\Http\Controllers\Admin\ExamController::class, 'arsipList'])->middleware(['auth', 'role:admin']);
 
     // Route group untuk guru
-    Route::middleware(['auth', 'verified', 'role:teacher'])->prefix('guru')->name('guru.')->group(function () {
+    Route::middleware(['auth', 'role:teacher'])->prefix('guru')->name('guru.')->group(function () {
         Route::view('periksa', 'guru.periksa')->name('periksa');
         // Penilaian/priksa jawaban siswa per ujian (fitur guru)
         Route::get('ujian/{id}/peserta', [\App\Http\Controllers\Guru\UjianController::class, 'peserta'])->name('ujian.peserta');
@@ -97,12 +96,6 @@
             return view('guru.dashboard');
         })->name('dashboard');
         Route::get('dashboard/stats', [\App\Http\Controllers\Guru\DashboardController::class, 'stats']);
-        // Menu lain: mapel, soal, ujian, monitoring, hasil
-        // Route::get('mapel', ...)->name('mapel');
-        // Route::get('soal', ...)->name('soal');
-        // Route::get('ujian', ...)->name('ujian');
-        // Route::get('monitoring', ...)->name('monitoring');
-        // Route::get('hasil', ...)->name('hasil');
         Route::view('mapel', 'guru.mapel')->name('mapel');
         Route::get('mapel/list', [\App\Http\Controllers\Guru\MapelController::class, 'index'])->name('mapel.list');
         
@@ -131,22 +124,8 @@
         Route::get('berita-acara/{examId}/pdf', [\App\Http\Controllers\Guru\BeritaAcaraController::class, 'exportPdf'])->name('berita-acara.pdf');
         Route::get('berita-acara/{examId}/excel', [\App\Http\Controllers\Guru\BeritaAcaraController::class, 'exportExcel'])->name('berita-acara.excel');
     });
-    // Route dashboard siswa
-    // Route::middleware(['auth', 'verified', 'role:student'])->prefix('siswa')->name('siswa.')->group(function () {
-    //     Route::get('dashboard', [\App\Http\Controllers\Siswa\DashboardController::class, 'index'])->name('dashboard');
-    //     Route::view('ujian/aktif', 'siswa.ujian-aktif')->name('ujian.aktif');
-    //     Route::get('ujian/aktif/json', [\App\Http\Controllers\Siswa\DashboardController::class, 'ujianAktif']);
-    //     Route::post('/api/siswa/ujian/logout', [\App\Http\Controllers\Siswa\DashboardController::class, 'logoutUjian']);
-    //     Route::view('ujian/riwayat', 'siswa.ujian-riwayat')->name('ujian.riwayat');
-    //     Route::get('ujian/riwayat/json', [\App\Http\Controllers\Siswa\DashboardController::class, 'riwayatUjian']);
-    //     Route::get('ujian/{id}', [\App\Http\Controllers\Siswa\DashboardController::class, 'ujianDetail'])->name('ujian.detail');
-    //     Route::post('ujian/{id}/reapply', [\App\Http\Controllers\Siswa\DashboardController::class, 'reapplyUjian'])->name('ujian.reapply');
-    //     Route::get('ujian/{id}/hasil', [\App\Http\Controllers\Siswa\DashboardController::class, 'cetakHasilUjian'])->name('ujian.hasil');
-    //     Route::get('ujian/{id}/hasil/pdf', [\App\Http\Controllers\Siswa\HasilUjianPdfController::class, 'hasilPdf'])->name('ujian.hasil.pdf');
-    //     Route::post('/api/siswa/ujian/lokasi', [\App\Http\Controllers\Siswa\DashboardController::class, 'simpanLokasiUjian']);
-    //     Route::post('ujian/{id}/submit', [\App\Http\Controllers\Siswa\DashboardController::class, 'submitUjian'])->name('ujian.submit');
-    // });
-    Route::middleware(['auth', 'verified', 'role:student'])->prefix('siswa')->name('siswa.')->group(function () {
+
+    Route::middleware(['auth', 'role:student'])->prefix('siswa')->name('siswa.')->group(function () {
         Route::get('dashboard', [\App\Http\Controllers\Siswa\DashboardController::class, 'index'])->name('dashboard');
 
         // ✅ Semua route SPESIFIK harus di atas {id}
@@ -169,15 +148,25 @@
     });
 
     // Route mobile manager
-    Route::middleware(['auth', 'verified', 'role:mobile'])->prefix('mobile')->name('mobile.')->group(function () {
+    Route::middleware(['auth', 'role:mobile'])->prefix('mobile')->name('mobile.')->group(function () {
         Route::get('dashboard', [\App\Http\Controllers\Mobile\DashboardController::class, 'index'])->name('dashboard');
         Route::get('config', [\App\Http\Controllers\Mobile\DashboardController::class, 'getConfig'])->name('config');
         Route::post('config/app', [\App\Http\Controllers\Mobile\DashboardController::class, 'updateAppConfig'])->name('config.app');
+        Route::post('config/assets', [\App\Http\Controllers\Mobile\DashboardController::class, 'uploadAssets'])->name('config.assets');
+        Route::post('config/lottie', [\App\Http\Controllers\Mobile\DashboardController::class, 'updateLottie'])->name('config.lottie');
         Route::post('config/theme', [\App\Http\Controllers\Mobile\DashboardController::class, 'updateTheme'])->name('config.theme');
         Route::post('config/features', [\App\Http\Controllers\Mobile\DashboardController::class, 'updateFeatures'])->name('config.features');
+        Route::post('config/contact', [\App\Http\Controllers\Mobile\DashboardController::class, 'updateContact'])->name('config.contact');
+
+        // Manajemen Banner Iklan & Promo
+        Route::get('banners', [\App\Http\Controllers\Mobile\BannerController::class, 'index'])->name('banners.index');
+        Route::post('banners', [\App\Http\Controllers\Mobile\BannerController::class, 'store'])->name('banners.store');
+        Route::post('banners/{id}', [\App\Http\Controllers\Mobile\BannerController::class, 'update'])->name('banners.update');
+        Route::delete('banners/{id}', [\App\Http\Controllers\Mobile\BannerController::class, 'destroy'])->name('banners.destroy');
+        Route::post('banners/{id}/toggle', [\App\Http\Controllers\Mobile\BannerController::class, 'toggleStatus'])->name('banners.toggle');
     });
     // Route siswa CRUD (API/AJAX)
-    Route::middleware(['auth', 'verified'])->group(function () {
+    Route::middleware('auth')->group(function () {
         Route::get('/siswa', [App\Http\Controllers\Admin\StudentController::class, 'index']);
         Route::post('/siswa', [App\Http\Controllers\Admin\StudentController::class, 'store']);
         Route::get('/siswa/{id}', [App\Http\Controllers\Admin\StudentController::class, 'show']);
@@ -186,7 +175,7 @@
     });
 
     // Route group untuk Kepala Sekolah
-    Route::middleware(['auth', 'verified', 'role:kepala_sekolah'])->prefix('kepala-sekolah')->name('kepala-sekolah.')->group(function () {
+    Route::middleware(['auth', 'role:kepala_sekolah'])->prefix('kepala-sekolah')->name('kepala-sekolah.')->group(function () {
         Route::get('dashboard', [\App\Http\Controllers\Kepsek\DashboardController::class, 'index'])->name('dashboard');
         Route::get('monitoring', [\App\Http\Controllers\Kepsek\MonitoringController::class, 'index'])->name('monitoring');
         Route::get('monitoring/data', [\App\Http\Controllers\Kepsek\MonitoringController::class, 'data'])->name('monitoring.data');
@@ -220,7 +209,7 @@ Route::get('/', [App\Http\Controllers\Frontend\HomeController::class, 'index']);
 
     Route::get('/dashboard', function () {
         return view('admin.dashboard');
-    })->middleware(['auth', 'verified', 'role:admin'])->name('admin.dashboard');
+    })->middleware(['auth', 'role:admin'])->name('admin.dashboard');
 
     Route::middleware('auth')->group(function () {
         Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');

@@ -44,6 +44,11 @@ class Exam extends Model
         return $this->belongsTo(Subject::class);
     }
 
+    public function teacher()
+    {
+        return $this->hasOneThrough(User::class, Subject::class, 'id', 'id', 'subject_id', 'teacher_id');
+    }
+
     public function schoolClass(): BelongsTo
     {
         return $this->belongsTo(SchoolClass::class, 'class_id');

@@ -22,63 +22,66 @@ Route::get('/siswa/ujian/{id}/cetak-url', function($id) {
     return response()->json(['success' => true, 'url' => $url]);
 })->middleware('auth:sanctum');
 
-// ==================== PUBLIC ENDPOINTS ====================
+// ==================== PUBLIC CONFIG & BANNERS (MOBILE APP) ====================
+Route::get('/config', [\App\Http\Controllers\Mobile\DashboardController::class, 'getPublicConfig']);
+Route::get('/mobile/public-config', [\App\Http\Controllers\Mobile\DashboardController::class, 'getPublicConfig']);
+Route::get('/banners', [\App\Http\Controllers\Mobile\BannerController::class, 'getActiveBanners']);
 
-// App Config - Public endpoint for mobile app
-Route::get('/config', function () {
-    return response()->json([
-        'success' => true,
-        'data' => [
-            'app_name' => config('app.app_name', 'Web Skola SMA5'),
-            'school_name' => config('app.school_name', 'SMA 5'),
-            'tagline' => config('app.tagline', 'Sistem Ujian Online'),
-            'location' => config('app.location', ''),
-            'theme' => [
-                'primary' => config('theme.primary', '#0d6efd'),
-                'secondary' => config('theme.secondary', '#6c757d'),
-                'background' => config('theme.background', '#ffffff'),
-                'surface' => config('theme.surface', '#f8f9fa'),
-                'error' => config('theme.error', '#dc3545'),
-                'success' => config('theme.success', '#198754'),
-                'text_primary' => config('theme.text_primary', '#212529'),
-                'text_secondary' => config('theme.text_secondary', '#6c757d'),
-            ],
-            'features' => [
-                'show_onboarding' => config('features.show_onboarding', true),
-                'show_notifications' => config('features.show_notifications', true),
-                'enable_location_tracking' => config('features.enable_location_tracking', true),
-            ],
-            'version' => config('app.version', '1.0.0'),
-            'maintenance_mode' => (bool) config('app.maintenance_mode', false),
-            'maintenance_message' => config('app.maintenance_message', ''),
-        ]
-    ]);
-});
+// ==================== MOBILE SETTINGS API (MOBILE MANAGER / ADMIN) ====================
+Route::get('mobile/config', [\App\Http\Controllers\Mobile\DashboardController::class, 'getConfig']);
+Route::post('mobile/config', [\App\Http\Controllers\Mobile\DashboardController::class, 'updateAll']);
+Route::post('mobile/config/app', [\App\Http\Controllers\Mobile\DashboardController::class, 'updateAppConfig']);
+Route::post('mobile/config/assets', [\App\Http\Controllers\Mobile\DashboardController::class, 'uploadAssets']);
+Route::post('mobile/config/lottie', [\App\Http\Controllers\Mobile\DashboardController::class, 'updateLottie']);
+Route::post('mobile/config/theme', [\App\Http\Controllers\Mobile\DashboardController::class, 'updateTheme']);
+Route::post('mobile/config/features', [\App\Http\Controllers\Mobile\DashboardController::class, 'updateFeatures']);
+Route::post('mobile/config/contact', [\App\Http\Controllers\Mobile\DashboardController::class, 'updateContact']);
 
-// Login
+// Mobile Banners Management
+Route::get('mobile/banners', [\App\Http\Controllers\Mobile\BannerController::class, 'index']);
+Route::post('mobile/banners', [\App\Http\Controllers\Mobile\BannerController::class, 'store']);
+Route::post('mobile/banners/{id}', [\App\Http\Controllers\Mobile\BannerController::class, 'update']);
+Route::delete('mobile/banners/{id}', [\App\Http\Controllers\Mobile\BannerController::class, 'destroy']);
+Route::post('mobile/banners/{id}/toggle', [\App\Http\Controllers\Mobile\BannerController::class, 'toggleStatus']);
+
+// ==================== AUTH & PROFILE SISWA ====================
+Route::post('siswa/login', [\App\Http\Controllers\Api\Siswa\AuthController::class, 'login']);
+
+// Login Umum (Legacy / Multi-Role)
 Route::post('login', [AuthController::class, 'login']);
 
 Route::middleware('auth:sanctum')->group(function () {
     Route::post('logout', [AuthController::class, 'logout']);
     Route::get('me', [AuthController::class, 'me']);
-});
-Route::middleware('auth:sanctum')->group(function () {
-    // ==================== ENDPOINTS KHUSUS SISWA (MOBILE API) ====================
-    // PENTING: Routes spesifik harus di atas apiResource!
 
-    // Profile
-    Route::get('siswa/profile', [ApiStudentController::class, 'profile']);
-    Route::put('siswa/profile', [ApiStudentController::class, 'updateProfile']);
+    // ==================== ENDPOINTS KHUSUS SISWA (MOBILE API) ====================
+    // Auth & Profile Siswa
+    Route::post('siswa/logout', [\App\Http\Controllers\Api\Siswa\AuthController::class, 'logout']);
+    Route::get('siswa/profile', [\App\Http\Controllers\Api\Siswa\AuthController::class, 'profile']);
+    Route::get('siswa/me', [\App\Http\Controllers\Api\Siswa\AuthController::class, 'profile']);
+    Route::put('siswa/profile', [\App\Http\Controllers\Api\Siswa\AuthController::class, 'updateProfile']);
+    Route::post('siswa/profile', [\App\Http\Controllers\Api\Siswa\AuthController::class, 'updateProfile']);
+    Route::post('siswa/change-password', [\App\Http\Controllers\Api\Siswa\AuthController::class, 'changePassword']);
+    Route::put('siswa/password', [\App\Http\Controllers\Api\Siswa\AuthController::class, 'changePassword']);
+
+    // Dashboard Siswa
+    Route::get('siswa/dashboard', [ApiStudentController::class, 'dashboard']);
 
     // Ujian - Aktif
     Route::get('siswa/ujian/aktif', [ApiStudentController::class, 'ujianAktif']);
+    Route::get('siswa/ujian', [ApiStudentController::class, 'ujianAktif']);
 
-    // Ujian - Riwayat
+    // Ujian - Riwayat & Nilai
     Route::get('siswa/ujian/riwayat', [ApiStudentController::class, 'riwayatUjian']);
+    Route::get('siswa/nilai', [ApiStudentController::class, 'riwayatUjian']);
 
     // Ujian - Detail & Mulai
     Route::get('siswa/ujian/{id}', [ApiStudentController::class, 'ujianDetail']);
     Route::post('siswa/ujian/{id}/mulai', [ApiStudentController::class, 'mulaiUjian']);
+
+    // Ujian - Jawab Butir Soal (Auto-save)
+    Route::post('siswa/ujian/{id}/jawab', [ApiStudentController::class, 'jawabSoal']);
+    Route::post('siswa/ujian/jawab', [ApiStudentController::class, 'jawabSoal']);
 
     // Ujian - Submit & Logout
     Route::post('siswa/ujian/{id}/submit', [ApiStudentController::class, 'submitUjian']);

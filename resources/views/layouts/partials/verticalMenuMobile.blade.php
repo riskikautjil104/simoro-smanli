@@ -1,44 +1,10 @@
-{{-- @php
-    $active = fn($route) => request()->is($route) ? 'active' : '';
-@endphp
-<aside class="d-flex flex-column h-100 p-3 bg-white sidebar shadow-sm">
-    <div class="mb-4 d-flex align-items-center">
-        <span class="fs-3 fw-bold text-primary me-2">S</span>
-        <span class="fs-5 fw-bold">IMORO</span>
-    </div>
-    <ul class="nav nav-pills flex-column mb-auto">
-
-        <li class="nav-item mb-2"><a class="nav-link {{ $active('dashboard') }}" href="/dashboard"><i
-                    class="bi bi-speedometer2 me-2"></i> Dashboard</a></li>
-        <li class="nav-item mb-2"><a class="nav-link {{ $active('admin/siswa*') }}" href="/admin/siswa"><i
-                    class="bi bi-people me-2"></i> Data Siswa</a></li>
-        <li class="nav-item mb-2"><a class="nav-link {{ $active('admin/guru*') }}" href="/admin/guru"><i
-                    class="bi bi-person-badge me-2"></i> Data Guru</a></li>
-        <li class="nav-item mb-2"><a class="nav-link {{ $active('admin/kelas*') }}" href="/admin/kelas"><i
-                    class="bi bi-building me-2"></i> Data Kelas</a></li>
-        <li class="nav-item mb-2"><a class="nav-link {{ $active('admin/mapel*') }}" href="/admin/mapel"><i
-                    class="bi bi-journal-bookmark me-2"></i> Data Mapel</a></li>
-        <li class="nav-item mb-2"><a class="nav-link {{ $active('admin/ujian*') }}" href="/admin/ujian"><i
-                    class="bi bi-file-earmark-text me-2"></i> Data Ujian</a></li>
-        <li class="nav-item mb-2"><a class="nav-link {{ $active('admin/soal*') }}" href="/admin/soal"><i
-                    class="bi bi-question-circle me-2"></i> Data Soal</a></li>
-        <li class="nav-item mb-2"><a class="nav-link {{ $active('admin/monitoring*') }}" href="/admin/monitoring"><i
-                    class="bi bi-tv me-2"></i> Monitoring Ujian</a></li>
-        <li class="nav-item mb-2"><a class="nav-link {{ $active('admin/laporan*') }}" href="/admin/laporan"><i
-                    class="bi bi-bar-chart me-2"></i> Laporan Hasil</a></li>
-        <li class="nav-item mb-2"><a class="nav-link {{ $active('profile') }}" href="/profile"><i
-                    class="bi bi-person-circle me-2"></i> Edit Profile</a></li>
-        <li class="nav-item mb-2"><a class="nav-link {{ $active('admin/ttd*') }}" href="/admin/ttd"><i
-                    class="bi bi-pencil me-2"></i> TTD Admin</a></li>
-    </ul>
-</aside> --}}
 @php
     $active = fn($route) => request()->is($route) ? 'active' : '';
 @endphp
 
 <aside class="sidebar-swirl">
 
-  {{-- SVG Swirl Background — disederhanakan, warna diselaraskan --}}
+  {{-- SVG Swirl Background --}}
   <svg class="swirl-bg" viewBox="0 0 268 900" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg">
     <rect width="268" height="900" fill="#f0f4ff"/>
 
@@ -77,113 +43,83 @@
   {{-- Header --}}
   <div class="swirl-header">
     <div class="swirl-logo">
-      <img src="{{ asset('assets/frondend/assets/img/logo.png') }}" alt="Logo"
+      <img src="{{ asset('assets/img/icon.png') }}" alt="Logo" height="30px" width="30px"
            onerror="this.style.display='none';this.nextElementSibling.style.display='flex';">
       <span style="display:none;color:white;font-weight:800;font-size:1.2rem;">S</span>
     </div>
     <div class="swirl-logo-text">
       <h5>SIMORO SMANLI</h5>
-      <small>SMA Negeri 5 Morotai</small>
+      <small>Panel Mobile Manager</small>
     </div>
   </div>
 
   {{-- Nav Body --}}
   <div class="swirl-body">
 
-    <span class="swirl-section-label">Main Menu</span>
-    <ul class="swirl-nav">
-      <li>
-        <a class="swirl-link {{ $active('dashboard') }}" href="/dashboard">
-          <i class="bi bi-speedometer2"></i>
-          <span>Dashboard</span>
-        </a>
-      </li>
-      <li>
-        <a class="swirl-link {{ $active('admin/siswa*') }}" href="/admin/siswa">
-          <i class="bi bi-people"></i>
-          <span>Data Siswa</span>
-        </a>
-      </li>
-      <li>
-        <a class="swirl-link {{ $active('admin/kelulusan*') }}" href="/admin/kelulusan">
-          <i class="bi bi-mortarboard"></i>
-          <span>Kelulusan &amp; Alumni</span>
-        </a>
-      </li>
-      <li>
-        <a class="swirl-link {{ $active('admin/guru*') }}" href="/admin/guru">
-          <i class="bi bi-person-badge"></i>
-          <span>Data Guru</span>
-        </a>
-      </li>
-      <li>
-        <a class="swirl-link {{ $active('admin/kelas*') }}" href="/admin/kelas">
-          <i class="bi bi-building"></i>
-          <span>Data Kelas</span>
-        </a>
-      </li>
-      <li>
-        <a class="swirl-link {{ $active('admin/mapel*') }}" href="/admin/mapel">
-          <i class="bi bi-journal-bookmark"></i>
-          <span>Data Mapel</span>
-        </a>
-      </li>
-    </ul>
-
-    <div class="swirl-divider"></div>
-    <span class="swirl-section-label">Ujian</span>
-    <ul class="swirl-nav">
-      <li>
-        <a class="swirl-link {{ (request()->is('admin/ujian') || (request()->is('admin/ujian/*') && !request()->is('admin/ujian/arsip*'))) ? 'active' : '' }}" href="/admin/ujian">
-          <i class="bi bi-file-earmark-text"></i>
-          <span>Data Ujian</span>
-        </a>
-      </li>
-      <li>
-        <a class="swirl-link {{ $active('admin/ujian/arsip*') }}" href="/admin/ujian/arsip">
-          <i class="bi bi-archive"></i>
-          <span>Arsip Ujian</span>
-        </a>
-      </li>
-      <li>
-        <a class="swirl-link {{ $active('admin/soal*') }}" href="/admin/soal">
-          <i class="bi bi-question-circle"></i>
-          <span>Data Soal</span>
-        </a>
-      </li>
-      <li>
-        <a class="swirl-link {{ $active('admin/monitoring*') }}" href="/admin/monitoring">
-          <i class="bi bi-tv"></i>
-          <span>Monitoring Ujian</span>
-        </a>
-      </li>
-      <li>
-        <a class="swirl-link {{ $active('admin/laporan*') }}" href="/admin/laporan">
-          <i class="bi bi-bar-chart"></i>
-          <span>Laporan Hasil</span>
-        </a>
-      </li>
-    </ul>
-
-    <div class="swirl-divider"></div>
-    <span class="swirl-section-label">Akun</span>
+    <span class="swirl-section-label">PENGATURAN MOBILE</span>
     <ul class="swirl-nav">
       <li>
         <a class="swirl-link {{ $active('mobile/dashboard*') }}" href="/mobile/dashboard">
           <i class="bi bi-phone"></i>
-          <span>Pengaturan Mobile</span>
+          <span>Dashboard Mobile</span>
         </a>
       </li>
       <li>
-        <a class="swirl-link {{ $active('profile') }}" href="/profile">
+        <a class="swirl-link" href="/mobile/dashboard#appFormCard">
+          <i class="bi bi-globe"></i>
+          <span>Base URL &amp; Server</span>
+        </a>
+      </li>
+      <li>
+        <a class="swirl-link" href="/mobile/dashboard#assetSection">
+          <i class="bi bi-images"></i>
+          <span>Media, Logo &amp; Lottie</span>
+        </a>
+      </li>
+      <li>
+        <a class="swirl-link" href="/mobile/dashboard#themeFormCard">
+          <i class="bi bi-palette"></i>
+          <span>Tema &amp; Warna</span>
+        </a>
+      </li>
+      <li>
+        <a class="swirl-link" href="/mobile/dashboard#featuresFormCard">
+          <i class="bi bi-shield-check"></i>
+          <span>Keamanan &amp; CBT</span>
+        </a>
+      </li>
+      <li>
+        <a class="swirl-link" href="/mobile/dashboard#contactFormCard">
+          <i class="bi bi-headset"></i>
+          <span>Kontak &amp; Helpdesk</span>
+        </a>
+      </li>
+    </ul>
+
+    <div class="swirl-divider"></div>
+    <span class="swirl-section-label">REST API &amp; DOKUMEN</span>
+    <ul class="swirl-nav">
+      <li>
+        <a class="swirl-link" href="/api/config" target="_blank">
+          <i class="bi bi-code-slash"></i>
+          <span>Endpoint /api/config</span>
+        </a>
+      </li>
+      <li>
+        <a class="swirl-link" href="/docs" target="_blank">
+          <i class="bi bi-journal-text"></i>
+          <span>Dokumentasi Web</span>
+        </a>
+      </li>
+    </ul>
+
+    <div class="swirl-divider"></div>
+    <span class="swirl-section-label">AKUN</span>
+    <ul class="swirl-nav">
+      <li>
+        <a class="swirl-link {{ $active('profile*') }}" href="/profile">
           <i class="bi bi-person-circle"></i>
           <span>Edit Profile</span>
-        </a>
-      </li>
-      <li>
-        <a class="swirl-link {{ $active('admin/ttd*') }}" href="/admin/ttd">
-          <i class="bi bi-vector-pen"></i>
-          <span>TTD Admin</span>
         </a>
       </li>
     </ul>
@@ -192,21 +128,21 @@
 
   {{-- Footer user card --}}
   <div class="swirl-footer">
-    <form method="POST" action="{{ route('logout') }}" id="sidebar-logout-form">
+    <form method="POST" action="{{ route('logout') }}" id="mobile-sidebar-logout-form">
       @csrf
     </form>
     <a href="/profile" class="swirl-user-card">
       <div class="swirl-avatar">
-        {{ strtoupper(substr(auth()->user()->name ?? 'A', 0, 2)) }}
+        {{ strtoupper(substr(auth()->user()->name ?? 'M', 0, 2)) }}
       </div>
       <div class="swirl-user-info">
-        <div class="swirl-user-name">{{ auth()->user()->name ?? 'Administrator' }}</div>
-        <div class="swirl-user-role">{{ auth()->user()->role ?? 'admin' }}</div>
+        <div class="swirl-user-name">{{ auth()->user()->name ?? 'Mobile Manager' }}</div>
+        <div class="swirl-user-role">Mobile Manager</div>
       </div>
       <i class="bi bi-chevron-right" style="color:#94a3b8;font-size:0.7rem;flex-shrink:0;"></i>
     </a>
     <button class="swirl-logout-btn"
-            onclick="document.getElementById('sidebar-logout-form').submit()">
+            onclick="document.getElementById('mobile-sidebar-logout-form').submit()">
       <i class="bi bi-box-arrow-left"></i>
       <span>Keluar</span>
     </button>
@@ -216,9 +152,20 @@
 
 <style>
 /* =============================================
-   SIDEBAR — diselaraskan dengan welcome & login
+   SIDEBAR SWIRL — Standar SIMORO SMANLI
    Primary: #0d6efd  Accent: #0dcaf0
 ============================================= */
+.sidebar-swirl {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  width: 100%;
+  overflow: hidden;
+  background: #ffffff;
+  border-right: none !important;
+  box-shadow: 4px 0 20px rgba(13,110,253,0.08) !important;
+}
 
 .swirl-bg {
   position: absolute;
@@ -226,6 +173,7 @@
   width: 100%;
   height: 100%;
   z-index: 0;
+  pointer-events: none;
 }
 
 .sidebar-swirl > *:not(.swirl-bg) {
@@ -259,8 +207,8 @@
 }
 
 .swirl-logo img {
-  width: 28px;
-  height: 28px;
+  width: 30px;
+  height: 30px;
   object-fit: contain;
   filter: brightness(0) invert(1);
 }
@@ -358,12 +306,12 @@
 
 .swirl-link.active i { color: #fff !important; }
 
-/* Active dot indicator */
 .swirl-link.active::after {
   content: '';
   position: absolute;
   right: 10px;
-  width: 6px; height: 6px;
+  width: 6px;
+  height: 6px;
   background: rgba(255,255,255,0.7);
   border-radius: 50%;
 }
