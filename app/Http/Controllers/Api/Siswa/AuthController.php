@@ -219,6 +219,8 @@ class AuthController extends Controller
     {
         $user = $request->user();
         if ($user && $user->currentAccessToken()) {
+            // Hapus fcm_token agar notifikasi tidak terkirim setelah logout
+            $user->update(['fcm_token' => null]);
             $user->currentAccessToken()->delete();
         }
 
@@ -227,4 +229,28 @@ class AuthController extends Controller
             'message' => 'Logout berhasil. Sesi token telah dihapus.',
         ], 200);
     }
+
+    /**
+     * Simpan / Update FCM Device Token Siswa.
+     * POST /api/siswa/device-token
+     * 
+     * Dipanggil otomatis oleh aplikasi Flutter saat login berhasil.
+     * Token ini digunakan server untuk mengirim push notification ke HP siswa.
+     */
+    public function updateDeviceToken(Request $request)
+    {
+        $request->validate([
+            'fcm_token' => 'required|string|min:10',
+        ]);
+
+        $request->user()->update([
+            'fcm_token' => $request->fcm_token,
+        ]);
+
+        return response()->json([
+            'success' => true,
+            'message' => 'FCM token berhasil disimpan.',
+        ], 200);
+    }
+    // batas suci
 }

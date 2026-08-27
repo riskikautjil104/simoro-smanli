@@ -63,6 +63,8 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('siswa/profile', [\App\Http\Controllers\Api\Siswa\AuthController::class, 'updateProfile']);
     Route::post('siswa/change-password', [\App\Http\Controllers\Api\Siswa\AuthController::class, 'changePassword']);
     Route::put('siswa/password', [\App\Http\Controllers\Api\Siswa\AuthController::class, 'changePassword']);
+    // FCM Device Token — dipanggil Flutter saat login berhasil
+    Route::post('siswa/device-token', [\App\Http\Controllers\Api\Siswa\AuthController::class, 'updateDeviceToken']);
 
     // Dashboard Siswa
     Route::get('siswa/dashboard', [ApiStudentController::class, 'dashboard']);
@@ -107,13 +109,35 @@ Route::middleware('auth:sanctum')->group(function () {
     // Dashboard: Kelas, Mata Pelajaran, Jadwal
     Route::get('siswa/dashboard', [ApiStudentController::class, 'dashboard']);
 
-    // API Resources (harus di bawah routes spesifik)
+    // User Accounts Management (Seluruh Akun & Role)
+    Route::apiResource('users', \App\Http\Controllers\Api\UserController::class);
+    Route::apiResource('akun', \App\Http\Controllers\Api\UserController::class);
+    Route::post('users/{id}/reset-password', [\App\Http\Controllers\Api\UserController::class, 'resetPassword']);
+    Route::post('akun/{id}/reset-password', [\App\Http\Controllers\Api\UserController::class, 'resetPassword']);
+    Route::post('guru/{id}/reset-password', [ApiTeacherController::class, 'resetPassword']);
+
+    // API Resources Akademik & Master Data (harus di bawah routes spesifik)
     Route::apiResource('kelas', ApiClassController::class);
+    Route::apiResource('classes', ApiClassController::class);
     Route::apiResource('guru', ApiTeacherController::class);
+    Route::apiResource('teachers', ApiTeacherController::class);
     Route::apiResource('siswa', ApiStudentController::class);
+    Route::apiResource('students', ApiStudentController::class);
+    Route::apiResource('alumni', \App\Http\Controllers\Api\AlumniController::class);
     Route::apiResource('mapel', ApiSubjectController::class);
+    Route::apiResource('subjects', ApiSubjectController::class);
     Route::apiResource('ujian', ApiExamController::class);
     Route::apiResource('soal', ApiQuestionController::class);
     Route::apiResource('monitoring', ApiMonitoringController::class);
     Route::apiResource('laporan', ApiReportController::class);
 });
+
+// Public Read-only Endpoints untuk Data Akademik & Akun Terbuka
+Route::get('public/users', [\App\Http\Controllers\Api\UserController::class, 'index']);
+Route::get('public/akun', [\App\Http\Controllers\Api\UserController::class, 'index']);
+Route::get('public/kelas', [ApiClassController::class, 'index']);
+Route::get('public/guru', [ApiTeacherController::class, 'index']);
+Route::get('public/mapel', [ApiSubjectController::class, 'index']);
+Route::get('public/alumni', [\App\Http\Controllers\Api\AlumniController::class, 'index']);
+
+

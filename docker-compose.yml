@@ -1,0 +1,95 @@
+services:
+  # Laravel PHP-FPM Application
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: simoro_app
+    restart: unless-stopped
+    working_dir: /var/www
+    volumes:
+      - .:/var/www
+      - ./docker/php/local.ini:/usr/local/etc/php/conf.d/local.ini
+    environment:
+      - APP_KEY=base64:kCfR5MN7vbJQ0eBvJydsWDoGnQC4cMbiYJwxf0qmo2E=
+      - APP_URL=http://127.0.0.1:8000
+      - SESSION_DRIVER=file
+      - DB_HOST=db
+      - DB_PORT=3306
+      - DB_DATABASE=webskola_sma5
+      - DB_USERNAME=simoro
+      - DB_PASSWORD=secret123
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
+    networks:
+      - simoro_network
+    depends_on:
+      - db
+
+  # Nginx Web Server
+  web:
+    image: nginx:alpine
+    container_name: simoro_nginx
+    restart: unless-stopped
+    ports:
+      - "8000:80"
+    volumes:
+      - .:/var/www
+      - ./docker/nginx/conf.d:/etc/nginx/conf.d
+    networks:
+      - simoro_network
+    depends_on:
+      - app
+
+  # MySQL Database
+  db:
+    image: mysql:8.0
+    container_name: simoro_db
+    restart: unless-stopped
+    ports:
+      - "33066:3306"
+    environment:
+      MYSQL_DATABASE: webskola_sma5
+      MYSQL_USER: simoro
+      MYSQL_PASSWORD: secret123
+      MYSQL_ROOT_PASSWORD: rootsecret123
+    volumes:
+      - simoro_db_data:/var/lib/mysql
+    networks:
+      - simoro_network
+
+  # phpMyAdmin Web Database GUI
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin
+    container_name: simoro_phpmyadmin
+    restart: unless-stopped
+    ports:
+      - "8081:80"
+    environment:
+      PMA_HOST: db
+      PMA_PORT: 3306
+      PMA_USER: root
+      PMA_PASSWORD: rootsecret123
+      UPLOAD_LIMIT: 64M
+    networks:
+      - simoro_network
+    depends_on:
+      - db
+
+  # Redis In-Memory Cache
+  redis:
+    image: redis:alpine
+    container_name: simoro_redis
+    restart: unless-stopped
+    ports:
+      - "6379:6379"
+    networks:
+      - simoro_network
+
+networks:
+  simoro_network:
+    driver: bridge
+
+volumes:
+  simoro_db_data:
+    driver: local

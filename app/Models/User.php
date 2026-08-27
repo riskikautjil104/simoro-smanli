@@ -51,6 +51,9 @@ class User extends Authenticatable
         'previous_class_id',
         'nis',
         'ttd_signature',
+        // awal batas suci yang kamu ubah
+        'fcm_token',
+        // akhir batas suci yang kamu ubah
     ];
 
     /**
