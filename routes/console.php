@@ -17,10 +17,12 @@ Artisan::command('inspire', function () {
 |
 */
 
-// Kirim notifikasi ujian besok ke siswa setiap hari pukul 18:00 WIT (= 09:00 UTC)
-// Menggunakan UTC karena server biasanya menggunakan timezone UTC
+// Kirim notifikasi ujian besok ke siswa setiap hari pukul 18:00 WIT
 Schedule::command('exams:notify-tomorrow')
-    ->dailyAt('09:00')  // 09:00 UTC = 18:00 WIT (UTC+9)
+    ->timezone('Asia/Jayapura')
+    ->dailyAt('18:00')  // 18:00 WIT (UTC+9)
     ->withoutOverlapping()
     ->runInBackground()
     ->appendOutputTo(storage_path('logs/fcm-notifications.log'));
+
+// batas suci
