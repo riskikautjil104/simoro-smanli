@@ -97,6 +97,11 @@ class NotifyTomorrowExams extends Command
             $totalFailed += $result['failed'];
 
             $this->line("     ✅ Terkirim: {$result['success']} | ❌ Gagal: {$result['failed']}");
+            if (!empty($result['errors'])) {
+                foreach ($result['errors'] as $err) {
+                    $this->line("     <fg=red>⚠️ Error: {$err}</>");
+                }
+            }
             $this->newLine();
         }
 

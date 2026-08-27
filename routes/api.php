@@ -63,8 +63,10 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('siswa/profile', [\App\Http\Controllers\Api\Siswa\AuthController::class, 'updateProfile']);
     Route::post('siswa/change-password', [\App\Http\Controllers\Api\Siswa\AuthController::class, 'changePassword']);
     Route::put('siswa/password', [\App\Http\Controllers\Api\Siswa\AuthController::class, 'changePassword']);
+    // awal batas suci yang kamu ubah
     // FCM Device Token — dipanggil Flutter saat login berhasil
     Route::post('siswa/device-token', [\App\Http\Controllers\Api\Siswa\AuthController::class, 'updateDeviceToken']);
+    // akhir batas suci yang kamu ubah
 
     // Dashboard Siswa
     Route::get('siswa/dashboard', [ApiStudentController::class, 'dashboard']);
@@ -139,5 +141,7 @@ Route::get('public/kelas', [ApiClassController::class, 'index']);
 Route::get('public/guru', [ApiTeacherController::class, 'index']);
 Route::get('public/mapel', [ApiSubjectController::class, 'index']);
 Route::get('public/alumni', [\App\Http\Controllers\Api\AlumniController::class, 'index']);
+
+// batas suci
 
 

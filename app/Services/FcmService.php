@@ -62,13 +62,16 @@ class FcmService
      * @param  string  $title      Judul notifikasi
      * @param  string  $body       Isi pesan notifikasi
      * @param  array   $data       Data tambahan (key-value, semua harus string)
-     * @return bool    true jika berhasil terkirim, false jika gagal
+     * @return array   ['success' => bool, 'error' => string|null]
      */
-    public function sendToDevice(string $fcmToken, string $title, string $body, array $data = []): bool
+    public function sendToDevice(string $fcmToken, string $title, string $body, array $data = []): array
     {
         $accessToken = $this->getAccessToken();
         if (!$accessToken) {
-            return false;
+            return [
+                'success' => false,
+                'error'   => 'Gagal mendapatkan OAuth2 Access Token. Pastikan file storage/app/firebase-credentials.json ada dan valid.',
+            ];
         }
 
         try {
@@ -85,12 +88,12 @@ class FcmService
                         'body'  => $body,
                     ],
                     'android' => [
+                        'priority' => 'HIGH',
                         'notification' => [
-                            'channel_id' => 'moro5smart_high_importance_channel',
-                            'sound'      => 'default',
-                            'priority'   => 'HIGH',
+                            'channel_id'            => 'moro5smart_high_importance_channel',
+                            'sound'                 => 'default',
+                            'notification_priority' => 'PRIORITY_HIGH',
                         ],
-                        'priority' => 'high',
                     ],
                     'apns' => [
                         'payload' => [
@@ -109,45 +112,49 @@ class FcmService
             ]);
 
             if ($response->successful()) {
-                return true;
+                return ['success' => true, 'error' => null];
             }
 
-            Log::warning('[FCM] Gagal kirim ke device.', [
-                'token_prefix' => substr($fcmToken, 0, 20) . '...',
-                'status'  => $response->status(),
-                'body'    => $response->body(),
-            ]);
-            return false;
+            $errorDetail = "HTTP {$response->status()}: " . $response->body();
+            Log::warning('[FCM] Gagal kirim ke device: ' . $errorDetail);
+
+            return [
+                'success' => false,
+                'error'   => $errorDetail,
+            ];
 
         } catch (\Exception $e) {
             Log::error('[FCM] Exception saat kirim notification: ' . $e->getMessage());
-            return false;
+            return [
+                'success' => false,
+                'error'   => $e->getMessage(),
+            ];
         }
     }
 
     /**
      * Kirim notifikasi ke banyak device sekaligus (bulk)
-     * 
-     * @param  array   $fcmTokens  Array FCM device tokens
-     * @param  string  $title
-     * @param  string  $body
-     * @param  array   $data
-     * @return array   ['success' => int, 'failed' => int]
      */
     public function sendToMultiple(array $fcmTokens, string $title, string $body, array $data = []): array
     {
         $success = 0;
         $failed  = 0;
+        $errors  = [];
 
         foreach ($fcmTokens as $token) {
             if (empty($token)) continue;
-            $result = $this->sendToDevice($token, $title, $body, $data);
-            $result ? $success++ : $failed++;
+            $res = $this->sendToDevice($token, $title, $body, $data);
+            if ($res['success']) {
+                $success++;
+            } else {
+                $failed++;
+                if (!empty($res['error'])) {
+                    $errors[] = $res['error'];
+                }
+            }
         }
 
-        Log::info("[FCM] Bulk send selesai. Berhasil: {$success}, Gagal: {$failed}");
-
-        return ['success' => $success, 'failed' => $failed];
+        return ['success' => $success, 'failed' => $failed, 'errors' => $errors];
     }
 
     /**
@@ -174,12 +181,12 @@ class FcmService
                         'body'  => $body,
                     ],
                     'android' => [
+                        'priority' => 'HIGH',
                         'notification' => [
-                            'channel_id' => 'moro5smart_high_importance_channel',
-                            'sound'      => 'default',
-                            'priority'   => 'HIGH',
+                            'channel_id'            => 'moro5smart_high_importance_channel',
+                            'sound'                 => 'default',
+                            'notification_priority' => 'PRIORITY_HIGH',
                         ],
-                        'priority' => 'high',
                     ],
                     'data' => collect($data)->map(fn($v) => (string) $v)->toArray(),
                 ],

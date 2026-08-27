@@ -230,6 +230,7 @@ class AuthController extends Controller
         ], 200);
     }
 
+    // awal batas suci yang kamu ubah
     /**
      * Simpan / Update FCM Device Token Siswa.
      * POST /api/siswa/device-token
@@ -252,5 +253,5 @@ class AuthController extends Controller
             'message' => 'FCM token berhasil disimpan.',
         ], 200);
     }
-    // batas suci
+    // akhir batas suci yang kamu ubah
 }
