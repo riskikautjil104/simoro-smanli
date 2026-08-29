@@ -14,6 +14,7 @@ class Exam extends Model
         'title',
         'subject_id',
         'class_id',
+        'target_agama',
         'start_time',
         'end_time',
         'duration',

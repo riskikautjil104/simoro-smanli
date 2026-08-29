@@ -145,6 +145,7 @@ use Illuminate\Support\Facades\Route;
         Route::get('ujian/{id}/hasil', [\App\Http\Controllers\Siswa\DashboardController::class, 'cetakHasilUjian'])->name('ujian.hasil');
         Route::get('ujian/{id}/hasil/pdf', [\App\Http\Controllers\Siswa\HasilUjianPdfController::class, 'hasilPdf'])->name('ujian.hasil.pdf');
         Route::post('ujian/{id}/submit', [\App\Http\Controllers\Siswa\DashboardController::class, 'submitUjian'])->name('ujian.submit');
+        Route::post('agama/update', [\App\Http\Controllers\Siswa\DashboardController::class, 'updateAgama'])->name('agama.update');
     });
 
     // Route mobile manager

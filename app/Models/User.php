@@ -50,6 +50,7 @@ class User extends Authenticatable
         'angkatan',
         'previous_class_id',
         'nis',
+        'agama',
         'ttd_signature',
         // awal batas suci yang kamu ubah
         'fcm_token',

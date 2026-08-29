@@ -248,13 +248,26 @@ class StudentController extends Controller
         $user = $request->user();
         $kelas = SchoolClass::find($user->class_id);
         $now = now();
+        $userAgama = strtolower(trim($user->agama ?? ''));
 
-        // Ambil daftar ujian aktif kelas siswa saat ini
+        // Ambil daftar ujian aktif kelas siswa saat ini (disaring sesuai agama)
         $ujiansAktifQuery = Exam::active()
             ->where('class_id', $user->class_id)
             ->where('start_time', '<=', $now)
             ->where(function ($q) use ($now) {
                 $q->whereNull('end_time')->orWhere('end_time', '>=', $now);
+            })
+            ->where(function ($q) use ($userAgama) {
+                $q->whereNull('target_agama')
+                  ->orWhere('target_agama', 'semua')
+                  ->orWhere('target_agama', '')
+                  ->orWhereRaw('LOWER(target_agama) = ?', [$userAgama]);
+            })
+            ->whereHas('subject', function ($q) use ($userAgama) {
+                $q->whereNull('kategori_agama')
+                  ->orWhere('kategori_agama', 'semua')
+                  ->orWhere('kategori_agama', '')
+                  ->orWhereRaw('LOWER(kategori_agama) = ?', [$userAgama]);
             })
             ->with(['subject.teacher', 'questions'])
             ->orderBy('start_time', 'asc')
@@ -342,6 +355,7 @@ class StudentController extends Controller
                     'name'         => $user->name,
                     'email'        => $user->email,
                     'nis'          => $user->nis,
+                    'agama'        => $user->agama,
                     'phone'        => $user->phone,
                     'class_id'     => $user->class_id,
                     'class_name'   => $kelas?->name ?? '-',
@@ -369,12 +383,25 @@ class StudentController extends Controller
     {
         $user = $request->user();
         $now = now();
+        $userAgama = strtolower(trim($user->agama ?? ''));
 
         $ujians = Exam::active()
             ->where('class_id', $user->class_id)
             ->where('start_time', '<=', $now)
             ->where(function ($q) use ($now) {
                 $q->whereNull('end_time')->orWhere('end_time', '>=', $now);
+            })
+            ->where(function ($q) use ($userAgama) {
+                $q->whereNull('target_agama')
+                  ->orWhere('target_agama', 'semua')
+                  ->orWhere('target_agama', '')
+                  ->orWhereRaw('LOWER(target_agama) = ?', [$userAgama]);
+            })
+            ->whereHas('subject', function ($q) use ($userAgama) {
+                $q->whereNull('kategori_agama')
+                  ->orWhere('kategori_agama', 'semua')
+                  ->orWhere('kategori_agama', '')
+                  ->orWhereRaw('LOWER(kategori_agama) = ?', [$userAgama]);
             })
             ->with(['subject.teacher', 'questions'])
             ->orderBy('start_time', 'asc')
@@ -497,6 +524,22 @@ class StudentController extends Controller
             ], 404);
         }
 
+        // Cek kesesuaian agama siswa dengan target ujian / mapel
+        $userAgama = strtolower(trim($user->agama ?? ''));
+        $targetAgama = strtolower(trim($exam->target_agama ?? 'semua'));
+        $mapelAgama = strtolower(trim($exam->subject?->kategori_agama ?? 'semua'));
+
+        $isTargetAgamaValid = ($targetAgama === 'semua' || $targetAgama === '' || $targetAgama === $userAgama);
+        $isMapelAgamaValid = ($mapelAgama === 'semua' || $mapelAgama === '' || $mapelAgama === $userAgama);
+
+        if (!$isTargetAgamaValid || !$isMapelAgamaValid) {
+            $namaTarget = $exam->target_agama !== 'semua' && !empty($exam->target_agama) ? $exam->target_agama : ($exam->subject?->kategori_agama ?? 'Agama Tertentu');
+            return response()->json([
+                'success' => false,
+                'message' => 'Ujian ini dikhususkan untuk siswa beragama ' . $namaTarget . '. Silakan pilih ujian yang sesuai dengan agama Anda.',
+            ], 403);
+        }
+
         $session = ExamSession::where('user_id', $user->id)
             ->where('exam_id', $exam->id)
             ->first();
@@ -565,6 +608,22 @@ class StudentController extends Controller
                 'success' => false,
                 'message' => 'Ujian tidak ditemukan'
             ], 404);
+        }
+
+        // Cek kesesuaian agama siswa dengan target ujian / mapel
+        $userAgama = strtolower(trim($user->agama ?? ''));
+        $targetAgama = strtolower(trim($exam->target_agama ?? 'semua'));
+        $mapelAgama = strtolower(trim($exam->subject?->kategori_agama ?? 'semua'));
+
+        $isTargetAgamaValid = ($targetAgama === 'semua' || $targetAgama === '' || $targetAgama === $userAgama);
+        $isMapelAgamaValid = ($mapelAgama === 'semua' || $mapelAgama === '' || $mapelAgama === $userAgama);
+
+        if (!$isTargetAgamaValid || !$isMapelAgamaValid) {
+            $namaTarget = $exam->target_agama !== 'semua' && !empty($exam->target_agama) ? $exam->target_agama : ($exam->subject?->kategori_agama ?? 'Agama Tertentu');
+            return response()->json([
+                'success' => false,
+                'message' => 'Ujian ini dikhususkan untuk siswa beragama ' . $namaTarget . '. Silakan pilih ujian yang sesuai dengan agama Anda.',
+            ], 403);
         }
 
         $session = ExamSession::where('user_id', $user->id)
@@ -996,6 +1055,67 @@ class StudentController extends Controller
                 'kkm_status'   => $score >= 75 ? 'Tuntas' : 'Remedial',
                 'completed_at' => $examSession->end_time ? $examSession->end_time->format('d-m-Y H:i') : '-',
                 'questions'    => $questionsData,
+            ]
+        ]);
+    }
+
+    /**
+     * Update Agama Siswa
+     * POST /api/siswa/agama atau POST /api/siswa/profile
+     */
+    public function updateAgama(Request $request)
+    {
+        $request->validate([
+            'agama' => 'required|string|max:50',
+        ]);
+
+        $user = $request->user();
+        $user->agama = $request->agama;
+        $user->save();
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Pilihan agama berhasil disimpan!',
+            'data'    => [
+                'id'    => $user->id,
+                'name'  => $user->name,
+                'email' => $user->email,
+                'nis'   => $user->nis,
+                'agama' => $user->agama,
+            ]
+        ]);
+    }
+
+    /**
+     * Update Profil Siswa (Agama, Phone, dll)
+     * POST /api/siswa/profile/update
+     */
+    public function updateProfile(Request $request)
+    {
+        $request->validate([
+            'agama' => 'nullable|string|max:50',
+            'phone' => 'nullable|string|max:25',
+        ]);
+
+        $user = $request->user();
+        if ($request->has('agama')) {
+            $user->agama = $request->agama;
+        }
+        if ($request->has('phone')) {
+            $user->phone = $request->phone;
+        }
+        $user->save();
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Profil siswa berhasil diperbarui!',
+            'data'    => [
+                'id'    => $user->id,
+                'name'  => $user->name,
+                'email' => $user->email,
+                'nis'   => $user->nis,
+                'agama' => $user->agama,
+                'phone' => $user->phone,
             ]
         ]);
     }

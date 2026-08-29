@@ -72,10 +72,14 @@ class ExamController extends Controller
             'nama' => 'required|string|max:255',
             'mapel_id' => 'required|integer|exists:subjects,id',
             'kelas_id' => 'required|integer|exists:classes,id',
+            'target_agama' => 'nullable|string|max:50',
             'start_time' => 'required|date_format:Y-m-d\TH:i',
             'end_time' => 'required|date_format:Y-m-d\TH:i|after:start_time',
             'duration' => 'nullable|integer|min:1',
         ]);
+
+        $subject = \App\Models\Subject::find($validated['mapel_id']);
+        $targetAgama = $validated['target_agama'] ?? ($subject?->kategori_agama ?? 'semua');
 
         $duration = $validated['duration'] ?? null;
         if (!$duration) {
@@ -86,6 +90,7 @@ class ExamController extends Controller
             'title' => $validated['nama'],
             'subject_id' => $validated['mapel_id'],
             'class_id' => $validated['kelas_id'],
+            'target_agama' => $targetAgama,
             'start_time' => $validated['start_time'],
             'end_time' => $validated['end_time'],
             'duration' => $duration,
@@ -107,10 +112,14 @@ class ExamController extends Controller
             'nama' => 'required|string|max:255',
             'mapel_id' => 'required|integer|exists:subjects,id',
             'kelas_id' => 'required|integer|exists:classes,id',
+            'target_agama' => 'nullable|string|max:50',
             'start_time' => 'required|date_format:Y-m-d\TH:i',
             'end_time' => 'required|date_format:Y-m-d\TH:i|after:start_time',
             'duration' => 'nullable|integer|min:1',
         ]);
+
+        $subject = \App\Models\Subject::find($validated['mapel_id']);
+        $targetAgama = $validated['target_agama'] ?? ($subject?->kategori_agama ?? $ujian->target_agama ?? 'semua');
 
         $duration = $validated['duration'] ?? null;
         if (!$duration) {
@@ -121,6 +130,7 @@ class ExamController extends Controller
             'title' => $validated['nama'],
             'subject_id' => $validated['mapel_id'],
             'class_id' => $validated['kelas_id'],
+            'target_agama' => $targetAgama,
             'start_time' => $validated['start_time'],
             'end_time' => $validated['end_time'],
             'duration' => $duration,

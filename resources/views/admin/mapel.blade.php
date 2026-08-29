@@ -122,6 +122,29 @@
                             <option value="">-- Pilih Guru --</option>
                         </select>
                     </div>
+                    <div class="row g-3 mb-3">
+                        <div class="col-md-7">
+                            <label class="form-label">Kategori Agama</label>
+                            <select class="form-select" id="kategoriAgamaMapel" name="kategori_agama">
+                                <option value="semua">Semua / Umum (Non-Agama)</option>
+                                <option value="Islam">Islam (PAI)</option>
+                                <option value="Kristen">Kristen Protestan (PAK)</option>
+                                <option value="Katolik">Katolik</option>
+                                <option value="Hindu">Hindu</option>
+                                <option value="Buddha">Buddha</option>
+                                <option value="Konghucu">Konghucu</option>
+                            </select>
+                            <div class="form-text">Pemisah otomatis saat ujian agama.</div>
+                        </div>
+                        <div class="col-md-5">
+                            <label class="form-label">Tipe Mapel</label>
+                            <select class="form-select" id="isPilihanMapel" name="is_pilihan">
+                                <option value="0">Wajib / Umum</option>
+                                <option value="1">Pilihan / Peminatan</option>
+                            </select>
+                            <div class="form-text">Kurikulum Merdeka</div>
+                        </div>
+                    </div>
                     <div class="mb-3">
                         <label class="form-label">Kelas <small class="text-muted">(tahan Ctrl/Cmd untuk pilih lebih dari satu)</small></label>
                         <select id="kelasMapel" name="kelas_id[]" multiple required></select>
@@ -186,13 +209,23 @@ document.addEventListener('DOMContentLoaded', function () {
             var guruNama = m.teacher ? (m.teacher.name||m.teacher.nama||'-') : '-';
             var kelasList = m.classes ? m.classes.map(function(k) { return '<span class="badge-pill badge-kelas">' + (k.name||k.nama||'') + '</span>'; }).join('') : '-';
 
+            var badgesExtra = '';
+            if (m.kategori_agama && m.kategori_agama !== 'semua') {
+                badgesExtra += '<span class="badge bg-primary-subtle text-primary border ms-1" style="font-size:0.7rem;"><i class="bi bi-star me-1"></i>' + m.kategori_agama + '</span>';
+            }
+            if (m.is_pilihan) {
+                badgesExtra += '<span class="badge bg-warning-subtle text-warning-emphasis border ms-1" style="font-size:0.7rem;">Peminatan</span>';
+            }
+
             rows += '<tr data-nama="' + (m.name||'').toLowerCase() + '" data-guru="' + guruNama.toLowerCase() + '">' +
                 '<td>' + (i+1) + '</td>' +
                 '<td>' +
                     '<div class="d-flex align-items-center gap-2">' +
                         '<div class="mapel-avatar">' + inisial + '</div>' +
-                        '<div><div style="font-weight:600;">' + (m.name||'-') + '</div>' +
-                        (m.code ? '<span class="badge-pill badge-kode">' + m.code + '</span>' : '') + '</div>' +
+                        '<div>' +
+                            '<div style="font-weight:600;">' + (m.name||'-') + badgesExtra + '</div>' +
+                            (m.code ? '<span class="badge-pill badge-kode">' + m.code + '</span>' : '') +
+                        '</div>' +
                     '</div>' +
                 '</td>' +
                 '<td><span class="badge-pill badge-guru"><i class="bi bi-person-badge me-1"></i>' + guruNama + '</span></td>' +
@@ -223,6 +256,8 @@ document.addEventListener('DOMContentLoaded', function () {
     document.getElementById('btnTambahMapel').addEventListener('click', function() {
         document.getElementById('formMapel').reset();
         document.getElementById('mapelId').value = '';
+        document.getElementById('kategoriAgamaMapel').value = 'semua';
+        document.getElementById('isPilihanMapel').value = '0';
         document.getElementById('modalMapelLabel').innerHTML = '<i class="bi bi-journal-bookmark me-2"></i>Tambah Mapel';
     });
 
@@ -274,6 +309,8 @@ document.addEventListener('DOMContentLoaded', function () {
                 document.getElementById('namaMapel').value  = m.name || '';
                 document.getElementById('kodeMapel').value  = m.code || '';
                 document.getElementById('guruMapel').value  = m.teacher_id || '';
+                document.getElementById('kategoriAgamaMapel').value = m.kategori_agama || 'semua';
+                document.getElementById('isPilihanMapel').value = m.is_pilihan ? '1' : '0';
                 var kelasSelect = document.getElementById('kelasMapel');
                 Array.from(kelasSelect.options).forEach(function(opt) {
                     opt.selected = m.classes && m.classes.some(function(k){ return k.id == opt.value; });

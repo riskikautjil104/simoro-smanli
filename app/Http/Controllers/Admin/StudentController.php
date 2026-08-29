@@ -22,6 +22,7 @@ class StudentController extends Controller
                     'kelas_id' => $siswa->class_id,
                     'kelas' => $siswa->class ? ['id' => $siswa->class->id, 'nama' => $siswa->class->name] : null,
                     'nis' => $siswa->nis,
+                    'agama' => $siswa->agama,
                     'phone' => $siswa->phone,
                 ];
             });
@@ -49,6 +50,7 @@ class StudentController extends Controller
             'email' => 'required|email|unique:users,email',
             'kelas_id' => 'required|integer|exists:classes,id',
             'nis' => 'nullable|string|max:30',
+            'agama' => 'nullable|string|max:50',
             'phone' => 'nullable|string|max:20',
         ]);
         $user = \App\Models\User::create([
@@ -58,6 +60,7 @@ class StudentController extends Controller
             'role' => 'student',
             'class_id' => $validated['kelas_id'],
             'nis' => $validated['nis'] ?? null,
+            'agama' => $validated['agama'] ?? null,
             'phone' => $validated['phone'] ?? null,
         ]);
         return response()->json([
@@ -67,6 +70,7 @@ class StudentController extends Controller
             'kelas_id' => $user->class_id,
             'kelas' => $user->class ? ['id' => $user->class->id, 'nama' => $user->class->name] : null,
             'nis' => $user->nis,
+            'agama' => $user->agama,
             'phone' => $user->phone,
         ]);
     }
@@ -84,6 +88,7 @@ class StudentController extends Controller
             'kelas_id' => $user->class_id,
             'kelas' => $user->class ? ['id' => $user->class->id, 'nama' => $user->class->name] : null,
             'nis' => $user->nis,
+            'agama' => $user->agama,
             'phone' => $user->phone,
         ]);
     }
@@ -107,6 +112,7 @@ class StudentController extends Controller
             'email' => 'required|email|unique:users,email,' . $id,
             'kelas_id' => 'required|integer|exists:classes,id',
             'nis' => 'nullable|string|max:30',
+            'agama' => 'nullable|string|max:50',
             'phone' => 'nullable|string|max:20',
         ]);
         $user->update([
@@ -114,6 +120,7 @@ class StudentController extends Controller
             'email' => $validated['email'],
             'class_id' => $validated['kelas_id'],
             'nis' => $validated['nis'] ?? null,
+            'agama' => $validated['agama'] ?? null,
             'phone' => $validated['phone'] ?? null,
         ]);
         return response()->json([
@@ -123,6 +130,7 @@ class StudentController extends Controller
             'kelas_id' => $user->class_id,
             'kelas' => $user->class ? ['id' => $user->class->id, 'nama' => $user->class->name] : null,
             'nis' => $user->nis,
+            'agama' => $user->agama,
             'phone' => $user->phone,
         ]);
     }

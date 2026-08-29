@@ -25,10 +25,12 @@ class UjianStoreController extends Controller
         $subject = Subject::where('id', $request->subject_id)->where('teacher_id', $user->id)->firstOrFail();
         // Pastikan kelas valid untuk mapel tsb
         $class = $subject->classes()->where('classes.id', $request->class_id)->firstOrFail();
+        $targetAgama = $request->target_agama ?? ($subject->kategori_agama ?? 'semua');
         $exam = Exam::create([
             'title' => $request->title,
             'subject_id' => $subject->id,
             'class_id' => $class->id,
+            'target_agama' => $targetAgama,
             'start_time' => $request->start_time,
             'end_time' => $request->end_time,
             'duration' => $request->duration,

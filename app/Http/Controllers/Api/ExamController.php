@@ -19,10 +19,16 @@ class ExamController extends Controller
             'title' => 'required|string|max:255',
             'subject_id' => 'required|exists:subjects,id',
             'class_id' => 'required|exists:classes,id',
+            'target_agama' => 'nullable|string|max:50',
             'start_time' => 'nullable|date',
             'end_time' => 'nullable|date|after_or_equal:start_time',
             'duration' => 'nullable|integer|min:0',
         ]);
+
+        $subject = \App\Models\Subject::find($validated['subject_id']);
+        if (!isset($validated['target_agama']) && $subject) {
+            $validated['target_agama'] = $subject->kategori_agama ?? 'semua';
+        }
 
         $exam = Exam::create($validated);
         return response()->json($exam, 201);
@@ -41,10 +47,18 @@ class ExamController extends Controller
             'title' => 'sometimes|required|string|max:255',
             'subject_id' => 'sometimes|required|exists:subjects,id',
             'class_id' => 'sometimes|required|exists:classes,id',
+            'target_agama' => 'nullable|string|max:50',
             'start_time' => 'nullable|date',
             'end_time' => 'nullable|date|after_or_equal:start_time',
             'duration' => 'nullable|integer|min:0',
         ]);
+
+        if (isset($validated['subject_id']) && !isset($validated['target_agama'])) {
+            $subject = \App\Models\Subject::find($validated['subject_id']);
+            if ($subject && $subject->kategori_agama) {
+                $validated['target_agama'] = $subject->kategori_agama;
+            }
+        }
 
         $exam->update($validated);
         return response()->json($exam);

@@ -27,11 +27,15 @@ class SubjectController extends Controller
             'teacher_id' => 'required|exists:users,id',
             'kelas_id' => 'required|array',
             'kelas_id.*' => 'exists:classes,id',
+            'kategori_agama' => 'nullable|string|max:50',
+            'is_pilihan' => 'nullable|boolean',
         ]);
         $mapel = \App\Models\Subject::create([
             'name' => $validated['nama'],
             'code' => $validated['code'],
             'teacher_id' => $validated['teacher_id'],
+            'kategori_agama' => $validated['kategori_agama'] ?? 'semua',
+            'is_pilihan' => $request->boolean('is_pilihan', false),
         ]);
         $mapel->classes()->sync($validated['kelas_id']);
         return response()->json($mapel->load(['teacher', 'classes']));
@@ -51,10 +55,14 @@ class SubjectController extends Controller
             'teacher_id' => 'required|exists:users,id',
             'kelas_id' => 'required|array',
             'kelas_id.*' => 'exists:classes,id',
+            'kategori_agama' => 'nullable|string|max:50',
+            'is_pilihan' => 'nullable|boolean',
         ]);
         $mapel->update([
             'name' => $validated['nama'],
             'teacher_id' => $validated['teacher_id'],
+            'kategori_agama' => $validated['kategori_agama'] ?? $mapel->kategori_agama ?? 'semua',
+            'is_pilihan' => $request->has('is_pilihan') ? $request->boolean('is_pilihan') : $mapel->is_pilihan,
         ]);
         $mapel->classes()->sync($validated['kelas_id']);
         return response()->json($mapel->load(['teacher', 'classes']));

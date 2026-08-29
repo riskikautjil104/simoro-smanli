@@ -311,12 +311,13 @@
                     <th>Siswa</th>
                     <th>Email</th>
                     <th>Kelas</th>
+                    <th>Agama</th>
                     <th style="width:120px;">Aksi</th>
                 </tr>
             </thead>
             <tbody id="siswaTbody">
                 <tr>
-                    <td colspan="5">
+                    <td colspan="6">
                         <div class="empty-state">
                             <div class="empty-icon"><i class="bi bi-hourglass-split"></i></div>
                             <h6>Memuat data...</h6>
@@ -358,6 +359,19 @@
                         <select class="form-select" id="kelasSiswa" name="kelas_id" required>
                             <option value="">-- Pilih Kelas --</option>
                         </select>
+                    </div>
+                    <div class="mb-3">
+                        <label for="agamaSiswa" class="form-label">Agama / Kepercayaan</label>
+                        <select class="form-select" id="agamaSiswa" name="agama">
+                            <option value="">-- Pilih Agama (Opsional) --</option>
+                            <option value="Islam">Islam</option>
+                            <option value="Kristen">Kristen Protestan</option>
+                            <option value="Katolik">Katolik</option>
+                            <option value="Hindu">Hindu</option>
+                            <option value="Buddha">Buddha</option>
+                            <option value="Konghucu">Konghucu</option>
+                        </select>
+                        <div class="form-text">Digunakan untuk menyaring ujian PAI / PAK / Agama tertentu secara otomatis.</div>
                     </div>
                 </div>
                 <div class="modal-footer border-0 px-4 pb-4 pt-0">
@@ -472,6 +486,7 @@ document.addEventListener('DOMContentLoaded', function () {
             var nama    = siswa.nama || '-';
             var inisial = nama.substring(0, 2).toUpperCase();
             var kelas   = siswa.kelas ? siswa.kelas.nama || siswa.kelas.name : '-';
+            var agama   = siswa.agama ? '<span class="badge bg-light text-primary border"><i class="bi bi-star me-1"></i>' + siswa.agama + '</span>' : '<span class="text-muted fst-italic" style="font-size:0.75rem;">Belum diatur</span>';
 
             rows += '<tr>' +
                 '<td>' + (i + 1) + '</td>' +
@@ -485,6 +500,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 '<td>' +
                     '<span class="badge-kelas"><i class="bi bi-building"></i>' + kelas + '</span>' +
                 '</td>' +
+                '<td>' + agama + '</td>' +
                 '<td>' +
                     '<button class="btn-act btn-act-edit me-1" data-id="' + siswa.id + '">' +
                         '<i class="bi bi-pencil"></i> Edit' +
@@ -501,7 +517,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
     function renderEmptyRow(icon, title, desc) {
         document.getElementById('siswaTbody').innerHTML =
-            '<tr><td colspan="5"><div class="empty-state">' +
+            '<tr><td colspan="6"><div class="empty-state">' +
             '<div class="empty-icon"><i class="bi ' + icon + '"></i></div>' +
             '<h6>' + title + '</h6><p>' + desc + '</p>' +
             '</div></td></tr>';
@@ -515,6 +531,7 @@ document.addEventListener('DOMContentLoaded', function () {
     document.getElementById('btnTambahSiswa').addEventListener('click', function () {
         document.getElementById('formSiswa').reset();
         document.getElementById('siswaId').value = '';
+        document.getElementById('agamaSiswa').value = '';
         document.getElementById('modalSiswaLabel').innerHTML =
             '<i class="bi bi-person-plus me-2"></i>Tambah Siswa';
     });
@@ -576,6 +593,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 document.getElementById('namaSiswa').value  = siswa.nama || '';
                 document.getElementById('emailSiswa').value = siswa.email || '';
                 document.getElementById('kelasSiswa').value = siswa.kelas_id || '';
+                document.getElementById('agamaSiswa').value = siswa.agama || '';
                 document.getElementById('modalSiswaLabel').innerHTML =
                     '<i class="bi bi-pencil me-2"></i>Edit Siswa';
                 bootstrap.Modal.getOrCreateInstance(document.getElementById('modalSiswa')).show();

@@ -61,6 +61,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('siswa/me', [\App\Http\Controllers\Api\Siswa\AuthController::class, 'profile']);
     Route::put('siswa/profile', [\App\Http\Controllers\Api\Siswa\AuthController::class, 'updateProfile']);
     Route::post('siswa/profile', [\App\Http\Controllers\Api\Siswa\AuthController::class, 'updateProfile']);
+    Route::post('siswa/agama', [ApiStudentController::class, 'updateAgama']);
     Route::post('siswa/change-password', [\App\Http\Controllers\Api\Siswa\AuthController::class, 'changePassword']);
     Route::put('siswa/password', [\App\Http\Controllers\Api\Siswa\AuthController::class, 'changePassword']);
     // awal batas suci yang kamu ubah

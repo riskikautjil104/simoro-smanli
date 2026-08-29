@@ -68,6 +68,7 @@ class AuthController extends Controller
                     'name'         => $user->name,
                     'email'        => $user->email,
                     'nis'          => $user->nis,
+                    'agama'        => $user->agama,
                     'phone'        => $user->phone,
                     'role'         => $user->role,
                     'class_id'     => $user->class_id,
@@ -97,6 +98,7 @@ class AuthController extends Controller
                 'name'         => $user->name,
                 'email'        => $user->email,
                 'nis'          => $user->nis,
+                'agama'        => $user->agama,
                 'phone'        => $user->phone,
                 'role'         => $user->role,
                 'class_id'     => $user->class_id,
@@ -110,7 +112,7 @@ class AuthController extends Controller
     }
 
     /**
-     * Update profil siswa (Nama, Email, No Telepon, TTD, atau Password).
+     * Update profil siswa (Nama, Email, No Telepon, Agama, TTD, atau Password).
      * PUT /api/siswa/profile atau POST /api/siswa/profile
      */
     public function updateProfile(Request $request)
@@ -120,6 +122,7 @@ class AuthController extends Controller
         $validated = $request->validate([
             'name'             => 'sometimes|string|max:255',
             'email'            => 'sometimes|email|max:255|unique:users,email,' . $user->id,
+            'agama'            => 'sometimes|nullable|string|max:50',
             'phone'            => 'sometimes|nullable|string|max:20',
             'ttd_signature'    => 'sometimes|nullable|string',
             'current_password' => 'sometimes|nullable|string',
@@ -150,6 +153,9 @@ class AuthController extends Controller
         }
         if (isset($validated['email'])) {
             $user->email = $validated['email'];
+        }
+        if (array_key_exists('agama', $validated)) {
+            $user->agama = $validated['agama'];
         }
         if (array_key_exists('phone', $validated)) {
             $user->phone = $validated['phone'];

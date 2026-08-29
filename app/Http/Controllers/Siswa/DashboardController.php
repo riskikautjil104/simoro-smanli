@@ -62,6 +62,19 @@ class DashboardController extends Controller
             abort(403, 'Ujian belum dimulai atau sudah berakhir.');
         }
 
+        // Cek filter kesesuaian agama siswa dengan ujian
+        $userAgama = strtolower(trim($user->agama ?? ''));
+        $targetAgama = strtolower(trim($exam->target_agama ?? 'semua'));
+        $mapelAgama = strtolower(trim($exam->subject->kategori_agama ?? 'semua'));
+
+        $isTargetAgamaValid = ($targetAgama === 'semua' || $targetAgama === '' || $targetAgama === $userAgama);
+        $isMapelAgamaValid = ($mapelAgama === 'semua' || $mapelAgama === '' || $mapelAgama === $userAgama);
+
+        if (!$isTargetAgamaValid || !$isMapelAgamaValid) {
+            $namaTarget = $exam->target_agama !== 'semua' && !empty($exam->target_agama) ? $exam->target_agama : ($exam->subject->kategori_agama ?? 'Agama Tertentu');
+            abort(403, 'Ujian ini dikhususkan untuk siswa beragama ' . $namaTarget . '. Silakan pilih ujian yang sesuai dengan agama Anda.');
+        }
+
         // Ambil session ujian
         $session = \App\Models\ExamSession::where('user_id', $user->id)
             ->where('exam_id', $exam->id)
@@ -225,12 +238,25 @@ class DashboardController extends Controller
     {
         $user = Auth::user();
         $now  = now();
+        $userAgama = strtolower(trim($user->agama ?? ''));
 
         $ujians = \App\Models\Exam::active()
             ->where('class_id', $user->class_id)
             ->where('start_time', '<=', $now)
             ->where(function ($q) use ($now) {
                 $q->whereNull('end_time')->orWhere('end_time', '>=', $now);
+            })
+            ->where(function ($q) use ($userAgama) {
+                $q->whereNull('target_agama')
+                  ->orWhere('target_agama', 'semua')
+                  ->orWhere('target_agama', '')
+                  ->orWhereRaw('LOWER(target_agama) = ?', [$userAgama]);
+            })
+            ->whereHas('subject', function ($q) use ($userAgama) {
+                $q->whereNull('kategori_agama')
+                  ->orWhere('kategori_agama', 'semua')
+                  ->orWhere('kategori_agama', '')
+                  ->orWhereRaw('LOWER(kategori_agama) = ?', [$userAgama]);
             })
             ->with('subject')
             ->get();
@@ -306,5 +332,26 @@ class DashboardController extends Controller
         return redirect()
             ->route('siswa.ujian.detail', $id)
             ->with('success', 'Pengajuan ulang akses ujian berhasil diajukan, tunggu persetujuan admin/guru.');
+    }
+
+    public function updateAgama(Request $request)
+    {
+        $request->validate([
+            'agama' => 'required|string|max:50',
+        ]);
+
+        $user = Auth::user();
+        $user->agama = $request->agama;
+        $user->save();
+
+        if ($request->expectsJson() || $request->wantsJson()) {
+            return response()->json([
+                'success' => true,
+                'message' => 'Agama berhasil diperbarui!',
+                'data' => ['agama' => $user->agama],
+            ]);
+        }
+
+        return back()->with('success', 'Agama berhasil disimpan!');
     }
 }
