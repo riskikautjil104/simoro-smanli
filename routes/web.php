@@ -206,6 +206,13 @@ Route::get('/panduan', function () {
     return view('frontend.docs');
 });
 
+Route::get('/privacy-policy', function () {
+    return view('frontend.privacy-policy');
+})->name('public.privacy-policy');
+Route::get('/kebijakan-privasi', function () {
+    return view('frontend.privacy-policy');
+})->name('public.kebijakan-privasi');
+
 Route::get('/', [App\Http\Controllers\Frontend\HomeController::class, 'index']);
 
     Route::get('/dashboard', function () {
