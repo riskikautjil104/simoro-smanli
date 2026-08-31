@@ -181,9 +181,9 @@
             <div class="col-lg-10">
 
                 <div class="policy-card">
-                    <!-- 1. Pendahuluan -->
+                    <!-- 1. Pendahuluan & Ruang Lingkup Internal -->
                     <div class="policy-item">
-                        <div class="section-badge"><i class="bi bi-info-circle"></i> 1. Pendahuluan</div>
+                        <div class="section-badge"><i class="bi bi-info-circle"></i> 1. Pendahuluan & Ruang Lingkup Internal</div>
                         <h3><i class="bi bi-building"></i> Tentang Aplikasi & Pengembang</h3>
                         <p>
                             Aplikasi mobile <strong>MORO⁵SMART</strong> dan platform web <strong>SIMORO</strong> (Sistem Informasi Manajemen & CBT Online) dikembangkan dan dikelola secara resmi oleh <strong>SMA Negeri 5 Pulau Morotai</strong>, beralamat di Kabupaten Pulau Morotai, Provinsi Maluku Utara, Indonesia.
@@ -191,21 +191,34 @@
                         <p>
                             Kebijakan Privasi ini menjelaskan bagaimana kami mengumpulkan, menggunakan, menyimpan, dan melindungi informasi pribadi Anda saat menggunakan aplikasi mobile MORO⁵SMART maupun platform SIMORO. Dengan mengunduh dan menggunakan aplikasi ini, Anda menyetujui praktik yang dijelaskan dalam kebijakan ini.
                         </p>
+                        <div class="p-3 bg-light rounded-3 border-start border-4 border-primary">
+                            <strong class="text-dark d-block mb-1"><i class="bi bi-shield-check text-primary me-1"></i> Batasan Ruang Lingkup Penggunaan Internal:</strong>
+                            <p class="mb-0 small text-muted">
+                                Aplikasi MORO⁵SMART dan sistem SIMORO diperuntukkan secara <strong>khusus dan eksklusif untuk lingkungan internal SMA Negeri 5 Kabupaten Pulau Morotai</strong> (meliputi Siswa, Guru, Tenaga Kependidikan, dan Petugas Keamanan/Satpam). Pendaftaran akun dikelola secara terpusat oleh administrator sekolah dan tidak dibuka untuk pendaftaran publik di luar warga sekolah.
+                            </p>
+                        </div>
                     </div>
 
                     <hr class="my-4" style="border-color: var(--border-color);">
 
-                    <!-- 2. Data yang Dikumpulkan -->
+                    <!-- 2. Data yang Dikumpulkan & Keabsahan Tanda Tangan Digital -->
                     <div class="policy-item">
-                        <div class="section-badge"><i class="bi bi-database-check"></i> 2. Informasi yang Kami Kumpulkan</div>
-                        <h3><i class="bi bi-person-lines-fill"></i> Data Pengguna & Akademik</h3>
+                        <div class="section-badge"><i class="bi bi-database-check"></i> 2. Informasi yang Dikumpulkan & Tanda Tangan Digital</div>
+                        <h3><i class="bi bi-person-lines-fill"></i> Data Pengguna & Keabsahan Dokumen Ujian</h3>
                         <p>Kami hanya mengumpulkan data yang diperlukan secara sah untuk operasional administrasi sekolah, proses belajar-mengajar, dan keamanan lingkungan sekolah:</p>
                         <ul>
-                            <li><strong>Identitas Akun</strong>: Nama lengkap, Nomor Induk Siswa Nasional (NISN), Nomor Induk Siswa (NIS), Nomor Induk Pegawai (NIP), kelas, rombongan belajar, agama/kepercayaan (untuk penyesuaian soal ujian Pendidikan Agama), dan alamat email resmi.</li>
+                            <li><strong>Identitas Akun</strong>: Nama lengkap, Nomor Induk Siswa Nasional (NISN), Nomor Induk Siswa (NIS), Nomor Induk Pegawai (NIP), kelas, rombongan belajar, agama/kepercayaan (untuk penyesuaian otomatis soal ujian Pendidikan Agama), dan alamat email resmi.</li>
                             <li><strong>Data Kehadiran & Gerbang</strong>: Waktu presensi masuk dan pulang di pos gerbang sekolah atau kelas, status kehadiran (hadir/terlambat/izin/sakit), dan log scan barcode/QR.</li>
                             <li><strong>Data Evaluasi & CBT</strong>: Riwayat pengerjaan ujian berbasis komputer (CBT), jawaban soal, nilai tugas, dan materi bahan ajar.</li>
-                            <li><strong>Tanda Tangan Digital</strong>: Goresan tanda tangan digital siswa/guru yang disimpan untuk dicantumkan secara sah pada Berita Acara Ujian dan Kartu Ujian.</li>
                         </ul>
+
+                        <!-- Keabsahan Tanda Tangan Digital -->
+                        <div class="p-3.5 bg-light rounded-3 border-start border-4 border-success mt-3">
+                            <strong class="text-dark d-block mb-1"><i class="bi bi-pen text-success me-1"></i> Keabsahan Tanda Tangan Digital Internal:</strong>
+                            <p class="mb-0 small text-muted">
+                                Goresan tanda tangan digital yang dibubuhkan oleh Siswa, Guru, atau Kepala Sekolah di dalam aplikasi MORO⁵SMART <strong>berlaku sah, resmi, dan mengikat secara hukum di lingkungan internal SMA Negeri 5 Kabupaten Pulau Morotai</strong>. Tanda tangan ini digunakan semata-mata sebagai bukti keaslian, integritas, dan otentisitas fisik atas Lembar Jawaban Ujian CBT, Berita Acara Ujian, Kartu Pelajar Digital, serta Rekapitulasi Presensi Resmi Sekolah.
+                            </p>
+                        </div>
                     </div>
 
                     <hr class="my-4" style="border-color: var(--border-color);">
