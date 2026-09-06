@@ -33,8 +33,11 @@
         <button type="button" class="btn btn-info rounded-pill px-3 fw-bold text-white" id="btnPullAbsensi">
             <i class="bi bi-calendar-check-fill me-1"></i> Tarik Absensi
         </button>
-        <a href="{{ route('guru.rapor.pdf', $rapor->id) }}" target="_blank" class="btn btn-outline-light rounded-pill px-3">
+        <a href="{{ route('guru.rapor.pdf', $rapor->encrypted_id) }}" target="_blank" class="btn btn-outline-light rounded-pill px-3" title="Cetak Berkas PDF Resmi">
             <i class="bi bi-file-earmark-pdf me-1"></i> Cetak PDF
+        </a>
+        <a href="{{ $rapor->verification_url }}" target="_blank" class="btn btn-outline-success rounded-pill px-3 text-white border-success" title="Lihat Halaman Verifikasi Keaslian">
+            <i class="bi bi-shield-check me-1"></i> Verifikasi Online
         </a>
     </div>
 </div>
@@ -42,11 +45,58 @@
 <form id="formRapor">
     @csrf
 
+    {{-- Panel Pengaturan Bobot Rapor & KKM Siswa --}}
+    <div class="card card-rapor mb-4 bg-white p-3">
+        <div class="d-flex align-items-center justify-content-between flex-wrap gap-3">
+            <div class="d-flex align-items-center gap-3">
+                <div style="width:40px; height:40px; border-radius:12px; background:rgba(13,110,253,0.1); display:flex; align-items:center; justify-content:center; color:#0d6efd; font-size:1.15rem;">
+                    <i class="bi bi-sliders"></i>
+                </div>
+                <div>
+                    <h6 class="fw-bold mb-0 text-dark">Konfigurasi Bobot Penilaian & KKM</h6>
+                    <small class="text-muted">Nilai akhir dan status tuntas di tabel bawah akan otomatis terkalkulasi ulang saat bobot diubah.</small>
+                </div>
+            </div>
+            <div class="d-flex align-items-center gap-3 flex-wrap">
+                <div class="d-flex align-items-center gap-2">
+                    <label class="small fw-bold text-muted mb-0">Tugas:</label>
+                    <div class="input-group input-group-sm" style="width: 105px;">
+                        <input type="number" min="0" max="100" class="form-control fw-bold text-center" 
+                               id="cfgWeightTugas" name="weight_tugas" 
+                               value="{{ (int)($rapor->weight_tugas ?? $defaultWeightTugas) }}">
+                        <span class="input-group-text bg-light fw-bold">%</span>
+                    </div>
+                </div>
+                <div class="d-flex align-items-center gap-2">
+                    <label class="small fw-bold text-muted mb-0">CBT:</label>
+                    <div class="input-group input-group-sm" style="width: 105px;">
+                        <input type="number" min="0" max="100" class="form-control fw-bold text-center" 
+                               id="cfgWeightCbt" name="weight_cbt" 
+                               value="{{ (int)($rapor->weight_cbt ?? $defaultWeightCbt) }}">
+                        <span class="input-group-text bg-light fw-bold">%</span>
+                    </div>
+                </div>
+                <div class="d-flex align-items-center gap-2">
+                    <label class="small fw-bold text-muted mb-0">KKM:</label>
+                    <div class="input-group input-group-sm" style="width: 95px;">
+                        <input type="number" step="0.5" min="0" max="100" class="form-control fw-bold text-center text-primary" 
+                               id="cfgKkm" name="kkm" 
+                               value="{{ (float)($rapor->kkm ?? $defaultKkm) }}">
+                    </div>
+                </div>
+                <button type="button" class="btn btn-sm btn-outline-secondary rounded-pill px-3" id="btnResetBobot" title="Kembalikan ke standar sekolah">
+                    <i class="bi bi-arrow-counterclockwise me-1"></i> Standar Sekolah
+                </button>
+            </div>
+        </div>
+        <div id="liveWeightWarning" class="small mt-2" style="display:none;"></div>
+    </div>
+
     {{-- Tabel Nilai Mata Pelajaran --}}
     <div class="card card-rapor mb-4 bg-white">
         <div class="card-header bg-transparent py-3 border-0 d-flex justify-content-between align-items-center">
             <h5 class="fw-bold mb-0 text-dark"><i class="bi bi-journal-bookmark me-2 text-primary"></i>Capaian Hasil Belajar Siswa</h5>
-            <span class="text-muted small">Rumus: <strong>40% Tugas + 60% CBT</strong> (Dapat disesuaikan manual)</span>
+            <span class="text-muted small" id="lblRumusAktif">Rumus: <strong>Tugas + CBT</strong> (Nilai akhir dapat disesuaikan manual)</span>
         </div>
         <div class="table-responsive">
             <table class="table table-scores align-middle mb-0">
@@ -55,9 +105,9 @@
                         <th style="width: 50px;">No</th>
                         <th>Mata Pelajaran</th>
                         <th>Guru Pengampu</th>
-                        <th class="text-center" style="width: 110px;">Nilai Tugas (40%)</th>
-                        <th class="text-center" style="width: 110px;">Nilai CBT (60%)</th>
-                        <th class="text-center" style="width: 110px;">Nilai Akhir</th>
+                        <th class="text-center" style="width: 120px;" id="thWeightTugas">Nilai Tugas ({{ (int)($rapor->weight_tugas ?? $defaultWeightTugas) }}%)</th>
+                        <th class="text-center" style="width: 120px;" id="thWeightCbt">Nilai CBT ({{ (int)($rapor->weight_cbt ?? $defaultWeightCbt) }}%)</th>
+                        <th class="text-center" style="width: 130px;">Nilai Akhir</th>
                         <th>Deskripsi Capaian Pembelajaran</th>
                     </tr>
                 </thead>
@@ -91,7 +141,9 @@
                                    class="form-control form-control-sm final-score" 
                                    id="final_{{ $score->id }}" 
                                    name="scores[{{ $score->id }}][nilai_akhir]" 
-                                   value="{{ $score->nilai_akhir }}">
+                                   value="{{ $score->nilai_akhir }}"
+                                   data-id="{{ $score->id }}">
+                            <div class="kkm-status mt-1" id="kkm_status_{{ $score->id }}"></div>
                         </td>
                         <td>
                             <input type="text" class="form-control form-control-sm rounded-3" 
@@ -188,27 +240,125 @@
 <script>
 document.addEventListener('DOMContentLoaded', function() {
     var csrfToken = '{{ csrf_token() }}';
-    var raporId = '{{ $rapor->id }}';
+    var raporId = '{{ $rapor->encrypted_id }}';
 
-    // Auto-calculate Final Score live when Tugas or CBT changes
-    function recalcScore(scoreId) {
+    var defaultWeightTugas = {{ $defaultWeightTugas }};
+    var defaultWeightCbt   = {{ $defaultWeightCbt }};
+    var defaultKkm         = {{ $defaultKkm }};
+
+    function getWeights() {
+        var elT = document.getElementById('cfgWeightTugas');
+        var elC = document.getElementById('cfgWeightCbt');
+        var elK = document.getElementById('cfgKkm');
+
+        var wTugas = elT ? parseFloat(elT.value) : defaultWeightTugas;
+        var wCbt   = elC ? parseFloat(elC.value) : defaultWeightCbt;
+        var kkm    = elK ? parseFloat(elK.value) : defaultKkm;
+
+        if (isNaN(wTugas)) wTugas = defaultWeightTugas;
+        if (isNaN(wCbt))   wCbt   = defaultWeightCbt;
+        if (isNaN(kkm))    kkm    = defaultKkm;
+
+        return { wTugas: wTugas, wCbt: wCbt, kkm: kkm };
+    }
+
+    function updateKkmBadge(scoreId, finalVal, kkm) {
+        var el = document.getElementById('kkm_status_' + scoreId);
+        if (!el) return;
+        if (finalVal >= kkm) {
+            el.innerHTML = '<span class="badge" style="background:#ecfdf5; color:#059669; font-size:0.7rem; font-weight:700; padding:3px 7px; border-radius:6px; border:1px solid #a7f3d0;"><i class="bi bi-check-circle me-1"></i>Tuntas</span>';
+        } else {
+            el.innerHTML = '<span class="badge" style="background:#fef2f2; color:#dc2626; font-size:0.7rem; font-weight:700; padding:3px 7px; border-radius:6px; border:1px solid #fecaca;"><i class="bi bi-exclamation-triangle me-1"></i>< KKM (' + kkm + ')</span>';
+        }
+    }
+
+    function recalcScore(scoreId, autoUpdateFinal) {
         var tugasInput = document.querySelector('.input-tugas[data-id="' + scoreId + '"]');
         var cbtInput   = document.querySelector('.input-cbt[data-id="' + scoreId + '"]');
         var finalInput = document.getElementById('final_' + scoreId);
+        if (!finalInput) return;
 
-        var tugas = parseFloat(tugasInput.value) || 0;
-        var cbt   = parseFloat(cbtInput.value) || 0;
+        var w = getWeights();
 
-        var final = (tugas * 0.40) + (cbt * 0.60);
-        finalInput.value = final.toFixed(2);
+        if (autoUpdateFinal) {
+            var tugas = parseFloat(tugasInput ? tugasInput.value : 0) || 0;
+            var cbt   = parseFloat(cbtInput ? cbtInput.value : 0) || 0;
+            var final = (tugas * (w.wTugas / 100)) + (cbt * (w.wCbt / 100));
+            finalInput.value = final.toFixed(2);
+        }
+
+        var currentFinal = parseFloat(finalInput.value) || 0;
+        updateKkmBadge(scoreId, currentFinal, w.kkm);
+    }
+
+    function recalcAll(autoUpdateFinal) {
+        var w = getWeights();
+        var warningEl = document.getElementById('liveWeightWarning');
+        var sum = w.wTugas + w.wCbt;
+        if (warningEl) {
+            if (sum !== 100) {
+                warningEl.style.display = 'block';
+                warningEl.innerHTML = '<span class="text-warning fw-bold"><i class="bi bi-exclamation-triangle me-1"></i>Perhatian: Total bobot saat ini ' + sum + '% (Idealnya total Tugas + CBT = 100%).</span>';
+            } else {
+                warningEl.style.display = 'none';
+            }
+        }
+
+        var thT = document.getElementById('thWeightTugas');
+        var thC = document.getElementById('thWeightCbt');
+        var lblRumus = document.getElementById('lblRumusAktif');
+        if (thT) thT.textContent = 'Nilai Tugas (' + w.wTugas + '%)';
+        if (thC) thC.textContent = 'Nilai CBT (' + w.wCbt + '%)';
+        if (lblRumus) lblRumus.innerHTML = 'Rumus: <strong>' + w.wTugas + '% Tugas + ' + w.wCbt + '% CBT</strong> (KKM: ' + w.kkm + ')';
+
+        document.querySelectorAll('.final-score').forEach(function(el) {
+            var id = el.getAttribute('data-id') || el.id.replace('final_', '');
+            recalcScore(id, autoUpdateFinal);
+        });
     }
 
     document.querySelectorAll('.input-tugas, .input-cbt').forEach(function(input) {
         input.addEventListener('input', function() {
             var id = this.getAttribute('data-id');
-            recalcScore(id);
+            recalcScore(id, true);
         });
     });
+
+    document.querySelectorAll('.final-score').forEach(function(input) {
+        input.addEventListener('input', function() {
+            var id = this.getAttribute('data-id') || this.id.replace('final_', '');
+            var w = getWeights();
+            updateKkmBadge(id, parseFloat(this.value) || 0, w.kkm);
+        });
+    });
+
+    var cfgTugas = document.getElementById('cfgWeightTugas');
+    var cfgCbt   = document.getElementById('cfgWeightCbt');
+    var cfgKkm   = document.getElementById('cfgKkm');
+    if (cfgTugas) cfgTugas.addEventListener('input', function() { recalcAll(true); });
+    if (cfgCbt)   cfgCbt.addEventListener('input', function() { recalcAll(true); });
+    if (cfgKkm)   cfgKkm.addEventListener('input', function() { recalcAll(false); });
+
+    var btnReset = document.getElementById('btnResetBobot');
+    if (btnReset) {
+        btnReset.addEventListener('click', function() {
+            if (cfgTugas) cfgTugas.value = defaultWeightTugas;
+            if (cfgCbt)   cfgCbt.value   = defaultWeightCbt;
+            if (cfgKkm)   cfgKkm.value   = defaultKkm;
+            recalcAll(true);
+            Swal.fire({
+                toast: true,
+                position: 'top-end',
+                icon: 'info',
+                title: 'Bobot dikembalikan ke standar sekolah (' + defaultWeightTugas + '% : ' + defaultWeightCbt + '%, KKM: ' + defaultKkm + ')',
+                showConfirmButton: false,
+                timer: 2000
+            });
+        });
+    }
+
+    // Inisialisasi awal saat halaman dimuat (tidak menimpa nilai akhir yang sudah ada)
+    recalcAll(false);
 
     // Auto-pull CBT Exam Results
     document.getElementById('btnPullCbt').addEventListener('click', function() {

@@ -128,14 +128,17 @@
                     </td>
                     <td>
                         <div class="d-flex justify-content-center gap-1">
-                            <a href="{{ route('guru.rapor.detail', $r->id) }}" class="btn btn-sm btn-primary rounded-3 px-2 py-1" title="Input Nilai & Catatan">
+                            <a href="{{ route('guru.rapor.detail', $r->encrypted_id) }}" class="btn btn-sm btn-primary rounded-3 px-2 py-1" title="Input Nilai & Catatan">
                                 <i class="bi bi-pencil-square"></i> Input
                             </a>
-                            <button type="button" class="btn btn-sm btn-outline-secondary rounded-3 px-2 py-1 btn-toggle-publish" data-id="{{ $r->id }}" title="Ubah Status">
+                            <button type="button" class="btn btn-sm btn-outline-secondary rounded-3 px-2 py-1 btn-toggle-publish" data-id="{{ $r->encrypted_id }}" title="Ubah Status (Draft/Terbit)">
                                 <i class="bi bi-arrow-repeat"></i>
                             </button>
-                            <a href="{{ route('guru.rapor.pdf', $r->id) }}" target="_blank" class="btn btn-sm btn-outline-danger rounded-3 px-2 py-1" title="Cetak PDF">
+                            <a href="{{ route('guru.rapor.pdf', $r->encrypted_id) }}" target="_blank" class="btn btn-sm btn-outline-danger rounded-3 px-2 py-1" title="Cetak PDF Resmi">
                                 <i class="bi bi-file-earmark-pdf"></i>
+                            </a>
+                            <a href="{{ $r->verification_url }}" target="_blank" class="btn btn-sm btn-outline-success rounded-3 px-2 py-1" title="Verifikasi Keabsahan Rapor">
+                                <i class="bi bi-shield-check"></i>
                             </a>
                         </div>
                     </td>

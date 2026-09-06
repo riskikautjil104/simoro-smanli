@@ -4,9 +4,9 @@
     <meta charset="utf-8">
     <meta content="width=device-width, initial-scale=1.0" name="viewport">
 
-    <title>SIMORO - SMA Negeri 5 Morotai | Portal Pendidikan Pulau Morotai</title>
-    <meta name="description" content="SIMORO SMANLI (Sistem Ujian Online) resmi SMA Negeri 5 Morotai. Inovasi pendidikan digital terbaik di Kabupaten Pulau Morotai, Maluku Utara.">
-    <meta name="keywords" content="SIMORO, SMANLI, SMA Negeri 5 Morotai, SMA Morotai, SMA di Morotai, Sekolah Morotai, Ujian Online Morotai, Pendidikan Maluku Utara, SMAN 5 Morotai, SMA N 1 Morotai, SMA N 2 Morotai, Portal Sekolah Morotai, ujian online, pendidikan">
+    <title>SIMORO - SMA Negeri 5 Morotai | Portal CBT &amp; E-Rapor Digital Terpadu</title>
+    <meta name="description" content="SIMORO SMANLI - Sistem Ujian Online (CBT), E-Rapor Digital Terenkripsi dengan TTE resmi, dan Presensi Siswa SMA Negeri 5 Morotai, Maluku Utara.">
+    <meta name="keywords" content="SIMORO, SMANLI, SMA Negeri 5 Morotai, E-Rapor Digital, CBT Online, Verifikasi Rapor, Tanda Tangan Elektronik, Ujian Online Morotai, Pendidikan Maluku Utara">
     <meta name="author" content="SMA Negeri 5 Morotai">
     <meta name="robots" content="index, follow">
     <link rel="canonical" href="{{ url()->current() }}">
@@ -747,8 +747,141 @@
 
         [data-theme="dark"] .section-eyebrow { background: rgba(14,165,233,0.12); color: var(--accent); }
 
-        [data-theme="dark"] #sm-bottom-nav { background: rgba(10,15,26,0.95) !important; border-top-color: rgba(255,255,255,0.07) !important; }
-        [data-theme="dark"] .sm-bnav-item { color: #6b7280; }
+        /* ============ QUICK VERIFY WIDGET ============ */
+        #verifikasi-rapor { padding: 40px 0 60px; background: #fff; }
+        .verify-widget-card {
+            background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+            border-radius: 24px;
+            padding: 40px 36px;
+            color: #fff;
+            position: relative;
+            overflow: hidden;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 20px 50px rgba(15, 23, 42, 0.25);
+        }
+        .verify-widget-card::before {
+            content: '';
+            position: absolute;
+            width: 320px; height: 320px;
+            background: radial-gradient(circle, rgba(2, 132, 199, 0.25) 0%, transparent 70%);
+            border-radius: 50%;
+            top: -80px; right: -60px;
+            pointer-events: none;
+        }
+        .verify-input-group {
+            background: rgba(255, 255, 255, 0.08);
+            border: 1.5px solid rgba(255, 255, 255, 0.2);
+            border-radius: 16px;
+            padding: 6px;
+            display: flex;
+            gap: 8px;
+            transition: var(--transition);
+        }
+        .verify-input-group:focus-within {
+            border-color: var(--accent);
+            background: rgba(255, 255, 255, 0.14);
+            box-shadow: 0 0 0 4px rgba(2, 132, 199, 0.25);
+        }
+        .verify-input-group input {
+            background: transparent;
+            border: none;
+            color: #fff;
+            padding: 10px 16px;
+            font-size: 0.95rem;
+            width: 100%;
+            outline: none;
+        }
+        .verify-input-group input::placeholder { color: rgba(255, 255, 255, 0.55); }
+        @media (max-width: 767px) {
+            .verify-input-group { flex-direction: column; background: transparent; border: none; padding: 0; }
+            .verify-input-group input {
+                background: rgba(255, 255, 255, 0.1);
+                border: 1px solid rgba(255, 255, 255, 0.2);
+                border-radius: 12px;
+                padding: 12px 14px;
+            }
+        }
+
+        /* ============ KEAMANAN & RAPOR BENTO ============ */
+        #keamanan { padding: 85px 0; background: var(--bg-light); }
+        #rapor-system { padding: 85px 0; background: #fff; }
+        .grid-bento-3 {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+        }
+        @media (max-width: 991px) { .grid-bento-3 { grid-template-columns: repeat(2, 1fr); } }
+        @media (max-width: 640px) { .grid-bento-3 { grid-template-columns: 1fr; } }
+
+        .feature-card-modern {
+            background: #fff;
+            border: 1px solid rgba(10, 15, 44, 0.06);
+            border-radius: var(--radius-card);
+            padding: 30px 26px;
+            box-shadow: var(--shadow-card);
+            transition: var(--transition);
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+        }
+        .feature-card-modern:hover {
+            transform: translateY(-5px);
+            box-shadow: var(--shadow-card-hover);
+            border-color: rgba(29, 78, 216, 0.2);
+        }
+        .feature-icon-box {
+            width: 52px; height: 52px; border-radius: 14px;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 1.35rem; margin-bottom: 20px; flex-shrink: 0;
+        }
+        .feature-card-modern h3 {
+            font-size: 1.12rem; font-weight: 700; color: var(--ink); margin-bottom: 10px;
+        }
+        .feature-card-modern p {
+            font-size: 0.88rem; color: var(--text-muted); line-height: 1.65; margin: 0;
+        }
+        .security-badge-pill {
+            display: inline-flex; align-items: center; gap: 5px;
+            font-size: 0.72rem; font-weight: 700; padding: 3px 10px;
+            border-radius: 100px; margin-bottom: 14px;
+            text-transform: uppercase; letter-spacing: 0.5px;
+        }
+        .badge-sec-blue   { background: var(--primary-soft); color: var(--primary); border: 1px solid rgba(29,78,216,0.2); }
+        .badge-sec-green  { background: var(--svc-teal); color: var(--svc-teal-icon); border: 1px solid rgba(5,150,105,0.25); }
+        .badge-sec-cyan   { background: rgba(14,165,233,0.12); color: var(--accent); border: 1px solid rgba(14,165,233,0.25); }
+        .badge-sec-purple { background: var(--svc-indigo); color: var(--svc-indigo-icon); border: 1px solid rgba(79,70,229,0.25); }
+        .badge-sec-amber  { background: var(--svc-orange); color: var(--svc-orange-icon); border: 1px solid rgba(226,118,15,0.25); }
+
+        .mobile-promo-card {
+            background: linear-gradient(135deg, var(--primary) 0%, #0369a1 100%);
+            border-radius: 28px;
+            padding: 48px 42px;
+            color: #fff;
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            box-shadow: 0 20px 50px rgba(29, 78, 216, 0.25);
+            position: relative;
+            overflow: hidden;
+        }
+        .mobile-promo-card::before {
+            content: ''; position: absolute; width: 350px; height: 350px;
+            background: radial-gradient(circle, rgba(255,255,255,0.14) 0%, transparent 70%);
+            border-radius: 50%; top: -100px; right: -80px; pointer-events: none;
+        }
+
+        /* Dark mode overrides for new sections */
+        [data-theme="dark"] #verifikasi-rapor { background: #070a15 !important; }
+        [data-theme="dark"] #keamanan { background: #0c1120 !important; }
+        [data-theme="dark"] #rapor-system { background: #070a15 !important; }
+        [data-theme="dark"] .feature-card-modern {
+            background: #10162a !important;
+            border-color: rgba(255, 255, 255, 0.08) !important;
+        }
+        [data-theme="dark"] .feature-card-modern:hover {
+            background: #141c33 !important;
+            border-color: rgba(56, 189, 248, 0.35) !important;
+        }
+        [data-theme="dark"] .feature-card-modern h3 { color: #f8fafc !important; }
+        [data-theme="dark"] .feature-card-modern p { color: #94a3b8 !important; }
 
         #dm-toggle {
             display: inline-flex; align-items: center; justify-content: center; width: 40px; height: 40px;
@@ -775,15 +908,15 @@
 
             <nav id="sm-nav">
                 <ul id="sm-nav-list">
-                    <li><a href="#hero"       class="sm-nav-link active">Beranda</a></li>
-                    <li><a href="{{ route('public.docs') }}" target="_blank" class="sm-nav-link"><i class="bi bi-book me-1"></i> Dokumentasi</a></li>
-                    <li><a href="{{ route('public.pengumuman') }}" target="_blank" class="sm-nav-link">Pengumuman Kelulusan</a></li>
-                    <li><a href="#about"      class="sm-nav-link">Tentang</a></li>
-                    <li><a href="#features"   class="sm-nav-link">Fitur</a></li>
-                    <li><a href="#services"   class="sm-nav-link">Layanan</a></li>
-                    <li><a href="#my-project" class="sm-nav-link">My Project</a></li>
-                    <li><a href="{{ route('public.ranking') }}" target="_blank">Ranking Siswa</a></li>
-                    <li><a href="#contact"    class="sm-nav-link">Kontak</a></li>
+                    <li><a href="#hero"             class="sm-nav-link active">Beranda</a></li>
+                    <li><a href="#verifikasi-rapor" class="sm-nav-link"><i class="bi bi-patch-check-fill text-primary me-1"></i>Cek Rapor</a></li>
+                    <li><a href="#keamanan"         class="sm-nav-link"><i class="bi bi-shield-lock-fill text-success me-1"></i>Keamanan</a></li>
+                    <li><a href="#rapor-system"     class="sm-nav-link">E-Rapor</a></li>
+                    <li><a href="#features"         class="sm-nav-link">Fitur CBT</a></li>
+                    <li><a href="#services"         class="sm-nav-link">Layanan</a></li>
+                    <li><a href="#my-project"       class="sm-nav-link">My Project</a></li>
+                    <li><a href="{{ route('public.ranking') }}" target="_blank" class="sm-nav-link">Ranking</a></li>
+                    <li><a href="#contact"          class="sm-nav-link">Kontak</a></li>
                 </ul>
             </nav>
 
@@ -795,18 +928,15 @@
                 </button>
 
                 @auth
-                    {{-- <a href="{{ url('/dashboard') }}" class="btn-school">
+                    <a href="{{ url('/dashboard') }}" class="btn-school">
                         <i class="bi bi-speedometer2"></i>
                         <span class="d-none d-md-inline">Dashboard</span>
-                    </a> --}}
+                    </a>
                 @else
                     <a href="{{ route('login') }}" class="btn-school">
                         <i class="bi bi-box-arrow-in-right"></i>
                         <span>Login</span>
                     </a>
-                    {{-- @if (Route::has('register'))
-                        <a href="{{ route('register') }}" class="btn-outline-school d-none d-sm-inline-flex">Daftar</a>
-                    @endif --}}
                 @endauth
 
                 <button id="sm-burger" aria-label="Menu" aria-expanded="false">
@@ -820,14 +950,17 @@
 
         <div id="sm-mobile-menu">
             <ul>
-                <li><a href="#hero"       class="sm-nav-link">Beranda</a></li>
-                 <li><a href="{{ route('public.pengumuman') }}" target="_blank" class="sm-nav-link active">Pengumuman Kelulusan</a></li>
-                <li><a href="#about"      class="sm-nav-link">Tentang</a></li>
-                <li><a href="#features"   class="sm-nav-link">Fitur</a></li>
-                <li><a href="#services"   class="sm-nav-link">Layanan</a></li>
-                <li><a href="#my-project" class="sm-nav-link">My Project</a></li>
-                <li><a href="#contact"    class="sm-nav-link">Kontak</a></li>
-                <li> <a href="https://simoro.sma-n5-morotai.id/ranking" target="_blank">Ranking Siswa</a></li>
+                <li><a href="#hero"             class="sm-nav-link"><i class="bi bi-house-door me-2"></i>Beranda</a></li>
+                <li><a href="#verifikasi-rapor" class="sm-nav-link text-primary fw-bold"><i class="bi bi-patch-check-fill me-2"></i>Cek Keaslian Rapor</a></li>
+                <li><a href="#keamanan"         class="sm-nav-link"><i class="bi bi-shield-lock me-2"></i>Keamanan & Anti-Pemalsuan</a></li>
+                <li><a href="#rapor-system"     class="sm-nav-link"><i class="bi bi-file-earmark-spreadsheet me-2"></i>Sistem E-Rapor Digital</a></li>
+                <li><a href="#features"         class="sm-nav-link"><i class="bi bi-cpu me-2"></i>Fitur CBT Online</a></li>
+                <li><a href="#services"         class="sm-nav-link"><i class="bi bi-grid me-2"></i>Layanan Sistem</a></li>
+                <li><a href="{{ route('public.ranking') }}" target="_blank" class="sm-nav-link"><i class="bi bi-trophy me-2"></i>Ranking Siswa</a></li>
+                <li><a href="{{ route('public.pengumuman') }}" target="_blank" class="sm-nav-link"><i class="bi bi-megaphone me-2"></i>Pengumuman Kelulusan</a></li>
+                <li><a href="{{ route('public.docs') }}" target="_blank" class="sm-nav-link"><i class="bi bi-book me-2"></i>Dokumentasi API</a></li>
+                <li><a href="#my-project"       class="sm-nav-link"><i class="bi bi-folder-check me-2"></i>My Project</a></li>
+                <li><a href="#contact"          class="sm-nav-link"><i class="bi bi-envelope me-2"></i>Kontak</a></li>
             </ul>
         </div>
     </header>
@@ -840,11 +973,11 @@
                 <div class="row gy-5 align-items-center">
                     <div class="col-lg-6">
                         <div class="hero-text-wrap">
-                            <span class="section-eyebrow">✦ Sistem Ujian Digital Resmi</span>
-                            <h1>Sistem Ujian Online<br><strong>SMA Negeri 5 Morotai</strong></h1>
+                            <span class="section-eyebrow"><i class="bi bi-patch-check-fill text-primary me-1"></i> Sistem Ujian &amp; E-Rapor Digital Resmi</span>
+                            <h1>Portal CBT &amp; E-Rapor Digital<br><strong>SMA Negeri 5 Morotai</strong></h1>
                         </div>
                         <div class="hero-sub">
-                            <p class="mt-3">Mudahkan proses ujian dengan teknologi modern. Mulai ujian dimana saja, kapan saja dengan aman dan terpercaya.</p>
+                            <p class="mt-3">Ekosistem terintegrasi pembelajaran abad 21: Ujian online dengan proteksi anti-cheat server, pengolahan nilai rapor adaptif berstandar nasional, dan verifikasi keaslian dokumen digital terenkripsi.</p>
                         </div>
                         <div class="hero-btns d-flex flex-wrap gap-3 mt-4">
                             @auth
@@ -853,15 +986,18 @@
                                 </a>
                             @else
                                 <a href="{{ route('login') }}" class="btn-school">
-                                    <i class="bi bi-box-arrow-in-right"></i> Mulai Ujian
+                                    <i class="bi bi-box-arrow-in-right"></i> Mulai Ujian Online
                                 </a>
-                                <a href="#about" class="btn-outline-school">Pelajari Lebih Lanjut</a>
+                                <a href="#verifikasi-rapor" class="btn-outline-school">
+                                    <i class="bi bi-patch-check"></i> Cek Keaslian Rapor
+                                </a>
                             @endauth
                         </div>
                         <div class="hero-chips d-flex flex-wrap gap-2 mt-4">
-                            <span class="hero-chip"><span class="chip-dot"><i class="bi bi-shield-check"></i></span>Anti-Cheat</span>
-                            <span class="hero-chip"><span class="chip-dot"><i class="bi bi-clock-history"></i></span>Timer Real-time</span>
-                            <span class="hero-chip"><span class="chip-dot"><i class="bi bi-graph-up"></i></span>Hasil Instan</span>
+                            <span class="hero-chip"><span class="chip-dot"><i class="bi bi-shield-lock-fill"></i></span>Enkripsi AES-256</span>
+                            <span class="hero-chip"><span class="chip-dot"><i class="bi bi-stopwatch-fill"></i></span>CBT Anti-Cheat</span>
+                            <span class="hero-chip"><span class="chip-dot"><i class="bi bi-qr-code-scan"></i></span>TTE &amp; QR Code</span>
+                            <span class="hero-chip"><span class="chip-dot"><i class="bi bi-sliders"></i></span>Bobot Adaptif 40:60</span>
                         </div>
                     </div>
                     <div class="col-lg-6 text-center">
@@ -908,17 +1044,216 @@
             </div>
         </section>
 
+        <!-- =====================================================
+             ★ VERIFIKASI KEASLIAN RAPOR DIGITAL (QUICK CHECK)
+             ===================================================== -->
+        <section id="verifikasi-rapor">
+            <div class="container" data-aos="fade-up">
+                <div class="verify-widget-card">
+                    <div class="row align-items-center gy-4">
+                        <div class="col-lg-7">
+                            <span class="security-badge-pill badge-sec-blue mb-2">
+                                <i class="bi bi-shield-check"></i> Layanan Publik &amp; Validasi Dokumen
+                            </span>
+                            <h2 class="h3 fw-bold text-white mb-2">Verifikasi Keaslian Dokumen Rapor</h2>
+                            <p class="text-white-50 mb-4" style="font-size: 0.92rem; line-height: 1.6;">
+                                Validasi keabsahan lembar rapor digital siswa SMA Negeri 5 Morotai secara instan. Masukkan <strong>Nomor Registrasi Dokumen</strong> resmi (contoh: <code>SMAN5/RAPOR/...</code>) atau <strong>Kode Token Verifikasi</strong> yang tertera pada lembar dokumen fisik/digital.
+                            </p>
+                            <form id="quickVerifyForm" onsubmit="return handleQuickVerify(event)">
+                                <div class="verify-input-group">
+                                    <i class="bi bi-search text-white-50 align-self-center ms-3 d-none d-md-block" style="font-size: 1.1rem;"></i>
+                                    <input type="text" id="verifyInput" placeholder="Masukkan No. Registrasi (SMAN5/RAPOR/...) atau Token..." required autocomplete="off">
+                                    <button type="submit" class="btn-school flex-shrink-0">
+                                        <i class="bi bi-patch-check-fill"></i> Verifikasi Dokumen
+                                    </button>
+                                </div>
+                            </form>
+                            <div class="d-flex align-items-center gap-2 mt-3 text-white-50" style="font-size: 0.78rem;">
+                                <i class="bi bi-lock-fill text-info"></i>
+                                <span>Dilindungi enkripsi kriptografis dan berkekuatan hukum sah sesuai UU ITE No. 11/2008.</span>
+                            </div>
+                        </div>
+                        <div class="col-lg-5 text-center d-none d-lg-block">
+                            <div class="p-4 rounded-4" style="background: rgba(255,255,255,0.05); border: 1px dashed rgba(255,255,255,0.2);">
+                                <i class="bi bi-qr-code-scan display-4 text-info mb-3 d-inline-block"></i>
+                                <h4 class="text-white h6 fw-bold mb-1">Pindai QR Code Dokumen</h4>
+                                <p class="text-white-50 small mb-0">Arahkan kamera smartphone ke QR Code Tanda Tangan Elektronik di pojok dokumen untuk validasi langsung dari server pusat.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- =====================================================
+             ★ ARSITEKTUR KEAMANAN & ANTI-PEMALSUAN RAPOR
+             ===================================================== -->
+        <section id="keamanan">
+            <div class="container section-title text-center" data-aos="fade-up">
+                <span class="section-eyebrow"><i class="bi bi-shield-lock-fill text-primary me-1"></i> Standar Keamanan Enterprise</span>
+                <h2>Arsitektur Keamanan &amp; Anti-Pemalsuan</h2>
+                <p>SIMORO SMANLI menerapkan sistem keamanan berlapis untuk menjamin integritas data akademik dan mencegah segala bentuk manipulasi dokumen nilai.</p>
+            </div>
+            <div class="container" data-aos="fade-up" data-aos-delay="100">
+                <div class="grid-bento-3">
+                    
+                    <div class="feature-card-modern">
+                        <div class="d-flex justify-content-between align-items-start">
+                            <div class="feature-icon-box" style="background: rgba(29,78,216,0.1); color: var(--primary);">
+                                <i class="bi bi-key-fill"></i>
+                            </div>
+                            <span class="security-badge-pill badge-sec-blue">
+                                <i class="bi bi-shield-check"></i> AES-256 URL-Safe
+                            </span>
+                        </div>
+                        <h3>Enkripsi ID URL-Safe</h3>
+                        <p>ID identitas siswa dan record rapor dienkripsi menggunakan protokol URL-Safe AES-256 simetris kuat. Mencegah serangan enumerasi dan tebak ID parameter database saat tautan rapor dibagikan.</p>
+                    </div>
+
+                    <div class="feature-card-modern">
+                        <div class="d-flex justify-content-between align-items-start">
+                            <div class="feature-icon-box" style="background: rgba(5,150,105,0.1); color: #059669;">
+                                <i class="bi bi-fingerprint"></i>
+                            </div>
+                            <span class="security-badge-pill badge-sec-green">
+                                <i class="bi bi-check-circle"></i> Nomor Seri Baku
+                            </span>
+                        </div>
+                        <h3>Nomor Registrasi Unik SMAN 5</h3>
+                        <p>Format penomoran dokumen resmi <code>SMAN5/RAPOR/{TAHUN}/{SMT}/{ID}</code> tercatat secara permanen di database sekolah dan menjadi rujukan autentikasi tunggal instansi pendidikan dan perguruan tinggi.</p>
+                    </div>
+
+                    <div class="feature-card-modern">
+                        <div class="d-flex justify-content-between align-items-start">
+                            <div class="feature-icon-box" style="background: rgba(14,165,233,0.1); color: var(--accent);">
+                                <i class="bi bi-file-earmark-lock2-fill"></i>
+                            </div>
+                            <span class="security-badge-pill badge-sec-cyan">
+                                <i class="bi bi-cpu"></i> Kriptografi SHA-256
+                            </span>
+                        </div>
+                        <h3>Digital Signature &amp; Hash Checksum</h3>
+                        <p>Seluruh angka nilai diikat secara kriptografis menggunakan algoritma SHA-256 checksum. Manipulasi 1 digit angka nilai pada dokumen secara instan membatalkan validitas tanda tangan digital.</p>
+                    </div>
+
+                    <div class="feature-card-modern">
+                        <div class="d-flex justify-content-between align-items-start">
+                            <div class="feature-icon-box" style="background: rgba(79,70,229,0.1); color: #4f46e5;">
+                                <i class="bi bi-qr-code"></i>
+                            </div>
+                            <span class="security-badge-pill badge-sec-purple">
+                                <i class="bi bi-award"></i> Validasi Dinamis
+                            </span>
+                        </div>
+                        <h3>QR Code Tanda Tangan Elektronik</h3>
+                        <p>QR Code TTE Kepala Sekolah dicetak pada lembar fisik dan digital. Dapat diverifikasi langsung secara publik melalui kamera smartphone ke halaman verifikasi resmi portal SMA Negeri 5 Morotai.</p>
+                    </div>
+
+                    <div class="feature-card-modern">
+                        <div class="d-flex justify-content-between align-items-start">
+                            <div class="feature-icon-box" style="background: rgba(226,118,15,0.1); color: #e2760f;">
+                                <i class="bi bi-award-fill"></i>
+                            </div>
+                            <span class="security-badge-pill badge-sec-amber">
+                                <i class="bi bi-bank"></i> Regulasi Nasional
+                            </span>
+                        </div>
+                        <h3>Kekuatan Hukum Sah (UU ITE)</h3>
+                        <p>Memenuhi persyaratan kekuatan hukum alat bukti elektronik yang sah berdasarkan Pasal 5 &amp; 6 UU ITE No. 11/2008 serta Peraturan Pemerintah No. 71/2019 tentang Sistem dan Transaksi Elektronik.</p>
+                    </div>
+
+                    <div class="feature-card-modern">
+                        <div class="d-flex justify-content-between align-items-start">
+                            <div class="feature-icon-box" style="background: rgba(29,78,216,0.1); color: var(--primary);">
+                                <i class="bi bi-shield-shaded"></i>
+                            </div>
+                            <span class="security-badge-pill badge-sec-blue">
+                                <i class="bi bi-printer"></i> Proteksi PDF A4
+                            </span>
+                        </div>
+                        <h3>Watermark Resmi &amp; Anti-Duplikasi</h3>
+                        <p>Lembar rapor dilengkapi watermark latar transparan lambang sekolah beresolusi tinggi, tata letak baku A4 bebas distorsi, serta penguncian elemen visual dokumen cetak.</p>
+                    </div>
+
+                </div>
+            </div>
+        </section>
+
+        <!-- =====================================================
+             ★ SISTEM E-RAPOR DIGITAL TERINTEGRASI
+             ===================================================== -->
+        <section id="rapor-system">
+            <div class="container section-title text-center" data-aos="fade-up">
+                <span class="section-eyebrow"><i class="bi bi-file-earmark-spreadsheet-fill text-primary me-1"></i> Manajemen Nilai Akademik</span>
+                <h2>Sistem E-Rapor Digital Terintegrasi</h2>
+                <p>Pengolahan nilai akademik komprehensif yang mengintegrasikan hasil ujian CBT, tugas harian, presensi otomatis, dan evaluasi karakter siswa.</p>
+            </div>
+            <div class="container" data-aos="fade-up" data-aos-delay="100">
+                <div class="grid-bento-3">
+
+                    <div class="feature-card-modern">
+                        <div class="feature-icon-box" style="background: rgba(29,78,216,0.1); color: var(--primary);">
+                            <i class="bi bi-sliders"></i>
+                        </div>
+                        <h3>Pembobotan Nilai Adaptif</h3>
+                        <p>Fleksibilitas penentuan bobot nilai antara Tugas Harian dan Ujian CBT (contoh: 40% Tugas + 60% CBT) yang dapat disesuaikan per mata pelajaran ataupun per guru pengampu secara mandiri.</p>
+                    </div>
+
+                    <div class="feature-card-modern">
+                        <div class="feature-icon-box" style="background: rgba(5,150,105,0.1); color: #059669;">
+                            <i class="bi bi-person-check-fill"></i>
+                        </div>
+                        <h3>Sinkronisasi Presensi Otomatis</h3>
+                        <p>Terhubung langsung dengan sistem absensi digital Moro5Smart untuk menghitung rekap Sakit (S), Izin (I), dan Tanpa Keterangan (A) secara real-time tanpa proses rekapitulasi manual yang memakan waktu.</p>
+                    </div>
+
+                    <div class="feature-card-modern">
+                        <div class="feature-icon-box" style="background: rgba(14,165,233,0.1); color: var(--accent);">
+                            <i class="bi bi-clipboard2-check-fill"></i>
+                        </div>
+                        <h3>Standar KKM &amp; Predikat Capaian</h3>
+                        <p>Konversi otomatis nilai akhir menjadi predikat capaian kompetensi (A, B, C, D) dengan standar KKM adaptif sekolah serta penentuan status ketuntasan siswa secara objektif dan transparan.</p>
+                    </div>
+
+                    <div class="feature-card-modern">
+                        <div class="feature-icon-box" style="background: rgba(79,70,229,0.1); color: #4f46e5;">
+                            <i class="bi bi-journal-text"></i>
+                        </div>
+                        <h3>Catatan Wali Kelas &amp; Ekstrakurikuler</h3>
+                        <p>Ruang komprehensif bagi wali kelas untuk memasukkan catatan evaluasi karakter, akhlak, keikutsertaan kegiatan ekstrakurikuler, dan rekomendasi bimbingan akademik tiap siswa.</p>
+                    </div>
+
+                    <div class="feature-card-modern">
+                        <div class="feature-icon-box" style="background: rgba(226,118,15,0.1); color: #e2760f;">
+                            <i class="bi bi-printer-fill"></i>
+                        </div>
+                        <h3>Cetak PDF Rapor Standar A4</h3>
+                        <p>Format cetak dokumen resmi berstandar nasional lengkap dengan kop sekolah, tabel capaian kompetensi rapi, data identitas siswa, dan lembar tanda tangan ber-QR Code keamanan.</p>
+                    </div>
+
+                    <div class="feature-card-modern">
+                        <div class="feature-icon-box" style="background: rgba(29,78,216,0.1); color: var(--primary);">
+                            <i class="bi bi-send-check-fill"></i>
+                        </div>
+                        <h3>Publikasi Massal &amp; Portal Siswa</h3>
+                        <p>Wali kelas dapat mempublikasikan rapor satu rombel kelas secara serentak, sehingga siswa dan orang tua dapat mengakses dan mengunduh lembar rapor kapan saja dari portal SIMORO.</p>
+                    </div>
+
+                </div>
+            </div>
+        </section>
+
         <!-- ABOUT -->
         <section id="about">
             <div class="container">
                 <div class="row gy-5 align-items-center">
                     <div class="col-lg-6 order-2 order-lg-1" data-aos="fade-right">
-                        <span class="section-eyebrow">Tentang SIMORO SMANLI</span>
-                        <h2 style="font-size: 2.05rem; font-weight: 800; margin-bottom: 1.25rem; letter-spacing: -0.03em;">Sistem Ujian Online Modern untuk Pendidikan Terbaik</h2>
-                        <p style="color: var(--text-muted);">SIMORO SMANLI adalah platform ujian online yang dirancang khusus untuk mendukung kegiatan pembelajaran di SMA Negeri 5 Morotai. Dengan teknologi terkini, kami menghadirkan pengalaman ujian yang aman, praktis, dan transparan.</p>
-                        <p style="color: var(--text-muted);">Sistem ini memungkinkan siswa untuk mengikuti ujian secara online dengan mudah, sementara guru dapat mengelola dan memantau ujian dengan lebih efisien.</p>
+                        <span class="section-eyebrow"><i class="bi bi-building me-1"></i> Tentang SIMORO SMANLI</span>
+                        <h2 style="font-size: 2.05rem; font-weight: 800; margin-bottom: 1.25rem; letter-spacing: -0.03em;">Platform Pembelajaran &amp; Ujian Modern untuk Pendidikan Unggul</h2>
+                        <p style="color: var(--text-muted);">SIMORO SMANLI adalah ekosistem digital resmi SMA Negeri 5 Morotai yang menyatukan pelaksanaan ujian online berbasis komputer (CBT), manajemen penilaian e-rapor, serta pemantauan kehadiran siswa dalam satu sistem terpadu.</p>
+                        <p style="color: var(--text-muted);">Dibangun dengan standar keamanan modern, SIMORO memberikan kenyamanan maksimal bagi siswa dalam melaksanakan ujian, serta efisiensi tinggi bagi guru dan wali kelas dalam mengolah data evaluasi akademik.</p>
                         <a href="#features" class="btn-read-more mt-3">
-                            Lihat Fitur <i class="bi bi-arrow-right"></i>
+                            Eksplorasi Fitur CBT <i class="bi bi-arrow-right"></i>
                         </a>
                     </div>
                     <div class="col-lg-6 order-1 order-lg-2" data-aos="zoom-out" data-aos-delay="100">
@@ -927,8 +1262,8 @@
                             <div class="about-badge">
                                 <span class="badge-ic"><i class="bi bi-patch-check-fill"></i></span>
                                 <div>
-                                    <strong>Terverifikasi</strong>
-                                    <span>Platform resmi sekolah</span>
+                                    <strong>Terverifikasi Resmi</strong>
+                                    <span>SMA Negeri 5 Morotai</span>
                                 </div>
                             </div>
                         </div>
@@ -937,11 +1272,12 @@
             </div>
         </section>
 
-        <!-- FEATURES -->
+        <!-- FEATURES (CBT ONLINE) -->
         <section id="features">
             <div class="container section-title text-center" data-aos="fade-up">
-                <h2>Fitur Unggulan</h2>
-                <p>Kemudahan dan keamanan dalam setiap ujian</p>
+                <span class="section-eyebrow"><i class="bi bi-cpu-fill text-primary me-1"></i> Keunggulan Ujian Digital</span>
+                <h2>Fitur Unggulan CBT Online</h2>
+                <p>Dirancang khusus untuk menjaga integritas, objektivitas, dan kelancaran pelaksanaan ujian sekolah.</p>
             </div>
             <div class="container">
                 <div class="row gy-5 align-items-center">
@@ -949,12 +1285,12 @@
                         <div class="row gy-3">
                             @php
                                 $features = [
-                                    ['icon' => 'bi-check-circle-fill', 'color' => 'var(--primary)',  'label' => 'Ujian Online'],
-                                    ['icon' => 'bi-shield-check',      'color' => 'var(--secondary)','label' => 'Aman & Terpercaya'],
-                                    ['icon' => 'bi-clock-history',     'color' => 'var(--accent)',   'label' => 'Waktu Realtime'],
-                                    ['icon' => 'bi-graph-up',          'color' => '#e2760f',         'label' => 'Hasil Instan'],
-                                    ['icon' => 'bi-phone',             'color' => '#4f46e5',         'label' => 'Multi Device'],
-                                    ['icon' => 'bi-cloud-upload',      'color' => '#db2777',         'label' => 'Backup Data'],
+                                    ['icon' => 'bi-shield-check',         'color' => 'var(--primary)',   'label' => 'Anti-Cheat & Lock Browser'],
+                                    ['icon' => 'bi-stopwatch-fill',       'color' => 'var(--secondary)', 'label' => 'Timer Server Real-time'],
+                                    ['icon' => 'bi-shuffle',              'color' => 'var(--accent)',    'label' => 'Acak Soal & Pilihan Ganda'],
+                                    ['icon' => 'bi-graph-up-arrow',       'color' => '#e2760f',          'label' => 'Analitik & Koreksi Otomatis'],
+                                    ['icon' => 'bi-phone-flip',           'color' => '#4f46e5',          'label' => 'Multi Device Kompatibel'],
+                                    ['icon' => 'bi-cloud-arrow-up-fill',  'color' => '#db2777',          'label' => 'Auto-Save Jawaban Siswa'],
                                 ];
                             @endphp
                             @foreach($features as $i => $f)
@@ -977,19 +1313,20 @@
         <!-- SERVICES -->
         <section id="services">
             <div class="container section-title text-center" data-aos="fade-up">
-                <h2>Layanan</h2>
-                <p>Layanan terbaik untuk pendidikan</p>
+                <span class="section-eyebrow"><i class="bi bi-grid-fill text-primary me-1"></i> Ekosistem Layanan</span>
+                <h2>Layanan Terpadu SIMORO</h2>
+                <p>Solusi komprehensif bagi seluruh warga SMA Negeri 5 Morotai</p>
             </div>
             <div class="container">
                 <div class="svc-bento">
                     @php
                         $services = [
-                            ['icon' => 'bi-laptop',            'cls' => 'svc-blue',   'title' => 'Ujian Online',       'desc' => 'Ikuti ujian dengan mudah melalui perangkat komputer atau smartphone. Tidak perlu datang ke sekolah.'],
-                            ['icon' => 'bi-shield-lock',       'cls' => 'svc-orange', 'title' => 'Keamanan Terjamin',  'desc' => 'Sistem anti cheat dan monitoring real-time untuk memastikan kejujuran dalam ujian.'],
-                            ['icon' => 'bi-file-earmark-check','cls' => 'svc-teal',   'title' => 'Raport Digital',     'desc' => 'Hasil ujian langsung tercatat dalam sistem dan dapat diakses kapan saja secara digital.'],
-                            ['icon' => 'bi-people',            'cls' => 'svc-red',    'title' => 'Manajemen Kelas',    'desc' => 'Kelola data siswa dan pembagian ujian dengan mudah melalui satu platform.'],
-                            ['icon' => 'bi-bar-chart',         'cls' => 'svc-indigo', 'title' => 'Analisis Hasil',     'desc' => 'Dapatkan analisis mendalam tentang performa siswa dan kualitas soal ujian.'],
-                            ['icon' => 'bi-chat-dots',         'cls' => 'svc-pink',   'title' => 'Support 24/7',       'desc' => 'Tim support siap membantu kapan saja jika ada kendala dalam penggunaan sistem.'],
+                            ['icon' => 'bi-laptop',             'cls' => 'svc-blue',   'title' => 'Ujian Online CBT',            'desc' => 'Ujian online dengan perlindungan anti kecurangan, navigasi soal cerdas, dan deteksi pelanggaran otomatis.'],
+                            ['icon' => 'bi-shield-lock-fill',   'cls' => 'svc-orange', 'title' => 'Keamanan & Autentikasi',      'desc' => 'Enkripsi data berlapis, validasi Tanda Tangan Elektronik, dan proteksi dari kebocoran soal.'],
+                            ['icon' => 'bi-file-earmark-check', 'cls' => 'svc-teal',   'title' => 'E-Rapor Digital Terpadu',     'desc' => 'Pengolahan nilai rapor adaptif dengan kalkulasi bobot tugas dan CBT serta cetak PDF A4 resmi.'],
+                            ['icon' => 'bi-people-fill',        'cls' => 'svc-red',    'title' => 'Manajemen Kelas & Siswa',     'desc' => 'Distribusi sesi ujian per rombel kelas, pantauan peserta aktif, dan rekapitulasi presensi otomatis.'],
+                            ['icon' => 'bi-bar-chart-fill',     'cls' => 'svc-indigo', 'title' => 'Statistik & Ranking Siswa',   'desc' => 'Analisis komprehensif distribusi nilai, daya serap materi, dan papan peringkat siswa berprestasi.'],
+                            ['icon' => 'bi-phone-fill',         'cls' => 'svc-pink',   'title' => 'Ekosistem Moro5Smart Mobile', 'desc' => 'Integrasi menyeluruh dengan aplikasi smartphone untuk presensi berbasis lokasi dan notifikasi ujian.'],
                         ];
                     @endphp
                     @foreach($services as $i => $svc)
@@ -1003,6 +1340,40 @@
                         </div>
                     </div>
                     @endforeach
+                </div>
+            </div>
+        </section>
+
+        <!-- PROMO MORO5SMART MOBILE APP -->
+        <section class="py-5" style="background: var(--bg-light);">
+            <div class="container" data-aos="fade-up">
+                <div class="mobile-promo-card">
+                    <div class="row align-items-center gy-4">
+                        <div class="col-lg-8">
+                            <span class="badge bg-white text-primary px-3 py-2 rounded-pill fw-bold mb-3 d-inline-flex align-items-center gap-1">
+                                <i class="bi bi-phone"></i> Ekosistem Mobile Moro5Smart
+                            </span>
+                            <h2 class="h2 fw-bold text-white mb-3">Akses Pembelajaran &amp; Presensi di Smartphone</h2>
+                            <p class="text-white-50 mb-4" style="font-size: 1rem; line-height: 1.7; max-width: 650px;">
+                                Lengkapi aktivitas sekolah Anda dengan aplikasi <strong>Moro5Smart</strong>. Nikmati kemudahan presensi GPS dalam radius sekolah, pengingat jadwal ujian online, monitoring kehadiran harian, serta akses pengumuman sekolah langsung secara real-time.
+                            </p>
+                            <div class="d-flex flex-wrap gap-3">
+                                <a href="{{ asset('apk/moro5smart.apk') }}" class="btn-school-inverted">
+                                    <i class="bi bi-android2 fs-5"></i> Unduh APK Android
+                                </a>
+                                <a href="#about" class="btn-outline-school text-white border-white">
+                                    <i class="bi bi-info-circle"></i> Panduan Penggunaan
+                                </a>
+                            </div>
+                        </div>
+                        <div class="col-lg-4 text-center">
+                            <div class="d-inline-flex flex-column align-items-center p-4 rounded-4" style="background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.15);">
+                                <i class="bi bi-phone-vibrate display-3 text-white mb-2"></i>
+                                <div class="fw-bold text-white fs-6">Moro5Smart Mobile</div>
+                                <small class="text-white-50">Tersedia untuk Siswa &amp; Guru SMAN 5</small>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </section>
@@ -1084,7 +1455,7 @@
                                 <i class="bi bi-file-text"></i>
                             </div>
                             <div class="exam-body">
-                                <span class="badge-active d-block">● AKTIF</span>
+                                <span class="badge-active d-block"><i class="bi bi-broadcast me-1"></i> AKTIF</span>
                                 <h3>{{ $exam->title }}</h3>
                                 <span class="meta"><i class="bi bi-book me-1"></i>{{ $exam->subject->name ?? 'Tidak ada mata pelajaran' }}</span>
                                 <span class="meta"><i class="bi bi-clock me-1"></i>{{ $exam->duration }} menit</span>
@@ -1383,31 +1754,35 @@
                     <h4>Tautan Cepat</h4>
                     <ul>
                         <li><i class="bi bi-chevron-right"></i><a href="#hero">Beranda</a></li>
-                        <li><i class="bi bi-chevron-right"></i><a href="#about">Tentang</a></li>
-                        <li><i class="bi bi-chevron-right"></i><a href="#services">Layanan</a></li>
+                        <li><i class="bi bi-chevron-right"></i><a href="#verifikasi-rapor">Cek Rapor</a></li>
+                        <li><i class="bi bi-chevron-right"></i><a href="#keamanan">Keamanan</a></li>
+                        <li><i class="bi bi-chevron-right"></i><a href="#rapor-system">E-Rapor Digital</a></li>
+                        <li><i class="bi bi-chevron-right"></i><a href="#features">Fitur CBT</a></li>
                         <li><i class="bi bi-chevron-right"></i><a href="#my-project">My Project</a></li>
                         <li><i class="bi bi-chevron-right"></i><a href="#contact">Kontak</a></li>
                     </ul>
                 </div>
 
                 <div class="col-lg-2 col-md-3 footer-links">
-                    <h4>Layanan</h4>
+                    <h4>Layanan &amp; Fitur</h4>
                     <ul>
-                        <li><i class="bi bi-chevron-right"></i><a href="#">Ujian Online</a></li>
-                        <li><i class="bi bi-chevron-right"></i><a href="#">Data Siswa</a></li>
-                        <li><i class="bi bi-chevron-right"></i><a href="#">Raport Digital</a></li>
-                        <li><i class="bi bi-chevron-right"></i><a href="#">E-Learning</a></li>
+                        <li><i class="bi bi-chevron-right"></i><a href="#hero">Ujian Online CBT</a></li>
+                        <li><i class="bi bi-chevron-right"></i><a href="#verifikasi-rapor">Verifikasi Dokumen</a></li>
+                        <li><i class="bi bi-chevron-right"></i><a href="#rapor-system">E-Rapor &amp; TTE</a></li>
+                        <li><i class="bi bi-chevron-right"></i><a href="{{ route('public.ranking') }}" target="_blank">Ranking Siswa</a></li>
+                        <li><i class="bi bi-chevron-right"></i><a href="{{ route('public.pengumuman') }}" target="_blank">Pengumuman Kelulusan</a></li>
+                        <li><i class="bi bi-chevron-right"></i><a href="{{ route('public.docs') }}" target="_blank">Dokumentasi API</a></li>
                     </ul>
                 </div>
 
                 <div class="col-lg-4 col-md-12">
                     <h4>Ikuti Kami</h4>
-                    <p>Tetap terhubung dengan kami melalui media sosial.</p>
+                    <p>Tetap terhubung dengan SMA Negeri 5 Morotai melalui media sosial resmi.</p>
                     <div class="footer-social mt-3">
                         <a href="#"><i class="bi bi-twitter-x"></i></a>
                         <a href="#"><i class="bi bi-facebook"></i></a>
                         <a href="#"><i class="bi bi-instagram"></i></a>
-                        <a href="#"><i class="bi bi-linkedin"></i></a>
+                        <a href="#"><i class="bi bi-youtube"></i></a>
                     </div>
                 </div>
             </div>
@@ -1415,8 +1790,7 @@
 
         <div class="footer-bottom">
             <div class="container">
-                © Copyright <strong>SIMORO SMANLI</strong> All Rights Reserved ·
-                <a href="#">SMA Negeri 5 Morotai</a>
+                © Copyright <strong>SIMORO SMANLI</strong> · SMA Negeri 5 Morotai · All Rights Reserved
             </div>
         </div>
     </footer>
@@ -1429,9 +1803,9 @@
             <i class="bi bi-house-fill"></i>
             <span>Beranda</span>
         </a>
-        <a href="#about" class="sm-bnav-item" data-section="about">
-            <i class="bi bi-info-circle-fill"></i>
-            <span>Tentang</span>
+        <a href="#verifikasi-rapor" class="sm-bnav-item" data-section="verifikasi-rapor">
+            <i class="bi bi-patch-check-fill"></i>
+            <span>Cek Rapor</span>
         </a>
 
         @auth
@@ -1450,13 +1824,13 @@
         </a>
         @endauth
 
-        <a href="#services" class="sm-bnav-item" data-section="services">
-            <i class="bi bi-grid-fill"></i>
-            <span>Layanan</span>
+        <a href="#keamanan" class="sm-bnav-item" data-section="keamanan">
+            <i class="bi bi-shield-lock-fill"></i>
+            <span>Keamanan</span>
         </a>
-        <a href="#contact" class="sm-bnav-item" data-section="contact">
-            <i class="bi bi-envelope-fill"></i>
-            <span>Kontak</span>
+        <a href="#rapor-system" class="sm-bnav-item" data-section="rapor-system">
+            <i class="bi bi-file-earmark-text-fill"></i>
+            <span>E-Rapor</span>
         </a>
     </nav>
 
@@ -1469,6 +1843,20 @@
 
     {{-- ===================== SCRIPT ASLI (tidak diubah) ===================== --}}
     <script>
+        function handleQuickVerify(e) {
+            if (e) e.preventDefault();
+            var input = document.getElementById('verifyInput');
+            if (!input || !input.value.trim()) {
+                if (input) input.focus();
+                return false;
+            }
+            var rawVal = input.value.trim();
+            // Encode value for URL parameter safely
+            var encVal = encodeURIComponent(rawVal);
+            window.location.href = "{{ url('/verifikasi-rapor') }}/" + encVal;
+            return false;
+        }
+
         document.addEventListener('DOMContentLoaded', function () {
 
             // AOS

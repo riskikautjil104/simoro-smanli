@@ -46,6 +46,8 @@ use Illuminate\Support\Facades\Route;
         Route::get('ujian/{ujianId}/peserta/{userId}/jawaban', [ExamController::class, 'jawaban']);
         Route::get('kelas/list', [ClassController::class, 'list']);
         Route::get('kelas/teachers', [ClassController::class, 'teachers']);
+        Route::get('kelas/rapor-settings', [ClassController::class, 'getRaporSettings']);
+        Route::post('kelas/rapor-settings', [ClassController::class, 'saveRaporSettings']);
         Route::get('ujian/list', [ExamController::class, 'list']);
         Route::resource('ujian', ExamController::class);
         Route::resource('kelas', ClassController::class);
@@ -202,6 +204,10 @@ use Illuminate\Support\Facades\Route;
     Route::get('/ujian', [App\Http\Controllers\Admin\ExamController::class, 'list']);
 Route::get('/ranking', [\App\Http\Controllers\Frontend\RankingController::class, 'index'])->name('public.ranking');
 Route::get('/ranking/{id}', [\App\Http\Controllers\Frontend\RankingController::class, 'show'])->name('public.ranking.show');
+
+Route::match(['get', 'post'], '/verifikasi-rapor/{token?}', [\App\Http\Controllers\Frontend\RaporVerificationController::class, 'show'])
+    ->where('token', '.*')
+    ->name('public.rapor.verify');
 
 Route::get('/pengumuman', [\App\Http\Controllers\Frontend\PengumumanController::class, 'index'])->name('public.pengumuman');
 Route::post('/pengumuman/cek', [\App\Http\Controllers\Frontend\PengumumanController::class, 'cek'])->name('public.pengumuman.cek');

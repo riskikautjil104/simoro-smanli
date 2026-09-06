@@ -38,11 +38,14 @@ class RaporScore extends Model
     }
 
     /**
-     * Hitung otomatis nilai akhir berdasarkan bobot: 40% tugas + 60% CBT
+     * Hitung otomatis nilai akhir berdasarkan bobot: Tugas % + CBT %
      */
     public function calculateFinalScore(float $weightTugas = 0.40, float $weightCbt = 0.60): float
     {
-        $final = ($this->nilai_tugas * $weightTugas) + ($this->nilai_cbt * $weightCbt);
+        $wTugas = $weightTugas > 1.0 ? ($weightTugas / 100) : $weightTugas;
+        $wCbt   = $weightCbt > 1.0 ? ($weightCbt / 100) : $weightCbt;
+
+        $final = ($this->nilai_tugas * $wTugas) + ($this->nilai_cbt * $wCbt);
         $this->nilai_akhir = round($final, 2);
         return $this->nilai_akhir;
     }

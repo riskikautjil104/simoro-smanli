@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api\Siswa;
 
 use App\Http\Controllers\Controller;
 use App\Models\RaporStudent;
+use App\Services\RaporSecurityService;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\URL;
@@ -27,6 +28,7 @@ class RaporApiController extends Controller
         $data = $rapors->map(function ($r) {
             return [
                 'id' => $r->id,
+                'encrypted_id' => $r->encrypted_id,
                 'tahun_ajaran' => $r->tahun_ajaran,
                 'semester' => $r->semester,
                 'kelas' => $r->schoolClass?->name ?? '-',
@@ -39,7 +41,9 @@ class RaporApiController extends Controller
                 'catatan_wali_kelas' => $r->catatan_wali_kelas,
                 'status_kenaikan' => $r->status_kenaikan,
                 'tanggal_rapor' => $r->tanggal_rapor?->format('d M Y'),
-                'pdf_url' => url("/api/siswa/rapor/{$r->id}/pdf"),
+                'document_serial' => $r->effective_serial,
+                'verification_url' => $r->verification_url,
+                'pdf_url' => url("/api/siswa/rapor/{$r->encrypted_id}/pdf"),
             ];
         });
 
@@ -58,10 +62,20 @@ class RaporApiController extends Controller
     {
         $user = $request->user();
 
-        $rapor = RaporStudent::with(['schoolClass', 'waliKelas', 'scores.subject.teacher'])
+        $resolvedId = is_numeric($id) ? (int)$id : RaporSecurityService::decryptId($id);
+        $query = RaporStudent::with(['schoolClass', 'waliKelas', 'scores.subject.teacher'])
             ->where('student_id', $user->id)
-            ->where('status', 'published')
-            ->findOrFail($id);
+            ->where('status', 'published');
+
+        if ($resolvedId) {
+            $rapor = $query->find($resolvedId);
+        } else {
+            $rapor = $query->where('verification_token', $id)->first();
+        }
+
+        if (!$rapor) {
+            abort(404, 'Rapor tidak ditemukan atau belum diterbitkan.');
+        }
 
         $scores = $rapor->scores->map(function ($s) {
             return [
@@ -80,6 +94,7 @@ class RaporApiController extends Controller
             'success' => true,
             'data' => [
                 'id' => $rapor->id,
+                'encrypted_id' => $rapor->encrypted_id,
                 'tahun_ajaran' => $rapor->tahun_ajaran,
                 'semester' => $rapor->semester,
                 'kelas' => $rapor->schoolClass?->name ?? '-',
@@ -92,8 +107,10 @@ class RaporApiController extends Controller
                 'catatan_wali_kelas' => $rapor->catatan_wali_kelas,
                 'status_kenaikan' => $rapor->status_kenaikan,
                 'tanggal_rapor' => $rapor->tanggal_rapor?->translatedFormat('d F Y'),
+                'document_serial' => $rapor->effective_serial,
+                'verification_url' => $rapor->verification_url,
                 'scores' => $scores,
-                'pdf_url' => url("/api/siswa/rapor/{$rapor->id}/pdf"),
+                'pdf_url' => url("/api/siswa/rapor/{$rapor->encrypted_id}/pdf"),
             ],
         ]);
     }
@@ -106,20 +123,33 @@ class RaporApiController extends Controller
     {
         $user = $request->user();
 
-        $rapor = RaporStudent::with([
+        $resolvedId = is_numeric($id) ? (int)$id : RaporSecurityService::decryptId($id);
+        $query = RaporStudent::with([
             'student',
             'schoolClass',
             'waliKelas',
             'scores.subject.teacher'
         ])
         ->where('student_id', $user->id)
-        ->where('status', 'published')
-        ->findOrFail($id);
+        ->where('status', 'published');
+
+        if ($resolvedId) {
+            $rapor = $query->find($resolvedId);
+        } else {
+            $rapor = $query->where('verification_token', $id)->first();
+        }
+
+        if (!$rapor) {
+            abort(404, 'Rapor tidak ditemukan atau belum diterbitkan.');
+        }
+
+        RaporSecurityService::ensureSecurityData($rapor);
+        $qrCodeDataUri = RaporSecurityService::getQrCodeDataUri($rapor->verification_url);
 
         $kepsek = \App\Models\User::where('role', 'kepala_sekolah')->first() 
                ?? \App\Models\User::where('role', 'admin')->first();
 
-        $pdf = Pdf::loadView('pdf.rapor_siswa', compact('rapor', 'kepsek'))
+        $pdf = Pdf::loadView('pdf.rapor_siswa', compact('rapor', 'kepsek', 'qrCodeDataUri'))
             ->setPaper('a4', 'portrait');
 
         $cleanName = \Illuminate\Support\Str::slug($rapor->student->name ?? 'siswa', '_');

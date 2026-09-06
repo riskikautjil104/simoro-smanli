@@ -67,15 +67,36 @@
             margin: 0;
         }
 
+        /* Watermark Transparan */
+        .watermark-container {
+            position: fixed;
+            top: 25%;
+            left: 20%;
+            width: 60%;
+            text-align: center;
+            opacity: 0.05;
+            z-index: -1000;
+        }
+        .watermark-container img {
+            width: 320px;
+            height: auto;
+        }
+
         /* Judul Dokumen */
         .judul-rapor {
             text-align: center;
             font-size: 12pt;
             font-weight: 800;
             text-transform: uppercase;
-            margin: 10px 0 15px;
+            margin: 10px 0 6px;
             letter-spacing: 0.5px;
             text-decoration: underline;
+        }
+
+        .meta-registrasi {
+            margin-bottom: 12px;
+            font-size: 8pt;
+            color: #475569;
         }
 
         /* Biodata Siswa */
@@ -157,13 +178,21 @@
 </head>
 <body>
 
+    @php
+        $logoPath = public_path('assets/img/icon.png');
+    @endphp
+
+    {{-- WATERMARK SEKOLAH RESMI --}}
+    @if(file_exists($logoPath))
+        <div class="watermark-container">
+            <img src="{{ $logoPath }}" alt="Watermark SMAN 5 Morotai">
+        </div>
+    @endif
+
     {{-- KOP SURAT --}}
     <table class="kop-table">
         <tr>
             <td class="kop-logo">
-                @php
-                    $logoPath = public_path('assets/img/icon.png');
-                @endphp
                 @if(file_exists($logoPath))
                     <img src="{{ $logoPath }}" alt="Logo">
                 @endif
@@ -178,8 +207,22 @@
         </tr>
     </table>
 
-    {{-- JUDUL --}}
+    {{-- JUDUL & REGISTRASI DOKUMEN --}}
     <div class="judul-rapor">LAPORAN CAPAIAN HASIL BELAJAR PESERTA DIDIK</div>
+    <div class="meta-registrasi">
+        <table style="width: 100%; border-collapse: collapse;">
+            <tr>
+                <td style="text-align: left; padding: 0; font-size: 8pt; color: #475569;">
+                    No. Registrasi: <strong style="font-family: monospace; color: #0f172a;">{{ $rapor->effective_serial }}</strong>
+                </td>
+                <td style="text-align: right; padding: 0; font-size: 7.5pt; color: #166534; font-weight: bold;">
+                    <span style="border: 1px solid #16a34a; background-color: #f0fdf4; padding: 1.5px 6px; border-radius: 3px;">
+                        &#x2714; DOKUMEN DIGITAL RESMI TERVERIFIKASI
+                    </span>
+                </td>
+            </tr>
+        </table>
+    </div>
 
     {{-- BIODATA --}}
     <table class="bio-table">
@@ -210,7 +253,16 @@
     </table>
 
     {{-- TABEL NILAI MAPEL --}}
-    <div class="section-title">A. Nilai Capaian Kompetensi Mata Pelajaran</div>
+    <table style="width: 100%; margin-bottom: 4px;">
+        <tr>
+            <td style="text-align: left; vertical-align: bottom; padding: 0;">
+                <div class="section-title" style="margin: 0;">A. Nilai Capaian Kompetensi Mata Pelajaran</div>
+            </td>
+            <td style="text-align: right; vertical-align: bottom; padding: 0; font-size: 8pt; color: #444;">
+                KKM: <strong>{{ (int)$rapor->effective_kkm }}</strong> &nbsp;|&nbsp; Bobot: {{ (int)$rapor->effective_weight_tugas }}% Tugas + {{ (int)$rapor->effective_weight_cbt }}% CBT
+            </td>
+        </tr>
+    </table>
     <table class="data-table">
         <thead>
             <tr>
@@ -296,8 +348,17 @@
                 <div class="ttd-space"></div>
                 <div class="nama-pejabat">( ........................................ )</div>
             </td>
-            <td>
-                {{-- Spacer --}}
+            <td style="vertical-align: middle; text-align: center; padding: 0 10px;">
+                <div style="font-size: 7pt; font-weight: bold; color: #1e293b; margin-bottom: 3px; letter-spacing: 0.3px;">
+                    VERIFIKASI KEASLIAN DIGITAL
+                </div>
+                @php
+                    $qrCodeImage = !empty($qrCodeDataUri) ? $qrCodeDataUri : \App\Services\RaporSecurityService::getQrCodeDataUri($rapor->verification_url);
+                @endphp
+                <img src="{{ $qrCodeImage }}" style="width: 75px; height: 75px; margin: 0 auto; display: block;" alt="QR Verifikasi Rapor">
+                <div style="font-size: 6.2pt; color: #64748b; margin-top: 3px; line-height: 1.2;">
+                    Pindai QR untuk validasi keaslian dokumen di server resmi
+                </div>
             </td>
             <td>
                 Morotai Selatan, {{ $rapor->tanggal_rapor ? \Carbon\Carbon::parse($rapor->tanggal_rapor)->translatedFormat('d F Y') : date('d F Y') }}<br>
@@ -335,6 +396,23 @@
             </td>
         </tr>
     </table>
+
+    {{-- FOOTER KEAMANAN & DIGITAL SIGNATURE --}}
+    <div style="margin-top: 25px; border-top: 1px solid #cbd5e1; padding-top: 6px; font-size: 6.8pt; color: #64748b; line-height: 1.3;">
+        <table style="width: 100%; border-collapse: collapse;">
+            <tr>
+                <td style="width: 72%; vertical-align: top; padding: 0; text-align: left;">
+                    <strong>Pernyataan Tanda Tangan Elektronik & Integritas Dokumen (UU ITE No. 11/2008 & PP No. 71/2019):</strong><br>
+                    Dokumen ini sah dan diterbitkan secara digital oleh SMA Negeri 5 Pulau Morotai melalui SIMORO. Seluruh nilai dilindungi algoritma kriptografi. Validasi dapat dilakukan melalui pemindaian QR Code di atas atau melalui alamat resmi: <br>
+                    <span style="color: #0284c7;">{{ $rapor->verification_url }}</span>
+                </td>
+                <td style="width: 28%; vertical-align: top; text-align: right; font-family: monospace; padding: 0;">
+                    <strong>Digital Hash (SHA-256):</strong><br>
+                    <span title="{{ $rapor->effective_hash }}">{{ substr($rapor->effective_hash, 0, 16) }}...{{ substr($rapor->effective_hash, -8) }}</span>
+                </td>
+            </tr>
+        </table>
+    </div>
 
 </body>
 </html>

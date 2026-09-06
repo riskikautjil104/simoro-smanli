@@ -91,4 +91,42 @@ class ClassController extends Controller
         $kelas->delete();
         return response()->json(['success' => true]);
     }
+
+    /**
+     * Get school-wide default rapor weights and KKM
+     */
+    public function getRaporSettings()
+    {
+        return response()->json([
+            'weight_tugas' => (int) \App\Models\MobileConfig::get('rapor_weight_tugas', 40),
+            'weight_cbt'   => (int) \App\Models\MobileConfig::get('rapor_weight_cbt', 60),
+            'kkm'          => (int) \App\Models\MobileConfig::get('rapor_kkm_default', 75),
+        ]);
+    }
+
+    /**
+     * Save school-wide default rapor weights and KKM
+     */
+    public function saveRaporSettings(Request $request)
+    {
+        $validated = $request->validate([
+            'weight_tugas' => 'required|numeric|min:0|max:100',
+            'weight_cbt'   => 'required|numeric|min:0|max:100',
+            'kkm'          => 'required|numeric|min:0|max:100',
+        ]);
+
+        \App\Models\MobileConfig::set('rapor_weight_tugas', (int) $validated['weight_tugas'], 'rapor', 'integer', 'Bobot Nilai Tugas Default (%)');
+        \App\Models\MobileConfig::set('rapor_weight_cbt', (int) $validated['weight_cbt'], 'rapor', 'integer', 'Bobot Nilai CBT Default (%)');
+        \App\Models\MobileConfig::set('rapor_kkm_default', (int) $validated['kkm'], 'rapor', 'integer', 'Standar KKM Default Sekolah');
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Standar Bobot Rapor dan KKM Sekolah berhasil disimpan.',
+            'data'    => [
+                'weight_tugas' => (int) $validated['weight_tugas'],
+                'weight_cbt'   => (int) $validated['weight_cbt'],
+                'kkm'          => (int) $validated['kkm'],
+            ],
+        ]);
+    }
 }

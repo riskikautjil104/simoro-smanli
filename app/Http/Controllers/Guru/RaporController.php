@@ -9,6 +9,7 @@ use App\Models\RaporScore;
 use App\Models\RaporStudent;
 use App\Models\SchoolClass;
 use App\Models\User;
+use App\Services\RaporSecurityService;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -71,12 +72,36 @@ class RaporController extends Controller
     }
 
     /**
+     * Cari Rapor berdasarkan ID numerik, encrypted ID, atau verification token
+     */
+    private function resolveRapor($id, array $with = []): RaporStudent
+    {
+        $resolvedId = is_numeric($id) ? (int)$id : RaporSecurityService::decryptId($id);
+
+        $query = RaporStudent::query();
+        if (!empty($with)) {
+            $query->with($with);
+        }
+
+        if ($resolvedId) {
+            $rapor = $query->find($resolvedId);
+        } else {
+            $rapor = $query->where('verification_token', $id)->first();
+        }
+
+        if (!$rapor) {
+            abort(404, 'Data rapor tidak ditemukan.');
+        }
+
+        return $rapor;
+    }
+
+    /**
      * Detail Rapor Siswa & Form Input Nilai Mapel
      */
     public function detail($id)
     {
-        $rapor = RaporStudent::with(['student', 'schoolClass.subjects.teacher', 'scores.subject', 'waliKelas'])
-            ->findOrFail($id);
+        $rapor = $this->resolveRapor($id, ['student', 'schoolClass.subjects.teacher', 'scores.subject', 'waliKelas']);
 
         $user = Auth::user();
         if ($rapor->wali_kelas_id !== $user->id && !in_array($user->role, ['admin', 'kepala_sekolah'])) {
@@ -94,7 +119,11 @@ class RaporController extends Controller
 
         $rapor->load('scores.subject.teacher');
 
-        return view('guru.rapor.detail', compact('rapor'));
+        $defaultWeightTugas = (int) \App\Models\MobileConfig::get('rapor_weight_tugas', 40);
+        $defaultWeightCbt   = (int) \App\Models\MobileConfig::get('rapor_weight_cbt', 60);
+        $defaultKkm         = (int) \App\Models\MobileConfig::get('rapor_kkm_default', 75);
+
+        return view('guru.rapor.detail', compact('rapor', 'defaultWeightTugas', 'defaultWeightCbt', 'defaultKkm'));
     }
 
     /**
@@ -102,7 +131,7 @@ class RaporController extends Controller
      */
     public function pullCbt($id)
     {
-        $rapor = RaporStudent::with(['scores', 'schoolClass.subjects'])->findOrFail($id);
+        $rapor = $this->resolveRapor($id, ['scores', 'schoolClass.subjects']);
         
         // Pastikan setiap mapel pada kelas ini sudah ada entri RaporScore
         if ($rapor->schoolClass && $rapor->schoolClass->subjects) {
@@ -138,7 +167,10 @@ class RaporController extends Controller
 
             if ($avgScore !== null) {
                 $score->nilai_cbt = round((float) $avgScore, 2);
-                $score->calculateFinalScore();
+                $score->calculateFinalScore(
+                    $rapor->effective_weight_tugas,
+                    $rapor->effective_weight_cbt
+                );
                 $score->save();
                 $updatedCount++;
             }
@@ -158,7 +190,7 @@ class RaporController extends Controller
      */
     public function pullAttendance($id)
     {
-        $rapor = RaporStudent::findOrFail($id);
+        $rapor = $this->resolveRapor($id);
         
         try {
             $response = Http::timeout(4)->get("https://absensi.sma-n5-morotai.id/api/rekap/siswa/{$rapor->student_id}");
@@ -191,7 +223,7 @@ class RaporController extends Controller
      */
     public function save(Request $request, $id)
     {
-        $rapor = RaporStudent::findOrFail($id);
+        $rapor = $this->resolveRapor($id, ['scores']);
 
         $request->validate([
             'sakit' => 'nullable|integer|min:0',
@@ -200,17 +232,29 @@ class RaporController extends Controller
             'catatan_wali_kelas' => 'nullable|string',
             'status_kenaikan' => 'nullable|string|max:255',
             'tanggal_rapor' => 'nullable|date',
+            'weight_tugas' => 'nullable|numeric|min:0|max:100',
+            'weight_cbt' => 'nullable|numeric|min:0|max:100',
+            'kkm' => 'nullable|numeric|min:0|max:100',
             'scores' => 'nullable|array',
         ]);
 
-        $rapor->update([
+        $updateData = [
             'sakit' => $request->input('sakit', 0),
             'izin' => $request->input('izin', 0),
             'tanpa_keterangan' => $request->input('tanpa_keterangan', 0),
             'catatan_wali_kelas' => $request->input('catatan_wali_kelas'),
             'status_kenaikan' => $request->input('status_kenaikan'),
             'tanggal_rapor' => $request->input('tanggal_rapor') ?? now(),
-        ]);
+        ];
+
+        if ($request->filled('weight_tugas')) $updateData['weight_tugas'] = (float) $request->input('weight_tugas');
+        if ($request->filled('weight_cbt'))   $updateData['weight_cbt']   = (float) $request->input('weight_cbt');
+        if ($request->filled('kkm'))          $updateData['kkm']          = (float) $request->input('kkm');
+
+        $rapor->update($updateData);
+
+        $wTugas = $rapor->effective_weight_tugas;
+        $wCbt   = $rapor->effective_weight_cbt;
 
         // Simpan nilai masing-masing mapel
         if ($request->has('scores')) {
@@ -226,7 +270,7 @@ class RaporController extends Controller
                     if (isset($data['nilai_akhir']) && is_numeric($data['nilai_akhir'])) {
                         $score->nilai_akhir = (float) $data['nilai_akhir'];
                     } else {
-                        $score->calculateFinalScore();
+                        $score->calculateFinalScore($wTugas, $wCbt);
                     }
 
                     $score->capaian_kompetensi = $data['capaian_kompetensi'] ?? null;
@@ -234,6 +278,10 @@ class RaporController extends Controller
                 }
             }
         }
+
+        // Perbarui data keamanan dan digital signature hash agar selalu mutakhir
+        $rapor->load('scores');
+        RaporSecurityService::ensureSecurityData($rapor);
 
         return response()->json([
             'success' => true,
@@ -246,7 +294,7 @@ class RaporController extends Controller
      */
     public function togglePublish($id)
     {
-        $rapor = RaporStudent::findOrFail($id);
+        $rapor = $this->resolveRapor($id);
         $rapor->status = ($rapor->status === 'published') ? 'draft' : 'published';
         $rapor->save();
 
@@ -284,16 +332,20 @@ class RaporController extends Controller
      */
     public function exportPdf($id)
     {
-        $rapor = RaporStudent::with([
+        $rapor = $this->resolveRapor($id, [
             'student',
             'schoolClass',
             'waliKelas',
             'scores.subject.teacher'
-        ])->findOrFail($id);
+        ]);
+
+        // Pastikan token keamanan, nomor registrasi, dan hash digital terisi
+        RaporSecurityService::ensureSecurityData($rapor);
+        $qrCodeDataUri = RaporSecurityService::getQrCodeDataUri($rapor->verification_url);
 
         $kepsek = User::where('role', 'kepala_sekolah')->first() ?? User::where('role', 'admin')->first();
 
-        $pdf = Pdf::loadView('pdf.rapor_siswa', compact('rapor', 'kepsek'))
+        $pdf = Pdf::loadView('pdf.rapor_siswa', compact('rapor', 'kepsek', 'qrCodeDataUri'))
             ->setPaper('a4', 'portrait');
 
         $cleanName = \Illuminate\Support\Str::slug($rapor->student->name ?? 'siswa', '_');

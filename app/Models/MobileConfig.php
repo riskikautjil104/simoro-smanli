@@ -82,6 +82,11 @@ class MobileConfig extends Model
             'contact_email'            => ['value' => 'admin@sma5.sch.id', 'group' => 'contact', 'type' => 'string', 'description' => 'Email Bantuan Sekolah'],
             'privacy_policy_url'       => ['value' => 'http://127.0.0.1:8000/docs#kebijakan-privasi', 'group' => 'contact', 'type' => 'string', 'description' => 'Link Kebijakan Privasi'],
             'terms_url'                => ['value' => 'http://127.0.0.1:8000/docs#syarat-ketentuan', 'group' => 'contact', 'type' => 'string', 'description' => 'Link Syarat & Ketentuan'],
+
+            // E-Rapor Standar Sekolah
+            'rapor_weight_tugas'       => ['value' => '40', 'group' => 'rapor', 'type' => 'integer', 'description' => 'Bobot Nilai Tugas Default (%)'],
+            'rapor_weight_cbt'         => ['value' => '60', 'group' => 'rapor', 'type' => 'integer', 'description' => 'Bobot Nilai CBT Default (%)'],
+            'rapor_kkm_default'        => ['value' => '75', 'group' => 'rapor', 'type' => 'integer', 'description' => 'Standar KKM Default Sekolah'],
         ];
     }
 
@@ -138,6 +143,7 @@ class MobileConfig extends Model
             'theme'    => [],
             'features' => [],
             'contact'  => [],
+            'rapor'    => [],
         ];
 
         foreach ($defaults as $key => $def) {

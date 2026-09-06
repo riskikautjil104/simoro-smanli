@@ -50,9 +50,14 @@
             <h4><i class="bi bi-building me-2"></i>Data Kelas & Penetapan Wali Kelas <span class="count-badge" id="kelas-count">0 kelas</span></h4>
             <p>Kelola data rombongan belajar dan tentukan Wali Kelas pengampu rapor digital SMA Negeri 5 Morotai</p>
         </div>
-        <button class="btn-header" data-bs-toggle="modal" data-bs-target="#modalKelas" id="btnTambahKelas">
-            <i class="bi bi-plus-lg"></i> Tambah Kelas
-        </button>
+        <div class="d-flex gap-2 flex-wrap">
+            <button class="btn-header" data-bs-toggle="modal" data-bs-target="#modalRaporSetting" id="btnBobotSetting">
+                <i class="bi bi-sliders"></i> Standar Bobot & KKM
+            </button>
+            <button class="btn-header" data-bs-toggle="modal" data-bs-target="#modalKelas" id="btnTambahKelas">
+                <i class="bi bi-plus-lg"></i> Tambah Kelas
+            </button>
+        </div>
     </div>
 </div>
 
@@ -116,6 +121,49 @@
                 <div class="modal-footer border-0 px-4 pb-4 pt-0">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
                     <button type="submit" class="btn btn-primary" id="btnSimpanKelas"><i class="bi bi-save me-1"></i> Simpan</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="modalRaporSetting" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header modal-header-brand">
+                <h5 class="modal-title"><i class="bi bi-sliders me-2"></i>Standar Bobot Rapor & KKM Sekolah</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <form id="formRaporSetting">
+                <div class="modal-body p-4">
+                    <p class="text-muted small mb-4">Pengaturan ini menjadi standar acuan baku penilaian rapor untuk seluruh rombongan belajar SMA Negeri 5 Morotai. Wali Kelas tetap dapat menyesuaikan untuk kelasnya jika diperlukan.</p>
+                    
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">Bobot Nilai Tugas / Praktik (%) <span class="text-danger">*</span></label>
+                        <div class="input-group">
+                            <input type="number" step="1" min="0" max="100" class="form-control fw-bold" id="settingWeightTugas" name="weight_tugas" required>
+                            <span class="input-group-text bg-light fw-bold">%</span>
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">Bobot Nilai CBT / Ujian Online (%) <span class="text-danger">*</span></label>
+                        <div class="input-group">
+                            <input type="number" step="1" min="0" max="100" class="form-control fw-bold" id="settingWeightCbt" name="weight_cbt" required>
+                            <span class="input-group-text bg-light fw-bold">%</span>
+                        </div>
+                        <div id="weightTotalNotice" class="form-text small mt-1"></div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">Standar KKM / Batas Ketuntasan Minimum <span class="text-danger">*</span></label>
+                        <input type="number" step="0.5" min="0" max="100" class="form-control fw-bold" id="settingKkm" name="kkm" required>
+                        <div class="form-text text-muted small">Nilai akhir di bawah angka ini akan ditandai belum tuntas / memerlukan remidi di rapor.</div>
+                    </div>
+                </div>
+                <div class="modal-footer border-0 px-4 pb-4 pt-0">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
+                    <button type="submit" class="btn btn-primary" id="btnSimpanSetting"><i class="bi bi-save me-1"></i> Simpan Standar</button>
                 </div>
             </form>
         </div>
@@ -275,6 +323,66 @@ document.addEventListener('DOMContentLoaded', function () {
 
     loadTeachers();
     fetchKelas();
+
+    // Rapor Settings Handlers
+    function loadRaporSettings() {
+        fetch('/admin/kelas/rapor-settings', { headers:{'Accept':'application/json'} })
+        .then(function(r){ return r.ok ? r.json() : {}; })
+        .then(function(res) {
+            document.getElementById('settingWeightTugas').value = res.weight_tugas || 40;
+            document.getElementById('settingWeightCbt').value   = res.weight_cbt || 60;
+            document.getElementById('settingKkm').value         = res.kkm || 75;
+            checkWeightSum();
+        }).catch(function(){});
+    }
+
+    function checkWeightSum() {
+        var t = parseFloat(document.getElementById('settingWeightTugas').value) || 0;
+        var c = parseFloat(document.getElementById('settingWeightCbt').value) || 0;
+        var sum = t + c;
+        var notice = document.getElementById('weightTotalNotice');
+        if (notice) {
+            if (sum === 100) {
+                notice.innerHTML = '<span class="text-success"><i class="bi bi-check-circle me-1"></i>Total Bobot: 100% (Sempurna)</span>';
+            } else {
+                notice.innerHTML = '<span class="text-warning"><i class="bi bi-exclamation-triangle me-1"></i>Total: ' + sum + '% (Idealnya total Tugas + CBT = 100%)</span>';
+            }
+        }
+    }
+
+    var elWeightTugas = document.getElementById('settingWeightTugas');
+    var elWeightCbt   = document.getElementById('settingWeightCbt');
+    if (elWeightTugas) elWeightTugas.addEventListener('input', checkWeightSum);
+    if (elWeightCbt) elWeightCbt.addEventListener('input', checkWeightSum);
+
+    var btnBobotSetting = document.getElementById('btnBobotSetting');
+    if (btnBobotSetting) {
+        btnBobotSetting.addEventListener('click', loadRaporSettings);
+    }
+
+    var formSetting = document.getElementById('formRaporSetting');
+    if (formSetting) {
+        formSetting.addEventListener('submit', function(e) {
+            e.preventDefault();
+            var btn = document.getElementById('btnSimpanSetting');
+            btn.disabled = true;
+            btn.innerHTML = '<span class="spinner-border spinner-border-sm me-1"></span> Menyimpan...';
+
+            var formData = new FormData(this);
+            fetch('/admin/kelas/rapor-settings', {
+                method: 'POST',
+                headers: { 'X-CSRF-TOKEN': csrfToken, 'Accept': 'application/json' },
+                body: formData
+            })
+            .then(function(r){ return r.json(); })
+            .then(function(res) {
+                bootstrap.Modal.getInstance(document.getElementById('modalRaporSetting')).hide();
+                Swal.fire({ icon:'success', title:'Berhasil!', text:res.message || 'Pengaturan tersimpan.', timer:1800, showConfirmButton:false });
+            })
+            .catch(function(){ Swal.fire('Error', 'Gagal menyimpan pengaturan bobot.', 'error'); })
+            .finally(function(){ btn.disabled = false; btn.innerHTML = '<i class="bi bi-save me-1"></i> Simpan Standar'; });
+        });
+    }
 });
 </script>
 @endpush
