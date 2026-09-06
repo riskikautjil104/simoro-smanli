@@ -53,6 +53,10 @@ Route::post('siswa/login', [\App\Http\Controllers\Api\Siswa\AuthController::clas
 Route::post('login', [AuthController::class, 'login'])
     ->middleware('throttle:api-login');
 
+// Unduh PDF Lembar Rapor Resmi (Mendukung Bearer token, query token ?token=, atau encrypted_id rapor)
+Route::get('siswa/rapor/{id}/pdf', [\App\Http\Controllers\Api\Siswa\RaporApiController::class, 'downloadPdf'])
+    ->middleware('throttle:30,1');
+
 Route::middleware('auth:sanctum')->group(function () {
     Route::post('logout', [AuthController::class, 'logout']);
     Route::get('me', [AuthController::class, 'me']);
@@ -118,7 +122,6 @@ Route::middleware('auth:sanctum')->group(function () {
     // ==================== E-RAPOR DIGITAL SISWA (MOBILE API) ====================
     Route::get('siswa/rapor', [\App\Http\Controllers\Api\Siswa\RaporApiController::class, 'index']);
     Route::get('siswa/rapor/{id}', [\App\Http\Controllers\Api\Siswa\RaporApiController::class, 'show']);
-    Route::get('siswa/rapor/{id}/pdf', [\App\Http\Controllers\Api\Siswa\RaporApiController::class, 'downloadPdf']);
 
     // User Accounts Management (Seluruh Akun & Role)
     Route::apiResource('users', \App\Http\Controllers\Api\UserController::class);

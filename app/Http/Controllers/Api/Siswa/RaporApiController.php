@@ -121,7 +121,14 @@ class RaporApiController extends Controller
      */
     public function downloadPdf(Request $request, $id)
     {
-        $user = $request->user();
+        // 1. Cek autentikasi (Bearer token atau ?token=...)
+        $user = $request->user('sanctum');
+        if (!$user && $request->filled('token')) {
+            $personalToken = \Laravel\Sanctum\PersonalAccessToken::findToken($request->token);
+            if ($personalToken && $personalToken->tokenable instanceof \App\Models\User) {
+                $user = $personalToken->tokenable;
+            }
+        }
 
         $resolvedId = is_numeric($id) ? (int)$id : RaporSecurityService::decryptId($id);
         $query = RaporStudent::with([
@@ -130,8 +137,12 @@ class RaporApiController extends Controller
             'waliKelas',
             'scores.subject.teacher'
         ])
-        ->where('student_id', $user->id)
         ->where('status', 'published');
+
+        // Jika request dari user dengan role student, pastikan hanya milik siswa tersebut
+        if ($user && in_array($user->role, ['student', 'siswa'])) {
+            $query->where('student_id', $user->id);
+        }
 
         if ($resolvedId) {
             $rapor = $query->find($resolvedId);

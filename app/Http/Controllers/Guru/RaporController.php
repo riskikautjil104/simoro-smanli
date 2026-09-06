@@ -9,11 +9,13 @@ use App\Models\RaporScore;
 use App\Models\RaporStudent;
 use App\Models\SchoolClass;
 use App\Models\User;
+use App\Services\FcmService;
 use App\Services\RaporSecurityService;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Log;
 
 class RaporController extends Controller
 {
@@ -294,9 +296,13 @@ class RaporController extends Controller
      */
     public function togglePublish($id)
     {
-        $rapor = $this->resolveRapor($id);
+        $rapor = $this->resolveRapor($id, ['student', 'schoolClass']);
         $rapor->status = ($rapor->status === 'published') ? 'draft' : 'published';
         $rapor->save();
+
+        if ($rapor->status === 'published') {
+            $this->sendRaporNotification($rapor);
+        }
 
         return response()->json([
             'success' => true,
@@ -316,15 +322,97 @@ class RaporController extends Controller
         $tahunAjaran = $request->input('tahun_ajaran');
         $semester = $request->input('semester');
 
+        // Ambil seluruh rapor siswa di kelas ini beserta data siswa
+        $rapors = RaporStudent::with(['student', 'schoolClass'])
+            ->where('class_id', $classId)
+            ->where('tahun_ajaran', $tahunAjaran)
+            ->where('semester', $semester)
+            ->get();
+
         RaporStudent::where('class_id', $classId)
             ->where('tahun_ajaran', $tahunAjaran)
             ->where('semester', $semester)
             ->update(['status' => 'published']);
 
+        // Kirim push notification ke seluruh siswa di kelas
+        $this->sendBulkRaporNotification($rapors, (string) $semester, (string) $tahunAjaran);
+
         return response()->json([
             'success' => true,
             'message' => 'Seluruh rapor siswa di kelas ini berhasil diterbitkan!',
         ]);
+    }
+
+    /**
+     * Kirim notifikasi FCM ke siswa saat rapor diterbitkan secara individu
+     */
+    private function sendRaporNotification(RaporStudent $rapor): void
+    {
+        try {
+            if (!$rapor->student || empty($rapor->student->fcm_token)) {
+                return;
+            }
+
+            $fcm = app(FcmService::class);
+            $studentName = $rapor->student->name ?? 'Siswa';
+            $title = "Rapor Akademik Diterbitkan! 📄";
+            $body = "Halo {$studentName}, E-Rapor Semester {$rapor->semester} {$rapor->tahun_ajaran} Anda telah resmi diterbitkan oleh Wali Kelas. Ketuk untuk melihat!";
+
+            $fcm->sendToDevice(
+                $rapor->student->fcm_token,
+                $title,
+                $body,
+                [
+                    'type' => 'rapor_published',
+                    'rapor_id' => (string) $rapor->id,
+                    'student_id' => (string) $rapor->student_id,
+                    'semester' => (string) $rapor->semester,
+                    'tahun_ajaran' => (string) $rapor->tahun_ajaran,
+                    'click_action' => 'FLUTTER_NOTIFICATION_CLICK',
+                ]
+            );
+        } catch (\Throwable $e) {
+            Log::error('[FCM Rapor Notification Error] ' . $e->getMessage());
+        }
+    }
+
+    /**
+     * Kirim notifikasi FCM massal ke siswa saat seluruh rapor kelas diterbitkan
+     */
+    private function sendBulkRaporNotification($rapors, string $semester, string $tahunAjaran): void
+    {
+        try {
+            $fcm = app(FcmService::class);
+            $tokens = [];
+
+            foreach ($rapors as $rapor) {
+                if ($rapor->student && !empty($rapor->student->fcm_token)) {
+                    $tokens[] = $rapor->student->fcm_token;
+                }
+            }
+
+            $tokens = array_values(array_unique(array_filter($tokens)));
+            if (empty($tokens)) {
+                return;
+            }
+
+            $title = "Rapor Kelas Resmi Diterbitkan! 📄";
+            $body = "E-Rapor Semester {$semester} {$tahunAjaran} kelas Anda telah resmi diterbitkan oleh Wali Kelas. Silakan periksa nilai Anda di aplikasi!";
+
+            $fcm->sendToMultiple(
+                $tokens,
+                $title,
+                $body,
+                [
+                    'type' => 'rapor_published',
+                    'semester' => (string) $semester,
+                    'tahun_ajaran' => (string) $tahunAjaran,
+                    'click_action' => 'FLUTTER_NOTIFICATION_CLICK',
+                ]
+            );
+        } catch (\Throwable $e) {
+            Log::error('[FCM Rapor Bulk Notification Error] ' . $e->getMessage());
+        }
     }
 
     /**
