@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Guru;
 
 use App\Http\Controllers\Controller;
 use App\Models\ExamResult;
+use App\Models\ExamSession;
 use App\Models\RaporScore;
 use App\Models\RaporStudent;
 use App\Models\SchoolClass;
@@ -101,15 +102,39 @@ class RaporController extends Controller
      */
     public function pullCbt($id)
     {
-        $rapor = RaporStudent::with('scores')->findOrFail($id);
+        $rapor = RaporStudent::with(['scores', 'schoolClass.subjects'])->findOrFail($id);
+        
+        // Pastikan setiap mapel pada kelas ini sudah ada entri RaporScore
+        if ($rapor->schoolClass && $rapor->schoolClass->subjects) {
+            foreach ($rapor->schoolClass->subjects as $subject) {
+                RaporScore::firstOrCreate([
+                    'rapor_student_id' => $rapor->id,
+                    'subject_id' => $subject->id,
+                ]);
+            }
+        }
+        $rapor->load('scores');
+
         $updatedCount = 0;
 
         foreach ($rapor->scores as $score) {
-            $avgScore = ExamResult::where('user_id', $rapor->student_id)
+            // 1. Ambil nilai rata-rata dari ExamSession (penyimpanan CBT utama SIMORO)
+            $avgScore = ExamSession::where('user_id', $rapor->student_id)
+                ->whereNotNull('score')
                 ->whereHas('exam', function ($q) use ($score) {
                     $q->where('subject_id', $score->subject_id);
                 })
                 ->avg('score');
+
+            // 2. Fallback jika ada data di ExamResult
+            if ($avgScore === null) {
+                $avgScore = ExamResult::where('user_id', $rapor->student_id)
+                    ->whereNotNull('score')
+                    ->whereHas('exam', function ($q) use ($score) {
+                        $q->where('subject_id', $score->subject_id);
+                    })
+                    ->avg('score');
+            }
 
             if ($avgScore !== null) {
                 $score->nilai_cbt = round((float) $avgScore, 2);
@@ -121,7 +146,10 @@ class RaporController extends Controller
 
         return response()->json([
             'success' => true,
-            'message' => "Berhasil menarik nilai rata-rata CBT untuk {$updatedCount} mata pelajaran.",
+            'updated_count' => $updatedCount,
+            'message' => $updatedCount > 0 
+                ? "Berhasil menarik nilai rata-rata CBT untuk {$updatedCount} mata pelajaran."
+                : "Siswa ini belum memiliki nilai ujian CBT yang tersimpan di sistem untuk mata pelajaran kelas ini.",
         ]);
     }
 

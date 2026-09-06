@@ -223,12 +223,14 @@ document.addEventListener('DOMContentLoaded', function() {
         .then(function(r) { return r.json(); })
         .then(function(res) {
             Swal.fire({
-                icon: res.success ? 'success' : 'info',
+                icon: (res.updated_count > 0) ? 'success' : 'info',
                 title: 'Hasil Penarikan CBT',
                 text: res.message,
                 confirmButtonColor: '#0284c7'
             }).then(function() {
-                location.reload();
+                if (res.updated_count > 0) {
+                    location.reload();
+                }
             });
         })
         .catch(function() {

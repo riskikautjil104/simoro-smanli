@@ -14,12 +14,17 @@ class DashboardController extends Controller
     public function stats()
     {
         $user = auth()->user();
-        $mapel = Subject::where('teacher_id', $user->id)->count();
-        $soal = Question::whereHas('exam', function ($q) use ($user) {
-            $q->where('subject_id', Subject::where('teacher_id', $user->id)->pluck('id'));
+        $subjectIds = Subject::where('teacher_id', $user->id)->pluck('id');
+
+        $mapel = $subjectIds->count();
+        $soal = Question::whereHas('exam', function ($q) use ($subjectIds) {
+            $q->whereIn('subject_id', $subjectIds);
         })->count();
-        $ujian = Exam::where('subject_id', Subject::where('teacher_id', $user->id)->pluck('id'))->count();
-        $hasil = ExamSession::whereIn('exam_id', Exam::where('subject_id', Subject::where('teacher_id', $user->id)->pluck('id'))->pluck('id'))->count();
+
+        $ujianIds = Exam::whereIn('subject_id', $subjectIds)->pluck('id');
+        $ujian = $ujianIds->count();
+        $hasil = ExamSession::whereIn('exam_id', $ujianIds)->count();
+
         return response()->json([
             'mapel' => $mapel,
             'soal' => $soal,
