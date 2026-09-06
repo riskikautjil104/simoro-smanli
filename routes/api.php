@@ -45,10 +45,13 @@ Route::delete('mobile/banners/{id}', [\App\Http\Controllers\Mobile\BannerControl
 Route::post('mobile/banners/{id}/toggle', [\App\Http\Controllers\Mobile\BannerController::class, 'toggleStatus']);
 
 // ==================== AUTH & PROFILE SISWA ====================
-Route::post('siswa/login', [\App\Http\Controllers\Api\Siswa\AuthController::class, 'login']);
+// Login Siswa dengan proteksi rate limit brute force (10 request/menit per IP)
+Route::post('siswa/login', [\App\Http\Controllers\Api\Siswa\AuthController::class, 'login'])
+    ->middleware('throttle:api-login');
 
 // Login Umum (Legacy / Multi-Role)
-Route::post('login', [AuthController::class, 'login']);
+Route::post('login', [AuthController::class, 'login'])
+    ->middleware('throttle:api-login');
 
 Route::middleware('auth:sanctum')->group(function () {
     Route::post('logout', [AuthController::class, 'logout']);

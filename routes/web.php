@@ -205,12 +205,17 @@ use Illuminate\Support\Facades\Route;
 Route::get('/ranking', [\App\Http\Controllers\Frontend\RankingController::class, 'index'])->name('public.ranking');
 Route::get('/ranking/{id}', [\App\Http\Controllers\Frontend\RankingController::class, 'show'])->name('public.ranking.show');
 
+// Verifikasi Dokumen Rapor (Diproteksi Rate Limit 30 request/menit per IP)
 Route::match(['get', 'post'], '/verifikasi-rapor/{token?}', [\App\Http\Controllers\Frontend\RaporVerificationController::class, 'show'])
     ->where('token', '.*')
+    ->middleware('throttle:public-verification')
     ->name('public.rapor.verify');
 
 Route::get('/pengumuman', [\App\Http\Controllers\Frontend\PengumumanController::class, 'index'])->name('public.pengumuman');
-Route::post('/pengumuman/cek', [\App\Http\Controllers\Frontend\PengumumanController::class, 'cek'])->name('public.pengumuman.cek');
+// Cek Kelulusan Siswa (Diproteksi Rate Limit 30 request/menit per IP untuk cegah brute force NISN)
+Route::post('/pengumuman/cek', [\App\Http\Controllers\Frontend\PengumumanController::class, 'cek'])
+    ->middleware('throttle:public-verification')
+    ->name('public.pengumuman.cek');
 
 Route::get('/docs', function () {
     return view('frontend.docs');
