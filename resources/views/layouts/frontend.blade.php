@@ -6,7 +6,7 @@
     <meta name="description" content="SIMORO SMANLI - Sistem Ujian Online SMA Negeri 5 Morotai">
     <meta name="keywords" content="ujian online, sekolah, SMA, Morotai, pendidikan">
 
-    <title>{{ config('app.name', 'SIMORO SMANLI') }} - SMA Negeri 5 Morotai</title>
+    <title>@yield('title', config('app.name', 'SIMORO SMANLI') . ' - SMA Negeri 5 Morotai')</title>
 
     <!-- Favicons -->
     {{-- <link href="{{ asset('assets/frondend/assets/img/favicon.png') }}" rel="icon">
@@ -71,11 +71,29 @@
             transform: translateY(-2px);
         }
     </style>
+    @stack('styles')
 </head>
 
 <body class="index-page">
 
-    {{ $slot }}
+    <header id="header" class="header d-flex align-items-center sticky-top" style="background: #fff; box-shadow: 0 2px 15px rgba(0,0,0,0.06); padding: 14px 0;">
+        <div class="container d-flex align-items-center justify-content-between">
+            <a href="{{ url('/') }}" class="logo d-flex align-items-center text-decoration-none">
+                <img src="{{ asset('assets/img/icon.png') }}" alt="SIMORO" style="height: 38px; margin-right: 10px;">
+                <span class="fw-bold text-dark fs-5" style="font-family: 'Poppins', sans-serif;">SIMORO SMANLI</span>
+            </a>
+            <a href="{{ url('/') }}" class="btn btn-outline-primary rounded-pill px-3 py-1 btn-sm d-flex align-items-center gap-1">
+                <i class="bi bi-arrow-left"></i>
+                <span>Kembali ke Beranda</span>
+            </a>
+        </div>
+    </header>
+
+    @if(isset($slot))
+        {{ $slot }}
+    @else
+        @yield('content')
+    @endif
 
     <!-- Vendor JS Files -->
     <script src="{{ asset('assets/frondend/assets/vendor/bootstrap/js/bootstrap.bundle.min.js') }}"></script>
@@ -88,6 +106,7 @@
 
     <!-- Main JS File -->
     <script src="{{ asset('assets/frondend/assets/js/main.js') }}"></script>
+    @stack('scripts')
 
 </body>
 </html>
