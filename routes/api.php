@@ -112,6 +112,11 @@ Route::middleware('auth:sanctum')->group(function () {
     // Dashboard: Kelas, Mata Pelajaran, Jadwal
     Route::get('siswa/dashboard', [ApiStudentController::class, 'dashboard']);
 
+    // ==================== E-RAPOR DIGITAL SISWA (MOBILE API) ====================
+    Route::get('siswa/rapor', [\App\Http\Controllers\Api\Siswa\RaporApiController::class, 'index']);
+    Route::get('siswa/rapor/{id}', [\App\Http\Controllers\Api\Siswa\RaporApiController::class, 'show']);
+    Route::get('siswa/rapor/{id}/pdf', [\App\Http\Controllers\Api\Siswa\RaporApiController::class, 'downloadPdf']);
+
     // User Accounts Management (Seluruh Akun & Role)
     Route::apiResource('users', \App\Http\Controllers\Api\UserController::class);
     Route::apiResource('akun', \App\Http\Controllers\Api\UserController::class);

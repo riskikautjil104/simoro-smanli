@@ -31,6 +31,18 @@ class User extends Authenticatable
         return $this->hasMany(Subject::class, 'teacher_id');
     }
 
+    // Relasi kelas yang dibina (jika guru adalah Wali Kelas)
+    public function kelasWali(): \Illuminate\Database\Eloquent\Relations\HasOne
+    {
+        return $this->hasOne(SchoolClass::class, 'wali_kelas_id');
+    }
+
+    // Relasi ke Rapor (untuk siswa)
+    public function rapor(): HasMany
+    {
+        return $this->hasMany(RaporStudent::class, 'student_id');
+    }
+
     /**
      * The attributes that are mass assignable.
      *

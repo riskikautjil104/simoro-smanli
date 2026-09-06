@@ -1,5 +1,5 @@
 @extends('layouts.master')
-@section('title', 'Data Kelas')
+@section('title', 'Data Kelas & Wali Kelas')
 
 @push('styles')
 <style>
@@ -24,6 +24,7 @@
 .kelas-avatar { width:42px; height:42px; background:linear-gradient(135deg,var(--secondary),#198754); border-radius:12px; display:inline-flex; align-items:center; justify-content:center; color:#fff; font-weight:800; font-size:0.85rem; flex-shrink:0; box-shadow:0 2px 10px rgba(32,201,151,0.3); }
 .stat-chip-sm { display:inline-flex; align-items:center; gap:5px; background:#f0f4ff; color:var(--primary); font-size:0.72rem; font-weight:600; padding:4px 10px; border-radius:20px; }
 .stat-chip-sm.green { background:rgba(32,201,151,0.1); color:#198754; }
+.stat-chip-sm.indigo { background:rgba(99,102,241,0.1); color:#4f46e5; border:1px solid rgba(99,102,241,0.2); }
 .mapel-tag { display:inline-block; background:rgba(13,110,253,0.07); color:var(--primary); font-size:0.7rem; font-weight:600; padding:2px 8px; border-radius:12px; margin:2px 2px 0 0; }
 .btn-act { display:inline-flex; align-items:center; gap:5px; padding:6px 12px; border-radius:8px; font-size:0.78rem; font-weight:600; border:none; cursor:pointer; transition:var(--transition); font-family:'Poppins',sans-serif; white-space:nowrap; margin:2px 2px 0 0; }
 .btn-act-edit   { background:rgba(13,110,253,0.1); color:var(--primary); }
@@ -46,8 +47,8 @@
 <div class="page-header">
     <div class="page-header-content d-flex align-items-center justify-content-between flex-wrap gap-3">
         <div>
-            <h4><i class="bi bi-building me-2"></i>Data Kelas <span class="count-badge" id="kelas-count">0 kelas</span></h4>
-            <p>Kelola data kelas SMA Negeri 5 Morotai</p>
+            <h4><i class="bi bi-building me-2"></i>Data Kelas & Penetapan Wali Kelas <span class="count-badge" id="kelas-count">0 kelas</span></h4>
+            <p>Kelola data rombongan belajar dan tentukan Wali Kelas pengampu rapor digital SMA Negeri 5 Morotai</p>
         </div>
         <button class="btn-header" data-bs-toggle="modal" data-bs-target="#modalKelas" id="btnTambahKelas">
             <i class="bi bi-plus-lg"></i> Tambah Kelas
@@ -58,7 +59,7 @@
 <div class="d-flex align-items-center justify-content-between flex-wrap gap-3 mb-3">
     <div class="search-wrap">
         <i class="bi bi-search"></i>
-        <input type="text" id="searchKelas" class="form-control" placeholder="Cari nama kelas...">
+        <input type="text" id="searchKelas" class="form-control" placeholder="Cari nama kelas atau wali...">
     </div>
     <div style="font-size:0.82rem;color:var(--text-muted);">Menampilkan <span id="kelas-shown">0</span> data</div>
 </div>
@@ -70,14 +71,15 @@
                 <tr>
                     <th style="width:48px;">No</th>
                     <th>Kelas</th>
+                    <th>Wali Kelas</th>
                     <th>Mata Pelajaran</th>
                     <th>Siswa</th>
-                    <th>Guru</th>
+                    <th>Guru Mapel</th>
                     <th style="width:120px;">Aksi</th>
                 </tr>
             </thead>
             <tbody id="kelasTbody">
-                <tr><td colspan="6"><div class="empty-state"><div class="empty-icon"><i class="bi bi-hourglass-split"></i></div><h6>Memuat data...</h6></div></td></tr>
+                <tr><td colspan="7"><div class="empty-state"><div class="empty-icon"><i class="bi bi-hourglass-split"></i></div><h6>Memuat data...</h6></div></td></tr>
             </tbody>
         </table>
     </div>
@@ -94,9 +96,21 @@
                 <div class="modal-body p-4">
                     <input type="hidden" id="kelasId">
                     <div class="mb-3">
-                        <label class="form-label">Nama Kelas</label>
+                        <label class="form-label fw-bold">Nama Kelas <span class="text-danger">*</span></label>
                         <input type="text" class="form-control" id="namaKelas" name="nama"
-                               placeholder="Contoh: X IPA 1" required>
+                               placeholder="Contoh: X-1, XI-MIPA 1" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label fw-bold"><i class="bi bi-person-badge me-1 text-primary"></i>Pilih Wali Kelas</label>
+                        <select class="form-select" id="waliKelasId" name="wali_kelas_id">
+                            <option value="">-- Pilih Guru Sebagai Wali Kelas --</option>
+                            @if(isset($teachers) && count($teachers))
+                                @foreach($teachers as $teacher)
+                                    <option value="{{ $teacher->id }}">{{ $teacher->name }} {{ $teacher->nip ? '(NIP: '.$teacher->nip.')' : '' }}</option>
+                                @endforeach
+                            @endif
+                        </select>
+                        <div class="form-text text-muted small">Wali Kelas akan bertugas menandatangani rapor dan mengisi evaluasi akhir semester.</div>
                     </div>
                 </div>
                 <div class="modal-footer border-0 px-4 pb-4 pt-0">
@@ -114,6 +128,27 @@
 <script>
 document.addEventListener('DOMContentLoaded', function () {
     var csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+    var teachersList = [];
+
+    // Fetch teachers list for dropdown
+    function loadTeachers(selectedId) {
+        return fetch('/admin/kelas/teachers', { headers:{'Accept':'application/json'} })
+        .then(function(r){ return r.ok ? r.json() : []; })
+        .then(function(data) {
+            teachersList = data;
+            var select = document.getElementById('waliKelasId');
+            if (select) {
+                var currentVal = (selectedId !== undefined && selectedId !== null) ? selectedId : select.value;
+                var options = '<option value="">-- Pilih Guru Sebagai Wali Kelas --</option>';
+                data.forEach(function(t) {
+                    var isSelected = (currentVal && String(currentVal) === String(t.id)) ? ' selected' : '';
+                    options += '<option value="' + t.id + '"' + isSelected + '>' + t.name + (t.nip ? ' (NIP: ' + t.nip + ')' : '') + '</option>';
+                });
+                select.innerHTML = options;
+                if (currentVal) select.value = currentVal;
+            }
+        }).catch(function(err){ console.error('Gagal memuat guru:', err); });
+    }
 
     function fetchKelas() {
         fetch('/admin/kelas/list', { headers:{'Accept':'application/json'} })
@@ -124,7 +159,7 @@ document.addEventListener('DOMContentLoaded', function () {
             document.getElementById('kelas-shown').textContent = data.length;
 
             if (!data.length) {
-                tbody.innerHTML = '<tr><td colspan="6"><div class="empty-state"><div class="empty-icon"><i class="bi bi-building"></i></div><h6>Belum ada data kelas</h6><p>Klik "Tambah Kelas" untuk menambahkan</p></div></td></tr>';
+                tbody.innerHTML = '<tr><td colspan="7"><div class="empty-state"><div class="empty-icon"><i class="bi bi-building"></i></div><h6>Belum ada data kelas</h6><p>Klik "Tambah Kelas" untuk menambahkan</p></div></td></tr>';
                 return;
             }
             var rows = '';
@@ -135,9 +170,15 @@ document.addEventListener('DOMContentLoaded', function () {
                 var guruCount  = Array.isArray(k.subjects) ? k.subjects.map(function(s){ return s.teacher_id; }).filter(function(v,idx,arr){ return arr.indexOf(v)===idx; }).length : 0;
                 var mapelList  = Array.isArray(k.subjects) ? k.subjects.map(function(s){ return '<span class="mapel-tag">' + (s.name||'') + '</span>'; }).join('') : '<span style="color:#ccc;">—</span>';
 
-                rows += '<tr data-nama="' + nama.toLowerCase() + '">' +
+                var waliName = (k.wali_kelas && k.wali_kelas.name) ? k.wali_kelas.name : '';
+                var waliChip = waliName 
+                    ? '<span class="stat-chip-sm indigo"><i class="bi bi-person-check-fill me-1"></i>' + waliName + '</span>'
+                    : '<span class="stat-chip-sm text-muted" style="background:#f1f5f9;"><i class="bi bi-dash-circle me-1"></i>Belum ditentukan</span>';
+
+                rows += '<tr data-nama="' + nama.toLowerCase() + '" data-wali="' + waliName.toLowerCase() + '">' +
                     '<td>' + (i+1) + '</td>' +
                     '<td><div class="d-flex align-items-center gap-2"><div class="kelas-avatar">' + inisial + '</div><span style="font-weight:700;">' + nama + '</span></div></td>' +
+                    '<td>' + waliChip + '</td>' +
                     '<td>' + mapelList + '</td>' +
                     '<td><span class="stat-chip-sm green"><i class="bi bi-people"></i>' + siswaCount + ' siswa</span></td>' +
                     '<td><span class="stat-chip-sm"><i class="bi bi-person-badge"></i>' + guruCount + ' guru</span></td>' +
@@ -157,7 +198,9 @@ document.addEventListener('DOMContentLoaded', function () {
         var rows = document.querySelectorAll('#kelasTbody tr[data-nama]');
         var shown = 0;
         rows.forEach(function(row) {
-            var match = !q || row.getAttribute('data-nama').includes(q);
+            var matchNama = row.getAttribute('data-nama') && row.getAttribute('data-nama').includes(q);
+            var matchWali = row.getAttribute('data-wali') && row.getAttribute('data-wali').includes(q);
+            var match = !q || matchNama || matchWali;
             row.style.display = match ? '' : 'none';
             if (match) shown++;
         });
@@ -167,6 +210,7 @@ document.addEventListener('DOMContentLoaded', function () {
     document.getElementById('btnTambahKelas').addEventListener('click', function() {
         document.getElementById('formKelas').reset();
         document.getElementById('kelasId').value = '';
+        document.getElementById('waliKelasId').value = '';
         document.getElementById('modalKelasLabel').innerHTML = '<i class="bi bi-building me-2"></i>Tambah Kelas';
     });
 
@@ -186,7 +230,7 @@ document.addEventListener('DOMContentLoaded', function () {
         .then(function() {
             fetchKelas();
             bootstrap.Modal.getInstance(document.getElementById('modalKelas')).hide();
-            Swal.fire({ icon:'success', title:'Berhasil!', text:'Data kelas berhasil disimpan.', timer:1500, showConfirmButton:false });
+            Swal.fire({ icon:'success', title:'Berhasil!', text:'Data kelas dan Wali Kelas berhasil disimpan.', timer:1500, showConfirmButton:false });
         })
         .catch(function() { Swal.fire('Error','Gagal menyimpan data kelas.','error'); })
         .finally(function() { btn.disabled=false; btn.innerHTML='<i class="bi bi-save me-1"></i> Simpan'; });
@@ -201,9 +245,15 @@ document.addEventListener('DOMContentLoaded', function () {
             fetch('/admin/kelas/' + id, { headers:{'Accept':'application/json'} })
             .then(function(r){ return r.json(); })
             .then(function(data) {
-                document.getElementById('kelasId').value    = data.id;
-                document.getElementById('namaKelas').value  = data.nama || data.name || '';
-                document.getElementById('modalKelasLabel').innerHTML = '<i class="bi bi-pencil me-2"></i>Edit Kelas';
+                document.getElementById('kelasId').value     = data.id;
+                document.getElementById('namaKelas').value   = data.nama || data.name || '';
+                var targetWaliId = data.wali_kelas_id || '';
+                var selectEl = document.getElementById('waliKelasId');
+                selectEl.value = targetWaliId;
+                if (targetWaliId && selectEl.value !== String(targetWaliId)) {
+                    loadTeachers(targetWaliId);
+                }
+                document.getElementById('modalKelasLabel').innerHTML = '<i class="bi bi-pencil me-2"></i>Edit Kelas & Wali Kelas';
                 bootstrap.Modal.getOrCreateInstance(document.getElementById('modalKelas')).show();
             });
         }
@@ -223,6 +273,7 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     });
 
+    loadTeachers();
     fetchKelas();
 });
 </script>

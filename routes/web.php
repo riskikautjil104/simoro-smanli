@@ -44,8 +44,8 @@ use Illuminate\Support\Facades\Route;
         Route::get('ujian/{id}/peserta', [ExamController::class, 'peserta']);
         Route::get('ujian/{id}/ranking', [ExamController::class, 'ranking']);
         Route::get('ujian/{ujianId}/peserta/{userId}/jawaban', [ExamController::class, 'jawaban']);
-        Route::post('ujian/{ujianId}/peserta/{userId}/nilai', [ExamController::class, 'simpanNilai']);
         Route::get('kelas/list', [ClassController::class, 'list']);
+        Route::get('kelas/teachers', [ClassController::class, 'teachers']);
         Route::get('ujian/list', [ExamController::class, 'list']);
         Route::resource('ujian', ExamController::class);
         Route::resource('kelas', ClassController::class);
@@ -123,6 +123,16 @@ use Illuminate\Support\Facades\Route;
         Route::get('berita-acara/{examId}', [\App\Http\Controllers\Guru\BeritaAcaraController::class, 'show'])->name('berita-acara.show');
         Route::get('berita-acara/{examId}/pdf', [\App\Http\Controllers\Guru\BeritaAcaraController::class, 'exportPdf'])->name('berita-acara.pdf');
         Route::get('berita-acara/{examId}/excel', [\App\Http\Controllers\Guru\BeritaAcaraController::class, 'exportExcel'])->name('berita-acara.excel');
+
+        // E-Rapor Digital Wali Kelas
+        Route::get('rapor', [\App\Http\Controllers\Guru\RaporController::class, 'index'])->name('rapor.index');
+        Route::get('rapor/{id}', [\App\Http\Controllers\Guru\RaporController::class, 'detail'])->name('rapor.detail');
+        Route::post('rapor/{id}/save', [\App\Http\Controllers\Guru\RaporController::class, 'save'])->name('rapor.save');
+        Route::post('rapor/{id}/pull-cbt', [\App\Http\Controllers\Guru\RaporController::class, 'pullCbt'])->name('rapor.pull-cbt');
+        Route::post('rapor/{id}/pull-attendance', [\App\Http\Controllers\Guru\RaporController::class, 'pullAttendance'])->name('rapor.pull-attendance');
+        Route::post('rapor/{id}/publish', [\App\Http\Controllers\Guru\RaporController::class, 'togglePublish'])->name('rapor.publish');
+        Route::post('rapor/publish-all', [\App\Http\Controllers\Guru\RaporController::class, 'publishAll'])->name('rapor.publish-all');
+        Route::get('rapor/{id}/pdf', [\App\Http\Controllers\Guru\RaporController::class, 'exportPdf'])->name('rapor.pdf');
     });
 
     Route::middleware(['auth', 'role:student'])->prefix('siswa')->name('siswa.')->group(function () {

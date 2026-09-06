@@ -1,0 +1,278 @@
+<?php
+
+namespace App\Http\Controllers\Guru;
+
+use App\Http\Controllers\Controller;
+use App\Models\ExamResult;
+use App\Models\RaporScore;
+use App\Models\RaporStudent;
+use App\Models\SchoolClass;
+use App\Models\User;
+use Barryvdh\DomPDF\Facade\Pdf;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Http;
+
+class RaporController extends Controller
+{
+    /**
+     * Dashboard E-Rapor Wali Kelas
+     */
+    public function index(Request $request)
+    {
+        $user = Auth::user();
+        
+        // Cari kelas yang diampu guru ini sebagai Wali Kelas (atau jika admin/kepsek, bisa pilih kelas)
+        $kelas = SchoolClass::where('wali_kelas_id', $user->id)->first();
+        
+        if (!$kelas && in_array($user->role, ['admin', 'kepala_sekolah'])) {
+            $classId = $request->input('class_id', SchoolClass::first()?->id);
+            $kelas = SchoolClass::find($classId);
+        }
+
+        if (!$kelas) {
+            return view('guru.rapor.not_wali');
+        }
+
+        $tahunAjaran = $request->input('tahun_ajaran', '2025/2026');
+        $semester = $request->input('semester', 'Ganjil');
+
+        // Ambil seluruh siswa di kelas ini
+        $students = User::where('class_id', $kelas->id)
+            ->whereIn('role', ['student', 'siswa'])
+            ->orderBy('name')
+            ->get();
+
+        // Generate / Sinkronisasi entri rapor jika belum ada
+        foreach ($students as $student) {
+            RaporStudent::firstOrCreate([
+                'student_id' => $student->id,
+                'class_id' => $kelas->id,
+                'tahun_ajaran' => $tahunAjaran,
+                'semester' => $semester,
+            ], [
+                'wali_kelas_id' => $kelas->wali_kelas_id ?? $user->id,
+                'status' => 'draft',
+                'tanggal_rapor' => now(),
+            ]);
+        }
+
+        // Ambil daftar rapor kelas
+        $reports = RaporStudent::with(['student', 'scores.subject'])
+            ->where('class_id', $kelas->id)
+            ->where('tahun_ajaran', $tahunAjaran)
+            ->where('semester', $semester)
+            ->get();
+
+        $allClasses = in_array($user->role, ['admin', 'kepala_sekolah']) ? SchoolClass::orderBy('name')->get() : [];
+
+        return view('guru.rapor.index', compact('kelas', 'reports', 'tahunAjaran', 'semester', 'allClasses'));
+    }
+
+    /**
+     * Detail Rapor Siswa & Form Input Nilai Mapel
+     */
+    public function detail($id)
+    {
+        $rapor = RaporStudent::with(['student', 'schoolClass.subjects.teacher', 'scores.subject', 'waliKelas'])
+            ->findOrFail($id);
+
+        $user = Auth::user();
+        if ($rapor->wali_kelas_id !== $user->id && !in_array($user->role, ['admin', 'kepala_sekolah'])) {
+            abort(403, 'Anda bukan Wali Kelas dari siswa ini.');
+        }
+
+        // Pastikan setiap mapel kelas ini ada di rapor_scores
+        $classSubjects = $rapor->schoolClass->subjects;
+        foreach ($classSubjects as $subject) {
+            RaporScore::firstOrCreate([
+                'rapor_student_id' => $rapor->id,
+                'subject_id' => $subject->id,
+            ]);
+        }
+
+        $rapor->load('scores.subject.teacher');
+
+        return view('guru.rapor.detail', compact('rapor'));
+    }
+
+    /**
+     * Tarik otomatis nilai rata-rata ujian CBT siswa per mapel
+     */
+    public function pullCbt($id)
+    {
+        $rapor = RaporStudent::with('scores')->findOrFail($id);
+        $updatedCount = 0;
+
+        foreach ($rapor->scores as $score) {
+            $avgScore = ExamResult::where('user_id', $rapor->student_id)
+                ->whereHas('exam', function ($q) use ($score) {
+                    $q->where('subject_id', $score->subject_id);
+                })
+                ->avg('score');
+
+            if ($avgScore !== null) {
+                $score->nilai_cbt = round((float) $avgScore, 2);
+                $score->calculateFinalScore();
+                $score->save();
+                $updatedCount++;
+            }
+        }
+
+        return response()->json([
+            'success' => true,
+            'message' => "Berhasil menarik nilai rata-rata CBT untuk {$updatedCount} mata pelajaran.",
+        ]);
+    }
+
+    /**
+     * Tarik rekap absensi dari web absensi (atau fallback toleran)
+     */
+    public function pullAttendance($id)
+    {
+        $rapor = RaporStudent::findOrFail($id);
+        
+        try {
+            $response = Http::timeout(4)->get("https://absensi.sma-n5-morotai.id/api/rekap/siswa/{$rapor->student_id}");
+            if ($response->successful()) {
+                $data = $response->json();
+                if (isset($data['sakit'])) $rapor->sakit = (int) $data['sakit'];
+                if (isset($data['izin'])) $rapor->izin = (int) $data['izin'];
+                if (isset($data['alpa'])) $rapor->tanpa_keterangan = (int) $data['alpa'];
+                $rapor->save();
+
+                return response()->json([
+                    'success' => true,
+                    'message' => 'Data absensi berhasil ditarik dari server absensi.',
+                    'data' => $rapor,
+                ]);
+            }
+        } catch (\Exception $e) {
+            // Silently fall back to manual edit
+        }
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Silakan verifikasi atau masukkan angka absensi secara manual pada form.',
+            'data' => $rapor,
+        ]);
+    }
+
+    /**
+     * Simpan Perubahan Nilai, Catatan Wali Kelas, dan Absensi
+     */
+    public function save(Request $request, $id)
+    {
+        $rapor = RaporStudent::findOrFail($id);
+
+        $request->validate([
+            'sakit' => 'nullable|integer|min:0',
+            'izin' => 'nullable|integer|min:0',
+            'tanpa_keterangan' => 'nullable|integer|min:0',
+            'catatan_wali_kelas' => 'nullable|string',
+            'status_kenaikan' => 'nullable|string|max:255',
+            'tanggal_rapor' => 'nullable|date',
+            'scores' => 'nullable|array',
+        ]);
+
+        $rapor->update([
+            'sakit' => $request->input('sakit', 0),
+            'izin' => $request->input('izin', 0),
+            'tanpa_keterangan' => $request->input('tanpa_keterangan', 0),
+            'catatan_wali_kelas' => $request->input('catatan_wali_kelas'),
+            'status_kenaikan' => $request->input('status_kenaikan'),
+            'tanggal_rapor' => $request->input('tanggal_rapor') ?? now(),
+        ]);
+
+        // Simpan nilai masing-masing mapel
+        if ($request->has('scores')) {
+            foreach ($request->input('scores') as $scoreId => $data) {
+                $score = RaporScore::where('id', $scoreId)
+                    ->where('rapor_student_id', $rapor->id)
+                    ->first();
+
+                if ($score) {
+                    $score->nilai_tugas = (float) ($data['nilai_tugas'] ?? 0);
+                    $score->nilai_cbt   = (float) ($data['nilai_cbt'] ?? 0);
+                    
+                    if (isset($data['nilai_akhir']) && is_numeric($data['nilai_akhir'])) {
+                        $score->nilai_akhir = (float) $data['nilai_akhir'];
+                    } else {
+                        $score->calculateFinalScore();
+                    }
+
+                    $score->capaian_kompetensi = $data['capaian_kompetensi'] ?? null;
+                    $score->save();
+                }
+            }
+        }
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Data Rapor berhasil disimpan!',
+        ]);
+    }
+
+    /**
+     * Terbitkan Rapor (Publikasikan ke Siswa / Mobile)
+     */
+    public function togglePublish($id)
+    {
+        $rapor = RaporStudent::findOrFail($id);
+        $rapor->status = ($rapor->status === 'published') ? 'draft' : 'published';
+        $rapor->save();
+
+        return response()->json([
+            'success' => true,
+            'status' => $rapor->status,
+            'message' => $rapor->status === 'published' 
+                ? 'Rapor berhasil diterbitkan ke siswa & mobile.' 
+                : 'Status rapor dikembalikan ke draft.',
+        ]);
+    }
+
+    /**
+     * Terbitkan Semua Rapor Kelas Sekaligus
+     */
+    public function publishAll(Request $request)
+    {
+        $classId = $request->input('class_id');
+        $tahunAjaran = $request->input('tahun_ajaran');
+        $semester = $request->input('semester');
+
+        RaporStudent::where('class_id', $classId)
+            ->where('tahun_ajaran', $tahunAjaran)
+            ->where('semester', $semester)
+            ->update(['status' => 'published']);
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Seluruh rapor siswa di kelas ini berhasil diterbitkan!',
+        ]);
+    }
+
+    /**
+     * Cetak Lembar Rapor Resmi Format PDF A4
+     */
+    public function exportPdf($id)
+    {
+        $rapor = RaporStudent::with([
+            'student',
+            'schoolClass',
+            'waliKelas',
+            'scores.subject.teacher'
+        ])->findOrFail($id);
+
+        $kepsek = User::where('role', 'kepala_sekolah')->first() ?? User::where('role', 'admin')->first();
+
+        $pdf = Pdf::loadView('pdf.rapor_siswa', compact('rapor', 'kepsek'))
+            ->setPaper('a4', 'portrait');
+
+        $cleanName = \Illuminate\Support\Str::slug($rapor->student->name ?? 'siswa', '_');
+        $cleanSemester = \Illuminate\Support\Str::slug($rapor->semester ?? 'semester', '_');
+        $cleanTahun = str_replace(['/', '\\', ' '], ['-', '-', '_'], $rapor->tahun_ajaran ?? 'rapor');
+        $filename = "Rapor_{$cleanName}_{$cleanSemester}_{$cleanTahun}.pdf";
+
+        return $pdf->stream($filename);
+    }
+}

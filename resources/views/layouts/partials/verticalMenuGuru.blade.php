@@ -137,6 +137,20 @@
       </li>
     </ul>
 
+    {{-- Khusus jika Guru ditugaskan sebagai Wali Kelas --}}
+    @if(Auth::user()->kelasWali)
+    <div class="swirl-divider"></div>
+    <span class="swirl-section-label">Wali Kelas</span>
+    <ul class="swirl-nav">
+      <li>
+        <a class="swirl-link {{ request()->routeIs('guru.rapor*') ? 'active' : '' }}" href="{{ route('guru.rapor.index') }}">
+          <i class="bi bi-mortarboard"></i>
+          <span>Rapor {{ Auth::user()->kelasWali->name }}</span>
+        </a>
+      </li>
+    </ul>
+    @endif
+
     <div class="swirl-divider"></div>
     <span class="swirl-section-label">Akun</span>
     <ul class="swirl-nav">
