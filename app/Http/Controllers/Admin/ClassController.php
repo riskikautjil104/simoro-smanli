@@ -93,11 +93,13 @@ class ClassController extends Controller
     }
 
     /**
-     * Get school-wide default rapor weights and KKM
+     * Get school-wide default rapor weights, KKM, tahun ajaran, and semester
      */
     public function getRaporSettings()
     {
         return response()->json([
+            'tahun_ajaran' => \App\Models\MobileConfig::get('rapor_tahun_ajaran_default', '2025/2026'),
+            'semester'     => \App\Models\MobileConfig::get('rapor_semester_default', 'Ganjil'),
             'weight_tugas' => (int) \App\Models\MobileConfig::get('rapor_weight_tugas', 40),
             'weight_cbt'   => (int) \App\Models\MobileConfig::get('rapor_weight_cbt', 60),
             'kkm'          => (int) \App\Models\MobileConfig::get('rapor_kkm_default', 75),
@@ -105,24 +107,34 @@ class ClassController extends Controller
     }
 
     /**
-     * Save school-wide default rapor weights and KKM
+     * Save school-wide default rapor weights, KKM, tahun ajaran, and semester
      */
     public function saveRaporSettings(Request $request)
     {
         $validated = $request->validate([
+            'tahun_ajaran' => 'nullable|string|max:20',
+            'semester'     => 'nullable|string|in:Ganjil,Genap',
             'weight_tugas' => 'required|numeric|min:0|max:100',
             'weight_cbt'   => 'required|numeric|min:0|max:100',
             'kkm'          => 'required|numeric|min:0|max:100',
         ]);
 
+        if (!empty($validated['tahun_ajaran'])) {
+            \App\Models\MobileConfig::set('rapor_tahun_ajaran_default', $validated['tahun_ajaran'], 'rapor', 'string', 'Tahun Ajaran Aktif Sekolah');
+        }
+        if (!empty($validated['semester'])) {
+            \App\Models\MobileConfig::set('rapor_semester_default', $validated['semester'], 'rapor', 'string', 'Semester Aktif Sekolah');
+        }
         \App\Models\MobileConfig::set('rapor_weight_tugas', (int) $validated['weight_tugas'], 'rapor', 'integer', 'Bobot Nilai Tugas Default (%)');
         \App\Models\MobileConfig::set('rapor_weight_cbt', (int) $validated['weight_cbt'], 'rapor', 'integer', 'Bobot Nilai CBT Default (%)');
         \App\Models\MobileConfig::set('rapor_kkm_default', (int) $validated['kkm'], 'rapor', 'integer', 'Standar KKM Default Sekolah');
 
         return response()->json([
             'success' => true,
-            'message' => 'Standar Bobot Rapor dan KKM Sekolah berhasil disimpan.',
+            'message' => 'Standar Pengaturan Rapor & Semester Sekolah berhasil disimpan.',
             'data'    => [
+                'tahun_ajaran' => $validated['tahun_ajaran'] ?? '2025/2026',
+                'semester'     => $validated['semester'] ?? 'Ganjil',
                 'weight_tugas' => (int) $validated['weight_tugas'],
                 'weight_cbt'   => (int) $validated['weight_cbt'],
                 'kkm'          => (int) $validated['kkm'],

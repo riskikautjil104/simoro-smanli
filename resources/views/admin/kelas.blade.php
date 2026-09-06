@@ -138,6 +138,20 @@
                 <div class="modal-body p-4">
                     <p class="text-muted small mb-4">Pengaturan ini menjadi standar acuan baku penilaian rapor untuk seluruh rombongan belajar SMA Negeri 5 Morotai. Wali Kelas tetap dapat menyesuaikan untuk kelasnya jika diperlukan.</p>
                     
+                    <div class="row g-2 mb-3">
+                        <div class="col-md-7">
+                            <label class="form-label fw-bold">Tahun Ajaran Acuan Sekolah <span class="text-danger">*</span></label>
+                            <input type="text" class="form-control fw-bold" id="settingTahunAjaran" name="tahun_ajaran" placeholder="Contoh: 2025/2026" required>
+                        </div>
+                        <div class="col-md-5">
+                            <label class="form-label fw-bold">Semester Aktif <span class="text-danger">*</span></label>
+                            <select class="form-select fw-bold" id="settingSemester" name="semester" required>
+                                <option value="Ganjil">Semester Ganjil</option>
+                                <option value="Genap">Semester Genap</option>
+                            </select>
+                        </div>
+                    </div>
+
                     <div class="mb-3">
                         <label class="form-label fw-bold">Bobot Nilai Tugas / Praktik (%) <span class="text-danger">*</span></label>
                         <div class="input-group">
@@ -329,6 +343,8 @@ document.addEventListener('DOMContentLoaded', function () {
         fetch('/admin/kelas/rapor-settings', { headers:{'Accept':'application/json'} })
         .then(function(r){ return r.ok ? r.json() : {}; })
         .then(function(res) {
+            if (res.tahun_ajaran) document.getElementById('settingTahunAjaran').value = res.tahun_ajaran;
+            if (res.semester)     document.getElementById('settingSemester').value     = res.semester;
             document.getElementById('settingWeightTugas').value = res.weight_tugas || 40;
             document.getElementById('settingWeightCbt').value   = res.weight_cbt || 60;
             document.getElementById('settingKkm').value         = res.kkm || 75;

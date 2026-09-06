@@ -54,8 +54,13 @@
         <div class="col-md-3">
             <label class="form-label small fw-bold text-muted">Tahun Ajaran</label>
             <select name="tahun_ajaran" class="form-select form-select-sm" onchange="this.form.submit()">
-                <option value="2025/2026" {{ $tahunAjaran == '2025/2026' ? 'selected' : '' }}>2025/2026</option>
-                <option value="2024/2025" {{ $tahunAjaran == '2024/2025' ? 'selected' : '' }}>2024/2025</option>
+                @php
+                    $yearOptions = array_unique([$tahunAjaran, '2026/2027', '2025/2026', '2024/2025']);
+                    rsort($yearOptions);
+                @endphp
+                @foreach($yearOptions as $yr)
+                    <option value="{{ $yr }}" {{ $tahunAjaran == $yr ? 'selected' : '' }}>{{ $yr }}</option>
+                @endforeach
             </select>
         </div>
         <div class="col-md-3">

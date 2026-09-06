@@ -38,8 +38,11 @@ class RaporController extends Controller
             return view('guru.rapor.not_wali');
         }
 
-        $tahunAjaran = $request->input('tahun_ajaran', '2025/2026');
-        $semester = $request->input('semester', 'Ganjil');
+        $defaultTahun = \App\Models\MobileConfig::get('rapor_tahun_ajaran_default', '2025/2026');
+        $defaultSemester = \App\Models\MobileConfig::get('rapor_semester_default', 'Ganjil');
+
+        $tahunAjaran = $request->input('tahun_ajaran', $defaultTahun);
+        $semester = $request->input('semester', $defaultSemester);
 
         // Ambil seluruh siswa di kelas ini
         $students = User::where('class_id', $kelas->id)
