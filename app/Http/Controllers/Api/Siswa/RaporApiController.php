@@ -19,8 +19,21 @@ class RaporApiController extends Controller
     {
         $user = $request->user();
 
+        $studentId = $user->id;
+        if (!in_array($user->role ?? '', ['student', 'siswa']) || $request->filled('student_id') || $request->filled('email') || $request->filled('nis')) {
+            if ($request->filled('student_id')) {
+                $studentId = $request->input('student_id');
+            } elseif ($request->filled('email')) {
+                $foundId = \App\Models\User::where('email', $request->email)->value('id');
+                if ($foundId) $studentId = $foundId;
+            } elseif ($request->filled('nis')) {
+                $foundId = \App\Models\User::where('nis', $request->nis)->value('id');
+                if ($foundId) $studentId = $foundId;
+            }
+        }
+
         $rapors = RaporStudent::with(['schoolClass', 'waliKelas', 'scores.subject'])
-            ->where('student_id', $user->id)
+            ->where('student_id', $studentId)
             ->where('status', 'published')
             ->orderByDesc('id')
             ->get();
