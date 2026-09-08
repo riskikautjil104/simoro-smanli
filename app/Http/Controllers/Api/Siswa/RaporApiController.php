@@ -77,8 +77,11 @@ class RaporApiController extends Controller
 
         $resolvedId = is_numeric($id) ? (int)$id : RaporSecurityService::decryptId($id);
         $query = RaporStudent::with(['schoolClass', 'waliKelas', 'scores.subject.teacher'])
-            ->where('student_id', $user->id)
             ->where('status', 'published');
+
+        if ($user && in_array($user->role ?? '', ['student', 'siswa'])) {
+            $query->where('student_id', $user->id);
+        }
 
         if ($resolvedId) {
             $rapor = $query->find($resolvedId);
