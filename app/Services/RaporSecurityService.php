@@ -70,9 +70,31 @@ class RaporSecurityService
     {
         $cleanTahun = str_replace(['/', '\\', ' '], '-', $rapor->tahun_ajaran ?? '2025-2026');
         $semCode    = strtoupper(substr($rapor->semester ?? 'G', 0, 1)) . ($rapor->semester === 'Genap' ? '2' : '1');
-        $paddedId   = str_pad((string)($rapor->id ?? 1), 4, '0', STR_PAD_LEFT);
+        
+        $num = !empty($rapor->id) ? (int)$rapor->id : null;
+        if (!$num) {
+            $maxId = (int) (\Illuminate\Support\Facades\DB::table('rapor_students')->max('id') ?? 0);
+            $count = (int) (\Illuminate\Support\Facades\DB::table('rapor_students')
+                ->where('tahun_ajaran', $rapor->tahun_ajaran)
+                ->where('semester', $rapor->semester)
+                ->count());
+            $num = max($maxId, $count) + 1;
+        }
 
-        return "SMAN5/RAPOR/{$cleanTahun}/{$semCode}/{$paddedId}";
+        $paddedId = str_pad((string)$num, 4, '0', STR_PAD_LEFT);
+        $serial = "SMAN5/RAPOR/{$cleanTahun}/{$semCode}/{$paddedId}";
+
+        // Pastikan tidak terjadi tabrakan nomor unik di database
+        while (\Illuminate\Support\Facades\DB::table('rapor_students')
+            ->where('document_serial', $serial)
+            ->when(!empty($rapor->id), fn($q) => $q->where('id', '!=', $rapor->id))
+            ->exists()) {
+            $num++;
+            $paddedId = str_pad((string)$num, 4, '0', STR_PAD_LEFT);
+            $serial = "SMAN5/RAPOR/{$cleanTahun}/{$semCode}/{$paddedId}";
+        }
+
+        return $serial;
     }
 
     /**
